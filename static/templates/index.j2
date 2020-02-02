@@ -1,4 +1,41 @@
 {% extends "layout/base.j2" %}
 
+{% macro footerlink(project, attr, fa=none) %}
+    {% if project[attr] %}
+        <a class="mr-2" href="{{ project[attr] }}" target="_blank"><i class="{{ fa }}"></i></a>
+    {% endif %}
+{% endmacro %}
+
 {% block content %}
+<div class="jumbotron bg-dark">
+    <a class="align-middle text-center" href="/">
+        <img src="{{ static('/images/logo.png') }}" alt="The Voxel Fox logo"  height="100" />
+    </a>
+    <h1 style="display: inline" class="align-middle text-light">Voxel Fox</h1>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="card-columns">
+                {% for project in projects -%}
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ project.name }}</h5>
+                            {% for line in project.description.split('\n') -%}
+                                <p class="card-text">{{ line.strip() }}</p>
+                            {% endfor -%}
+                            <p class="card-text text-muted">Built with {{ project.built_with }}</p>
+                        </div>
+                        <div class="card-footer text-muted">
+                            {{ footerlink(project, 'website', 'fas fa-link') }}
+                            {{ footerlink(project, 'github', 'fab fa-github') }}
+                            {{ footerlink(project, 'discord', 'fab fa-discord') }}
+                        </div>
+                    </div>
+                {% endfor -%}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock content%}
