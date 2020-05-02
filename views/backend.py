@@ -154,7 +154,7 @@ async def paypal_purchase_complete(request:Request):
         request.app['logger'].info(f"Pinging {webhook_url} with PayPal data")
         try:
             async with aiohttp.ClientSession(loop=request.app.loop) as session:
-                headers = {'Token': webhook_data['webhook_token']}
+                headers = {'Authorization': webhook_data['authorization']}
                 async with session.post(webhook_url, headers=headers, json=database):
                     pass
         except Exception as e:
