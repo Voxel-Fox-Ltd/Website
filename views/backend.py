@@ -101,7 +101,7 @@ async def paypal_purchase_complete(request:Request):
             return Response(status=200)  # Payment below zero AND it's not reversed
 
     # Lets print this or whatever
-    request.app['logger'].info(paypal_data)
+    # request.app['logger'].info(paypal_data)
 
     # Set up our data to be databased
     database = {
@@ -147,7 +147,7 @@ async def paypal_purchase_complete(request:Request):
     try:
         if refunded is True or database['completed']:
             webhook_data = [i for i in request.app['config']['paypal_item_webhooks'] if i['item_name'] == database['item_name']][0]
-            webhook_url = webhook_data['webhook_url']['purchase' if refunded is False else 'refund']
+            webhook_url = webhook_data['webhook_url']
     except IndexError:
         pass
     if webhook_url:
@@ -161,4 +161,70 @@ async def paypal_purchase_complete(request:Request):
             print(e)
 
     # Let the user get redirected
+    return Response(status=200)
+
+
+@routes.post('/webhooks/topgg/vote_added')
+async def webhook_handler(request:Request):
+    """Sends a PM to the user with the webhook attached if user in owners"""
+
+    # See if we can get it
+    try:
+        request_data = await request.json()
+    except Exception:
+        request.app['logger'].info("Error parsing TopGG webhook")
+        return Response(status=400)
+
+    # See if it's all valid
+    keys = set(['bot', 'user', 'type'])
+    if not set(request_data.keys()).issuperset(keys):
+        request.app['logger'].info("Error parsing TopGG webhook - invalid keys")
+        return Response(status=400)
+
+    # Get the bot's ID
+    try:
+        bot_id = int(request_data['bot'])
+    except ValueError:
+        request.app['logger'].info("Error parsing TopGG webhook - invalid bot")
+        return Response(status=400)
+
+    # Get the user's ID
+    try:
+        user_id = int(request_data['user'])
+    except ValueError:
+        request.app['logger'].info("Error parsing TopGG webhook - invalid user")
+        return Response(status=400)
+
+    # Grab data from the config
+    try:
+        webhook_data = [i for i in request.app['config']['topgg_bot_webhooks'] if i['bot_id'] == bot_id][0]
+    except IndexError:
+        request.app['logger'].info(f"No TopGG passthrough webhook set for bot ID {bot_id}")
+        return Response(status=400)
+
+    # Check type
+    if request_data['type'] not in ['upvote', 'test']:
+        request.app['logger'].info("Error parsing TopGG webhook - invalid webhook type")
+        return Response(status=400)
+
+    # Check auth token from topgg
+    if request.headers.get('Authorization') != webhook_data['authorization']:
+        request.app['logger'].info("Error parsing TopGG webhook - invalid authorization")
+        return Response(status=400)
+
+    # Generate webhook ping data
+    response_data = {
+        'bot_id': bot_id,  # Doesn't need to be present but eh why not
+        'user_id': user_id,
+        'type': request_data['type']
+    }
+
+    # Ping the webhook
+    url = webhook_data['webhook_url']
+    async with aiohttp.ClientSession(loop=request.app.loop) as session:
+        headers = {"Authorization": webhook_data['authorization']}
+        async with session.post(url, headers=headers, json=response_data):
+            pass
+    request.app['logger'].info(f"Pinged TopGG webhook data to {url}")
+
     return Response(status=200)

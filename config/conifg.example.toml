@@ -13,5 +13,9 @@
 [[paypal_item_webhooks]]
     item_name = "MarriageBot Gold"  # The name of the item purchased
     authorization = "0"  # The token that we include with the webhook so we know it's from us
-    webhook_url.purchase = "https://marriagebot.xyz/webhooks/voxel_fox/purchase"  # The URL that we want to ping
-    webhook_url.refund = ""  # The URL that we want to ping
+    webhook_url = "https://marriagebot.xyz/webhooks/voxel_fox/purchase"  # The URL that we want to ping
+
+[[topgg_bot_webhooks]]
+    bot_id = 1
+    authorization = "0"
+    webhook_url = "https://marriagebot.xyz/webhooks/voxel_fox/topgg_vote_added"
