@@ -1,0 +1,17 @@
+[database]
+    user = "voxelfox"
+    password = ""
+    database = "voxelfox"
+    host = "127.0.0.1"
+    port = 5432
+    enabled = true
+
+[paypal_ipn]
+    receiver_email = ""  # The email that the PayPal account is set up with
+    sandbox = true
+
+[[paypal_item_webhooks]]
+    item_name = "MarriageBot Gold"  # The name of the item purchased
+    webhook_token = "0"  # The token that we include with the webhook so we know it's from us
+    webhook_url.purchase = "https://marriagebot.xyz/webhooks/voxel_fox/purchase"  # The URL that we want to ping
+    webhook_url.refund = ""  # The URL that we want to ping
