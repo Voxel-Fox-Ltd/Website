@@ -1,0 +1,34 @@
+[[project]]
+    name = "MarriageBot"
+    internal_link = ""
+    github = "https://github.com/4Kaylum/MarriageBot"
+    website = "https://marriagebot.xyz"
+    discord = "https://discord.gg/sWVgbPB"
+    description = """
+    MarriageBot is a bot made for the online chat service Discord to allow users to build a fake family with each other.
+    MarriageBot handles hundreds of thousands of concurrent users, including async practices, an integrated website for settings, PayPal IPN for giving out user perks, and a whole lot of other data.
+    """
+    built_with = "Python3, asyncio, aiohttp, PostgreSQL, Redis, Jinja2, Nginx"
+
+[[project]]
+    name = "Synergy"
+    internal_link = ""
+    github = "https://github.com/4Kaylum/Synergy"
+    website = "https://synergy.voxelfox.co.uk"
+    discord = "https://discord.gg/sWVgbPB"
+    description = """
+    Synergy is a highly customisable Discord bot built around putting user ideas first. The concept for the bot is quite simple - users can specify commands that they can run on their Discord servers, and they can specify responses for those commands. From there, the goal was just to make everything as fluid as possible. Users are able to set up commands; restrict them to specific channels on their guild; restrict things down to roles - all of this configurable on the website.
+    """
+    built_with = "Python3, asyncio, aiohttp, PostgreSQL, Jinja2, Nginx"
+
+[[project]]
+    name = "Cerberus"
+    internal_link = ""
+    github = "https://github.com/4Kaylum/Cerberus"
+    website = ""
+    discord = "https://discord.gg/sWVgbPB"
+    description = """
+    Cerberus measures the activity of the users on a given server and assigns them roles based on that. More activity means you get a higher tier of role. There are bots like this that exist already, but what makes Cerberus stand out is the fact that if users stop being active, then those roles are taken away again. Users are judged based on their past 7 days of activity, meaning that users gain and lose roles over time.
+    Users are able to view their 7-day window of activity on a graph via the bot, so they can see how close they are/have been to each role at any given time.
+    """
+    built_with = "Python3, asyncio, PostgreSQL"

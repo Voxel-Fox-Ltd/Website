@@ -1,0 +1,22 @@
+[[project]]
+    name = "Discord Bots"
+    internal_link = "/discord"
+    github = ""
+    website = ""
+    discord = ""
+    description = """
+    With Discord being a service that I love to use, it only makes sense that I would make a variety of Discord bots. Discord has a pretty [well-documented API](https://discordapp.com/developers/docs/intro \"The Discord developer documentation\"), as well as some brilliant libraries like Rapptz's [Discord.py library](https://github.com/Rapptz/Discord.py \"Rapptz's Discord.py library\"). I've made a _lot_ of bots, so I'm just listing some of the better ones.
+    """
+    built_with = ""
+
+
+[[project]]
+    name = "TheDogAPI"
+    internal_link = ""
+    github = "https://github.com/4Kaylum/TheDogAPI"
+    website = ""
+    discord = ""
+    description = """
+    Back when there was a gap in the market for APIs of dog images, I decided to take matters into my own hands and build my own. I downloaded a bunch of dog pictures from the Google Open Images database, and then threw them all up in the form of an API. The site is gone now, as is that gap in the market, but I'm proud of what I'd made for that year I had it on the internet.
+    """
+    built_with = "PHP, MySQL"
