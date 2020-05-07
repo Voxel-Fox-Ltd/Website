@@ -21,10 +21,11 @@ async def paypal_purchase_complete(request:Request):
     # Send the data back to see if it's valid
     data_send_back = "cmd=_notify-validate&" + paypal_data_string
     async with aiohttp.ClientSession(loop=request.app.loop) as session:
-        paypal_url = {
-            True: "https://ipnpb.sandbox.paypal.com/cgi-bin/webscr",
-            False: "https://ipnpb.paypal.com/cgi-bin/webscr",
-        }.get(request.app['config']['paypal_ipn']['sandbox'])
+        # paypal_url = {
+        #     True: "https://ipnpb.sandbox.paypal.com/cgi-bin/webscr",
+        #     False: "https://ipnpb.paypal.com/cgi-bin/webscr",
+        # }.get(request.app['config']['paypal_ipn']['sandbox'])
+        paypal_url = "https://ipnpb.paypal.com/cgi-bin/webscr"
         async with session.post(paypal_url, data=data_send_back) as site:
             site_data = await site.read()
             if site_data.decode() != "VERIFIED":
@@ -80,15 +81,21 @@ async def paypal_purchase_complete(request:Request):
     web_accept - Any of the buy now buttons
     """
 
-    # Make sure it's to the right person
-    if paypal_data['receiver_email'] != request.app['config']['paypal_ipn']['receiver_email']:
-        request.app['logger'].info("Invalid email passed for PayPal IPN")
-        return Response(status=200)  # Wrong email passed
-
     # Make sure they're actually buying something
     if paypal_data.get('item_name') is None:
         request.app['logger'].info("Item name set to null for PayPal IPN")
         return Response(status=200)
+
+    # Get the item data
+    try:
+        webhook_data = request.app['config']['paypal_item_webhooks'][paypal_data.get('item_name')]
+    except KeyError:
+        return Response(status=200)  # It's not an item we're handling
+
+    # Make sure it's to the right person
+    if paypal_data['receiver_email'] != webhook_data['receiver_email']:
+        request.app['logger'].info("Invalid email passed for PayPal IPN")
+        return Response(status=200)  # Wrong email passed
 
     # See if it's refunded data
     refunded = False
@@ -99,9 +106,6 @@ async def paypal_purchase_complete(request:Request):
         else:
             request.app['logger'].info("Payment below zero and non-reversed payment for PayPal IPN")
             return Response(status=200)  # Payment below zero AND it's not reversed
-
-    # Lets print this or whatever
-    # request.app['logger'].info(paypal_data)
 
     # Set up our data to be databased
     database = {
@@ -118,6 +122,7 @@ async def paypal_purchase_complete(request:Request):
         'custom': json.dumps(custom_data_dict),
         'payment_currency': paypal_data['mc_currency'],
         'refunded': refunded,
+        'quantity': int(paypal_data.get('quantity', '1')),
     }
     if database['completed'] is False:
         database['checkout_complete_timestamp'] = None
@@ -126,9 +131,9 @@ async def paypal_purchase_complete(request:Request):
     sql = """
     INSERT INTO paypal_purchases (
         id, transaction_type, customer_id, payment_amount, discord_id, guild_id, completed, checkout_complete_timestamp,
-        item_name, option_selection, custom, payment_currency
+        item_name, option_selection, custom, payment_currency, quantity
     ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
     ) ON CONFLICT (id, transaction_type) DO UPDATE
     SET
         customer_id=excluded.customer_id, payment_amount=excluded.payment_amount, discord_id=excluded.discord_id, guild_id=excluded.guild_id,
@@ -139,17 +144,19 @@ async def paypal_purchase_complete(request:Request):
             sql, database['id'], database['transaction_type'], database['customer_id'],
             database['payment_amount'], database['discord_id'], database['guild_id'], database['completed'],
             dt.fromtimestamp(database['checkout_complete_timestamp']), database['item_name'], database['option_selection'], database['custom'],
-            database['payment_currency'],
+            database['payment_currency'], database['quantity']
         )
 
-    # Ping our relevant webhooks IF a refund was processed OR the checkout was completed and I've received the funds
-    webhook_url = None
+    # Get the webhook url
     try:
         if refunded is True or database['completed']:
-            webhook_data = [i for i in request.app['config']['paypal_item_webhooks'] if i['item_name'] == database['item_name']][0]
             webhook_url = webhook_data['webhook_url']
-    except IndexError:
-        pass
+        else:
+            webhook_url = None
+    except KeyError:
+        webhook_url = None
+
+    # Ping the webhook url with the data
     if webhook_url:
         request.app['logger'].info(f"Pinging {webhook_url} with PayPal data")
         try:
@@ -158,9 +165,10 @@ async def paypal_purchase_complete(request:Request):
                 async with session.post(webhook_url, headers=headers, json=database):
                     pass
         except Exception as e:
-            print(e)
+            request.app['logger'].info(e)
 
     # Let the user get redirected
+    request.app['logger'].info(f"Processed payment for item '{database['item_name']} - {database['option_selection']}")
     return Response(status=200)
 
 

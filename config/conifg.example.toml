@@ -6,14 +6,10 @@
     port = 5432
     enabled = true
 
-[paypal_ipn]
-    receiver_email = ""  # The email that the PayPal account is set up with
-    sandbox = true
-
-[[paypal_item_webhooks]]
-    item_name = "MarriageBot Gold"  # The name of the item purchased
-    authorization = "0"  # The token that we include with the webhook so we know it's from us
+[paypal_item_webhooks."MarriageBot Gold"]
+    authorization = ""  # The token that we include with the webhook so we know it's from us
     webhook_url = "https://marriagebot.xyz/webhooks/voxel_fox/purchase"  # The URL that we want to ping
+    receiver_email = "billing@voxelfox.co.uk"  # The email that the PayPal account is set up with
 
 [[topgg_bot_webhooks]]
     bot_id = 1
