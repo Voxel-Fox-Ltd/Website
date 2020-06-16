@@ -5,11 +5,12 @@
     website = "https://marriagebot.xyz"
     discord = "https://discord.gg/sWVgbPB"
     description = """
-    MarriageBot is a bot made for the online chat service Discord to allow users to build a fake family with each other.
-    MarriageBot handles hundreds of thousands of concurrent users (using async practices); an integrated website for settings; PayPal IPN for giving out user perks, and a whole lot of other data.
-    MarriageBot has taught me a lot about handling lots of input at once and non-blocking processing, as well as a lot about how to store, organise, and cache data correctly using databases. At over 100,000 servers, MarriageBot will continue to grow and cause me issues into the future, and I can't wait.
+        MarriageBot is a Discord bot made to allow users to "marry" and "adopt" each other, from which the bot can dynamically generate family trees using Graphviz.
+        ![](https://marriagebot.xyz/static/images/black_tree.png)
+        MarriageBot handles hundreds of thousands of concurrent users using async practices; an integrated website for settings; PayPal IPN for giving out user perks; plus a lot more.
+        MarriageBot has taught me a lot about handling lots of input at once and non-blocking processing, as well as a lot about how to store, organise, and cache data correctly across multiple running instances. At over 100,000 servers, MarriageBot will continue to grow and cause me issues into the future, and I can't wait.
     """
-    built_with = "Python3, asyncio, aiohttp, PostgreSQL, Redis, Jinja2, Nginx"
+    built_with = "Python3, asyncio, aiohttp, PostgreSQL, Redis, Jinja2, Nginx, Graphviz"
 
 [[project]]
     name = "Honey"
@@ -18,7 +19,8 @@
     website = ""
     discord = ""
     description = """
-    Honey is a Discord bot intended for the general moderation and handling of servers made for Furries. Honey can handle multiple things in the running of a Discord server, including moderation, character storage, economy handling (for fake in-server money), shop handling and purchases, and other related items.
+    Honey is a Discord bot intended for the general moderation and handling of servers made for the furry community.
+    One of the main goals of Honey was to be customisable in such a way that users could run their servers as they pleased, so I needed to integrate a lot of settings within the bot, staying as far away from set data as I could. It can handle a lot of things in the running of a Discord server, including moderation, character storage, economy handling (for fake in-server money), shop handling and purchases, and other related items.
     """
     built_with = "Python3, asyncio, PostgreSQL"
 
@@ -29,9 +31,10 @@
     website = ""
     discord = ""
     description = """
-    Profile is a highly customisable dynamic Discord bot, which allows server owners and admins to set up profiles for users to fill out, the data for which will then be stored in the bot's database and can be pulled up at a moment's notice. This bot is unique in Discord, as far as I can see, and having worked on the concept I can really see why.
-    Admins are able to create, customise, and moderate profile templates as they wish for their server. Setting up templates to be customisable in this way is a pretty difficult task - data validation on the user's inputs to make sure the bot's able to send the data; making sure they give valid resposnes (eg for what kind of field they want to set up); the balancing act between giving flexibility and being accessible to everyone still (I've looked at my analytics and seen the bot is used by quite a few international users) - it's not a particularly easy task to deal with.
-    All of this, however, and Profile handles it wonderfullly - sitting at more than 500 servers at time of writing.
+        Profile is a highly customisable Discord bot which allows server owners and admins to set up profiles for users to fill out, the data for which will then be stored in the bot's database and can be pulled up at a moment's notice.
+        ![](/static/images/profile/profile.png)
+        Admins are able to create, customise, and moderate profile templates as they wish for their server. Setting up templates to be customisable in this way is a pretty difficult task - data validation on the user's inputs to make sure the bot's able to send the data; making sure they give valid resposnes (eg for what kind of field they want to set up); the balancing act between giving flexibility and being accessible to everyone still (I've looked at my analytics and seen the bot is used by quite a few international users) - it's not a particularly easy task to deal with.
+        ![](/static/images/profile/create_template.gif)
     """
     built_with = "Python3, asyncio, PostgreSQL"
 
@@ -42,9 +45,10 @@
     website = ""
     discord = "https://discord.gg/sWVgbPB"
     description = """
-    Cerberus measures the activity of the users on a given server and assigns them roles based on that. More activity means you get a higher tier of role. There are bots like this that exist already, but what makes Cerberus stand out is the fact that if users stop being active, then those roles are taken away again. Users are judged based on their past 7 days of activity, meaning that users gain and lose roles over time.
-    Users are able to view their 7-day window of activity on a graph via the bot, so they can see how close they are/have been to each role at any given time.
-    Cerberus stores the timestamp of when a user sends a message, rather than just a message counter as other activity trackers may use, which means that it's able to see trends in user data, which I may later use for data analysis. For the graphing, the bot uses Matplotlib to dynamically show the user their specific data.
+        Cerberus measures the activity of the users on a given server and assigns them roles based on that. More activity means you get a higher tier of role. There are bots like this that exist already, but what makes Cerberus stand out is the fact that if users stop being active, then those roles are taken away again. Users are judged based on their past 7 days of activity, meaning that users gain and lose roles over time.
+        Users are able to view their 7-day window of activity on a graph via the bot, so they can see how close they are/have been to each role at any given time.
+        ![](/static/images/cerberus/graph.png)
+        Cerberus stores the timestamp of when a user sends a message, rather than just a message counter as other activity trackers may use, which means that it's able to see trends in user data, which I may later use for data analysis. For the graphing, the bot uses Matplotlib to dynamically show the user their specific data.
     """
     built_with = "Python3, asyncio, PostgreSQL, Matplotlib"
 
@@ -55,6 +59,8 @@
     website = "https://synergy.voxelfox.co.uk"
     discord = "https://discord.gg/sWVgbPB"
     description = """
-    Synergy is a highly customisable Discord bot built around putting user ideas first. The concept for the bot is quite simple - users can specify commands that they can run on their Discord servers, and they can specify responses for those commands. From there, the goal was just to make everything as fluid as possible. Users are able to set up commands; restrict them to specific channels on their guild; restrict things down to roles - all of this configurable on the website.
+        Synergy is a highly customisable Discord bot built around putting user ideas first. The concept for the bot is deceptively simple - users can specify commands that they can run on their Discord servers, and they can specify responses for those commands.
+        ![](/static/images/synergy/hug_responses.png)
+        The problems in building this particular bot came up fairly quickly. The library I use to write bots in - Discord.py - doesn't really support custom commands in the same way that it supports command handling by default. As such, I had to build my own command handler based upon the commands set up by the users on the website, making sure that these commands only exist on the server that the user specified.
     """
     built_with = "Python3, asyncio, aiohttp, PostgreSQL, Jinja2, Nginx"
