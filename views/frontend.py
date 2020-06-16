@@ -38,7 +38,7 @@ def get_projects_page(filename:str) -> dict:
 
 
 @routes.get("/")
-@template("projects.j2")
+@template("projects.html.j2")
 async def index(request:Request):
     """Index page for the website"""
 
@@ -46,7 +46,7 @@ async def index(request:Request):
 
 
 @routes.get("/{project_group_name}")
-@template("projects.j2")
+@template("projects.html.j2")
 async def project_group(request:Request):
     """Projects page"""
 

@@ -4,8 +4,24 @@ from urllib.parse import unquote
 
 import aiohttp
 from aiohttp.web import Request, RouteTableDef, Response
+from aiohttp_jinja2 import render_template
 
 routes = RouteTableDef()
+
+
+@routes.post('/discord/chatlog')
+async def discord_handler(request:Request):
+    """Creates you a Discord chatlog you might be able to use"""
+
+    with open('static/css/discord/core.css') as a:
+        core_css = a.read()
+    with open('static/css/discord/dark.css') as a:
+        dark_css = a.read()
+    return render_template('discord_page.html.j2', request, {
+        'data': (await request.json()),
+        'core_css': core_css,
+        'dark_css': dark_css,
+    })
 
 
 @routes.post('/webhooks/paypal/purchase_ipn')

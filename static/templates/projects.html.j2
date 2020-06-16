@@ -6,6 +6,10 @@
     {%- endif -%}
 {% endmacro -%}
 
+{% block stylesheets%}
+<link rel="stylesheet" href="{{ static('css/projects.css') }}" />
+{% endblock stylesheets %}
+
 {% block content %}
 <div class="jumbotron bg-dark text-center">
     <a class="align-middle text-center" href="/">
@@ -24,7 +28,7 @@
         <div class="col">
             <div class="card-columns">
                 {% for project in projects -%}
-                <div class="card">
+                <a id="{{ project.name }}"><div class="card">
                     <div class="card-body">
                         {% if project['internal_link'] %}<a href="{{ project['internal_link'] }}"><h5 class="card-title">{{ project.name }}</h5></a>
                         {%- else %}<h5 class="card-title">{{ project.name }}</h5>
@@ -39,7 +43,7 @@
                         {{ footerlink(project, 'github', 'fab fa-github') }}
                         {{ footerlink(project, 'discord', 'fab fa-discord') }}
                     </div>
-                </div>
+                </div></a>
                 {% endfor -%}
             </div>
         </div>

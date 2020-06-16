@@ -3,6 +3,9 @@ import os
 import argparse
 import logging
 import sys
+import re
+import html
+from datetime import datetime as dt
 
 import toml
 
@@ -35,10 +38,48 @@ with open(args.config_file) as a:
 # Add routes and setups
 app = Application(loop=asyncio.get_event_loop())
 app['static_root_url'] = '/static'
-jinja_setup(app, loader=FileSystemLoader(os.getcwd() + '/static/templates'))
+jinja_env = jinja_setup(app, loader=FileSystemLoader(os.getcwd() + '/static/templates'))
 app.router.add_static('/static', os.getcwd() + '/static', append_version=True)
 app.router.add_routes(frontend_routes)
 app.router.add_routes(backend_routes)
+
+
+# Add some filters
+def regex_replace(string, find, replace):
+    return re.sub(find, replace, string, re.IGNORECASE | re.MULTILINE)
+
+
+def escape_text(string):
+    return html.escape(string)
+
+
+def timestamp(string):
+    return dt.fromtimestamp(float(string))
+
+
+def int_to_hex(string):
+    return format(hex(int(string))[2:], "0>6")
+
+
+def display_mentions(string, users):
+    def get_display_name(group):
+        user = users.get(group.group('userid'))
+        if not user:
+            return 'unknown-user'
+        return user.get('display_name') or user.get('username')
+    return re.sub(
+        '(?:<|(?:&lt;))@!?(?P<userid>\\d{16,23})(?:>|(?:&gt;))',
+        lambda g: f'<span class="chatlog__mention">@{get_display_name(g)}</span>',
+        string,
+        re.IGNORECASE | re.MULTILINE
+    )
+
+
+jinja_env.filters['regex_replace'] = regex_replace
+jinja_env.filters['escape_text'] = escape_text
+jinja_env.filters['timestamp'] = timestamp
+jinja_env.filters['int_to_hex'] = int_to_hex
+jinja_env.filters['display_mentions'] = display_mentions
 
 # Add our connections
 app['database'] = DatabaseConnection
