@@ -25,11 +25,11 @@ a {
     border-color: #4f545c;
 }
 
-.pre {
+code, .code {
     background-color: #2f3136 !important;
 }
 
-.pre--multiline {
+.code--multiline {
     border-color: #282b30 !important;
     color: #b9bbbe !important;
 }

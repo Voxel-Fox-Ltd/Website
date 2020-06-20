@@ -91,7 +91,7 @@
     <div class="chatlog__message" data-message-id="{{ message.id }}" id="message-{{ message.id }}">
     {% if message.content %}
         <div class="chatlog__content">
-            <div class="markdown">{{ message.content.strip() | escape_text | display_mentions(data.users) | safe }}</div> <!-- markdown -->
+            <div class="markdown">{{ message.content.strip() | escape_text | markdown | display_mentions(data.users) | safe }}</div> <!-- markdown -->
         </div> <!-- chatlog__content -->
     {% endif %}
 
@@ -142,7 +142,7 @@
                     {% endif %}
 
                     {% if embed.description %}
-                    <div class="chatlog__embed-description"><div class="markdown">{{ embed.description | escape_text | display_mentions(data.users) | safe }}</div></div>
+                    <div class="chatlog__embed-description"><div class="markdown">{{ embed.description | escape_text | markdown | display_mentions(data.users) | safe }}</div></div>
                     {% endif %}
 
                     {% if embed.get('fields', []) %}

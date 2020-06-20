@@ -115,18 +115,18 @@ img {
     border-radius: 3px;
 }
 
-.pre {
+code, .code {
     font-family: "Consolas", "Courier New", Courier, monospace;
 }
 
-.pre--multiline {
+.code--multiline {
     margin-top: 0.25em;
     padding: 0.5em;
     border: 2px solid;
     border-radius: 5px;
 }
 
-.pre--inline {
+.code--inline {
     padding: 2px;
     border-radius: 3px;
     font-size: 0.85em;
@@ -252,6 +252,10 @@ img {
     cursor: pointer;
     color: #fff;
     background-color: #7289da;
+}
+
+.chatlog__content p {
+    margin: 0;
 }
 
 .chatlog__edited-timestamp {

@@ -12,6 +12,7 @@ import toml
 from aiohttp.web import Application, AppRunner, TCPSite
 from aiohttp_jinja2 import setup as jinja_setup
 from jinja2 import FileSystemLoader
+import markdown
 
 from views.frontend import routes as frontend_routes
 from views.backend import routes as backend_routes
@@ -61,6 +62,10 @@ def int_to_hex(string):
     return format(hex(int(string))[2:], "0>6")
 
 
+def to_markdown(string):
+    return markdown.markdown(string, extensions=['extra'])
+
+
 def display_mentions(string, users):
     def get_display_name(group):
         user = users.get(group.group('userid'))
@@ -79,6 +84,7 @@ jinja_env.filters['regex_replace'] = regex_replace
 jinja_env.filters['escape_text'] = escape_text
 jinja_env.filters['timestamp'] = timestamp
 jinja_env.filters['int_to_hex'] = int_to_hex
+jinja_env.filters['markdown'] = to_markdown
 jinja_env.filters['display_mentions'] = display_mentions
 
 # Add our connections
