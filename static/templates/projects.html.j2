@@ -30,7 +30,7 @@
                 {% for project in projects -%}
                 <a id="{{ project.name }}"><div class="card">
                     <div class="card-body">
-                        {% if project['internal_link'] %}<a href="{{ project['internal_link'] }}"><h5 class="card-title">{{ project.name }}</h5></a>
+                        {% if project['internal_link'] %}<a href="/projects{{ project['internal_link'] }}"><h5 class="card-title">{{ project.name }}</h5></a>
                         {%- else %}<h5 class="card-title">{{ project.name }}</h5>
                         {%- endif %}
                         {% for line in project.description.split('\n') -%}

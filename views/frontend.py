@@ -3,6 +3,7 @@ import toml
 
 from aiohttp.web import RouteTableDef, Request, HTTPFound
 from aiohttp_jinja2 import template
+from aiohttp_session import get_session
 
 
 routes = RouteTableDef()
@@ -45,11 +46,21 @@ async def index(request:Request):
     return get_projects_page('index')
 
 
-@routes.get("/{project_group_name}")
+@routes.get("/projects/{project_group_name}")
 @template("projects.html.j2")
 async def project_group(request:Request):
     """Projects page"""
 
     name = request.match_info['project_group_name']
     return get_projects_page(name)
+
+
+@routes.get("/identify")
+@template("identify.html.j2")
+async def identify_user(request:Request):
+    """Projects page"""
+
+    return {}
+    # name = request.match_info['project_group_name']
+    # return get_projects_page(name)
 
