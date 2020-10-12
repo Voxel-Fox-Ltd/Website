@@ -5,6 +5,7 @@ from urllib.parse import unquote
 import aiohttp
 from aiohttp.web import Request, RouteTableDef, Response
 from aiohttp_jinja2 import render_template
+import htmlmin
 
 routes = RouteTableDef()
 
@@ -13,15 +14,23 @@ routes = RouteTableDef()
 async def discord_handler(request:Request):
     """Creates you a Discord chatlog you might be able to use"""
 
-    with open('static/css/discord/core.css') as a:
+    with open('static/css/discord/core.min.css') as a:
         core_css = a.read()
-    with open('static/css/discord/dark.css') as a:
+    with open('static/css/discord/dark.min.css') as a:
         dark_css = a.read()
-    return render_template('discord_page.html.j2', request, {
+    template: Response = render_template('discord_page.html.j2', request, {
         'data': (await request.json()),
         'core_css': core_css,
         'dark_css': dark_css,
     })
+    response_text = htmlmin.minify(
+        template.text,
+        remove_comments=True,
+        remove_empty_space=True,
+        reduce_boolean_attributes=True
+    )
+    template.text = response_text
+    return template
 
 
 @routes.post('/webhooks/paypal/purchase_ipn')
