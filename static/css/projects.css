@@ -6,7 +6,9 @@
 
 .jumbotron {
     padding: 10px;
+    padding-bottom: 0;
     border-radius: 0;
+    background-color: #5dadec;
 }
 
 @media (min-width: 768px) {

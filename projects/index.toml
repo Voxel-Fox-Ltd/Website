@@ -29,7 +29,7 @@
     internal_link = ""
     github = "https://github.com/Voxel-Fox-Ltd/ProfileBot"
     website = ""
-    discord = ""
+    discord = "https://discord.gg/vfl"
     description = """
         Profile is a highly customisable Discord bot which allows server owners and admins to set up profiles for users to fill out, the data for which will then be stored in the bot's database and can be pulled up at a moment's notice.
         ![](/static/images/profile/profile.png)
@@ -56,7 +56,7 @@
     internal_link = ""
     github = "https://github.com/Voxel-Fox-Ltd/Honey"
     website = ""
-    discord = ""
+    discord = "https://discord.gg/vfl"
     description = """
         Honey is a Discord bot intended for the general moderation and handling of servers made for the furry community.
         One of the main goals of Honey was to be customisable in such a way that users could run their servers as they pleased, so I needed to integrate a lot of settings within the bot, staying as far away from set data as I could. It can handle a lot of things in the running of a Discord server, including moderation, character storage, economy handling (for fake in-server money), shop handling and purchases, and other related items.
@@ -68,7 +68,7 @@
     internal_link = ""
     github = "https://github.com/Voxel-Fox-Ltd/Synergy"
     website = ""
-    discord = "https://discord.gg/vfl"
+    discord = ""
     description = """
         Synergy is a highly customisable Discord bot built around putting user ideas first. The concept for the bot is deceptively simple - users can specify commands that they can run on their Discord servers, and they can specify responses for those commands.
         ![](/static/images/synergy/hug_responses.png)
