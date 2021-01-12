@@ -1,9 +1,9 @@
 [[project]]
     name = "MarriageBot"
     internal_link = ""
-    github = "https://github.com/4Kaylum/MarriageBot"
+    github = "https://github.com/Voxel-Fox-Ltd/MarriageBot"
     website = "https://marriagebot.xyz"
-    discord = "https://discord.gg/sWVgbPB"
+    discord = "https://discord.gg/vfl"
     description = """
         MarriageBot is a Discord bot made to allow users to "marry" and "adopt" each other, from which the bot can dynamically generate family trees using Graphviz.
         ![](https://marriagebot.xyz/static/images/black_tree.png)
@@ -15,19 +15,19 @@
 [[project]]
     name = "Honey"
     internal_link = ""
-    github = "https://github.com/4Kaylum/Honey"
+    github = "https://github.com/Voxel-Fox-Ltd/Honey"
     website = ""
     discord = ""
     description = """
-    Honey is a Discord bot intended for the general moderation and handling of servers made for the furry community.
-    One of the main goals of Honey was to be customisable in such a way that users could run their servers as they pleased, so I needed to integrate a lot of settings within the bot, staying as far away from set data as I could. It can handle a lot of things in the running of a Discord server, including moderation, character storage, economy handling (for fake in-server money), shop handling and purchases, and other related items.
+        Honey is a Discord bot intended for the general moderation and handling of servers made for the furry community.
+        One of the main goals of Honey was to be customisable in such a way that users could run their servers as they pleased, so I needed to integrate a lot of settings within the bot, staying as far away from set data as I could. It can handle a lot of things in the running of a Discord server, including moderation, character storage, economy handling (for fake in-server money), shop handling and purchases, and other related items.
     """
     built_with = "Python3, asyncio, PostgreSQL"
 
 [[project]]
     name = "Profile"
     internal_link = ""
-    github = "https://github.com/4Kaylum/ProfileBot"
+    github = "https://github.com/Voxel-Fox-Ltd/ProfileBot"
     website = ""
     discord = ""
     description = """
@@ -41,9 +41,9 @@
 [[project]]
     name = "Cerberus"
     internal_link = ""
-    github = "https://github.com/4Kaylum/Cerberus"
+    github = "https://github.com/Voxel-Fox-Ltd/Cerberus"
     website = ""
-    discord = "https://discord.gg/sWVgbPB"
+    discord = "https://discord.gg/vfl"
     description = """
         Cerberus measures the activity of the users on a given server and assigns them roles based on that. More activity means you get a higher tier of role. There are bots like this that exist already, but what makes Cerberus stand out is the fact that if users stop being active, then those roles are taken away again. Users are judged based on their past 7 days of activity, meaning that users gain and lose roles over time.
         Users are able to view their 7-day window of activity on a graph via the bot, so they can see how close they are/have been to each role at any given time.
@@ -53,11 +53,22 @@
     built_with = "Python3, asyncio, PostgreSQL, Matplotlib"
 
 [[project]]
+    name = "Flower"
+    internal_link = ""
+    github = "https://github.com/Voxel-Fox-Ltd/Flower"
+    website = ""
+    discord = "https://discord.gg/vfl"
+    description = """
+        TODO
+    """
+    built_with = "Python3, asyncio, PostgreSQL, PILLOW"
+
+[[project]]
     name = "Synergy"
     internal_link = ""
-    github = "https://github.com/4Kaylum/Synergy"
+    github = "https://github.com/Voxel-Fox-Ltd/Synergy"
     website = "https://synergy.voxelfox.co.uk"
-    discord = "https://discord.gg/sWVgbPB"
+    discord = "https://discord.gg/vfl"
     description = """
         Synergy is a highly customisable Discord bot built around putting user ideas first. The concept for the bot is deceptively simple - users can specify commands that they can run on their Discord servers, and they can specify responses for those commands.
         ![](/static/images/synergy/hug_responses.png)
