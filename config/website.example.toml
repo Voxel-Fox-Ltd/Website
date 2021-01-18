@@ -16,7 +16,7 @@ oauth_scopes = [ "identify", "guilds", ]  # The scopes that should be added to t
 
 # This data is passed directly over to asyncpg.connect()
 [database]
-    enabled = false
+    enabled = true
     user = "database_username"
     password = "database_password"
     database = "database_name"
