@@ -47,11 +47,14 @@ async def index(request:Request):
 
 
 @routes.get("/gforms")
-@webutils.requires_login()
 async def gforms(request:Request):
     """
     Redirect to Google forms with given items filled in with session data.
     """
+
+    session = await aiohttp_session.get_session(request)
+    if session.get("logged_in", False) is False:
+        return HTTPFound("/login")
 
     alias = request.query.get('a')
     form_id = request.query.get('f')
@@ -63,7 +66,6 @@ async def gforms(request:Request):
     if not rows:
         return Response("No relevant form found.", status=404)
     # https://docs.google.com/forms/d/e/1FAIpQLSc0Aq9H6SOArocMT7QKa4APbTwAFgfbzLb6pryY0u-MWfO1-g/viewform?usp=pp_url&entry.2031777926=owo&entry.1773918586=uwu
-    session = await aiohttp_session.get_session(request)
     return HTTPFound((
         f"https://docs.google.com/forms/d/e/{rows[0]['form_id']}/viewform?"
         f"entry.{rows[0]['username_field_id']}={quote(session['user_info']['username'] + '#' + session['user_info']['discriminator'])}&"
