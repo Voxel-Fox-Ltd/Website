@@ -1,8 +1,11 @@
 import re as regex
 import toml
+from urllib.parse import quote
 
-from aiohttp.web import RouteTableDef, Request
+from aiohttp.web import RouteTableDef, Request, HTTPFound, Response
 from aiohttp_jinja2 import template
+import aiohttp_session
+from voxelbotutils import web as webutils
 
 
 routes = RouteTableDef()
@@ -44,5 +47,25 @@ async def index(request:Request):
 
 
 @routes.get("/gforms")
+@webutils.requires_login()
 async def gforms(request:Request):
-    pass
+    """
+    Redirect to Google forms with given items filled in with session data.
+    """
+
+    alias = request.query.get('a')
+    form_id = request.query.get('f')
+    async with request.app['database']() as db:
+        if alias:
+            rows = await db("SELECT * FROM google_forms_redirects WHERE alias=$1", alias)
+        else:
+            rows = await db("SELECT * FROM google_forms_redirects WHERE form_id=$1", form_id)
+    if not rows:
+        return Response("No relevant form found.", status=404)
+    # https://docs.google.com/forms/d/e/1FAIpQLSc0Aq9H6SOArocMT7QKa4APbTwAFgfbzLb6pryY0u-MWfO1-g/viewform?usp=pp_url&entry.2031777926=owo&entry.1773918586=uwu
+    session = await aiohttp_session.get_session(request)
+    return HTTPFound((
+        f"https://docs.google.com/forms/d/e/{rows[0]['form_id']}/viewform?"
+        f"entry.{rows[0]['username_field_id']}={quote(session['user_info']['username'] + '#' + session['user_info']['discriminator'])}&"
+        f"entry.{rows[0]['user_id_field_id']}={quote(session['user_id'])}"
+    ))

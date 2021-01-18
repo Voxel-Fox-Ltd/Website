@@ -44,3 +44,10 @@ CREATE TABLE IF NOT EXISTS paypal_purchases(
     PRIMARY KEY (id, transaction_type)
 );
 
+
+CREATE TABLE IF NOT EXISTS google_forms_redirects(
+    form_id VARCHAR(100) NOT NULL,
+    alias VARCHAR(100),
+    username_field_id VARCHAR(100),
+    user_id_field_id VARCHAR(100)
+);
