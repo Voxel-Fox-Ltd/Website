@@ -1,6 +1,7 @@
 import re as regex
 import toml
 from urllib.parse import quote
+import logging
 
 from aiohttp.web import RouteTableDef, Request, HTTPFound, Response
 from aiohttp_jinja2 import template
@@ -9,6 +10,8 @@ from voxelbotutils import web as webutils
 
 
 routes = RouteTableDef()
+logging.getLogger("aiohttp").setLevel(logging.DEBUG)
+logging.getLogger("aiohttp.access").setLevel(logging.DEBUG)
 
 
 image_matcher = regex.compile(r'!\[(.+?)?\]\((.+?)\)')
