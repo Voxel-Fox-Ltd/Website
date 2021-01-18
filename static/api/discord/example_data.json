@@ -9,8 +9,8 @@
             "discriminator": 2831,
             "avatar_url": "https://imgur.com/stuff.png",
             "bot": false,
-            "display_name": "Caleb",
-        },
+            "display_name": "Caleb"
+        }
     },
     "messages": [
         {
@@ -46,6 +46,6 @@
                     "title": "149.202.84.162:25588"
                 }
             ]
-        },
+        }
     ]
 }

@@ -1,5 +1,3 @@
-.vscode
-__pycache__
-*.pyc
-config/*.*
-!config/*.example.*
+__pycache__/
+config/config.toml
+config/website.toml

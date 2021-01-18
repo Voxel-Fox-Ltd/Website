@@ -1,6 +1,1 @@
-aiohttp
-aiohttp_jinja2
-aiohttp_session
-toml
-markdown
-htmlmin
+voxelbotutils[web]

@@ -1,0 +1,87 @@
+{% extends "layout/base.j2" %}
+
+{% macro footerlink(project, attr, fa=none) -%}
+    {% if project[attr] -%}
+        <a class="mr-2" href="{{ project[attr] }}" target="_blank"><i class="{{ fa }}"></i></a>
+    {%- endif -%}
+{% endmacro -%}
+
+{% block stylesheets%}
+<link rel="stylesheet" href="{{ static('css/projects.css') }}" />
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="jumbotron text-center">
+    <a class="align-middle text-center" href="/">
+        <img src="{{ static('/images/logo.png') }}" alt="The Voxel Fox logo"  height="100" />
+    </a>
+    {# <h1 style="display: inline" class="align-middle text-light">Voxel Fox</h1> #}
+</div>
+
+<div class="container">
+    <style>
+    .card-text img {
+        width: 100%;
+        max-width: 600px;
+    }
+    .card-title {
+        margin-bottom: 0;
+    }
+    </style>
+    <div class="row">
+        <div class="col">
+            <div class="card-columns">
+                <div class="card" style="text-align: center; padding: 10px;">
+                    <p style="margin-bottom: 0;">
+                        <i class="fab fa-github" style="margin-right: 5px;"></i>
+                        <a href="https://github.com/4Kaylum" target="_blank" style="color: inherit;">4Kaylum</a>
+                    </p>
+                    <p style="margin-bottom: 0;">
+                        <i class="fab fa-github" style="margin-right: 5px;"></i>
+                        <a href="https://github.com/Voxel-Fox-Ltd" target="_blank" style="color: inherit;">Voxel-Fox-Ltd</a>
+                    </p>
+                    <p style="margin-bottom: 0;">
+                        <i class="fab fa-twitter" style="margin-right: 5px;"></i>
+                        <a href="https://twitter.com/VoxelFoxKae" target="_blank" style="color: inherit;">VoxelFoxKae</a>
+                    </p>
+                    <p style="margin-bottom: 0;">
+                        <i class="fab fa-discord" style="margin-right: 5px;"></i>
+                        <a href="https://discord.gg/vfl" target="_blank" style="color: inherit;">Voxel Fox Discord</a>
+                    </p>
+                    <p style="margin-bottom: 0;">
+                        <i class="fas fa-at" style="margin-right: 5px;"></i>
+                        <a href="mailto://kae@voxelfox.co.uk" target="_blank" style="color: inherit;">kae@voxelfox.co.uk</a>
+                    </p>
+                </div>
+            </div>
+            <div class="card-columns">
+                {% for project in projects -%}
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <button class="btn" data-toggle="collapse" data-target="#{{ project.name }}Collapse" aria-expanded="true" aria-controls="{{ project.name }}Collapse" style="width: 100%;">
+                                {% if project.internal_link %}<a href="/projects{{ project.internal_link }}">{% endif %}
+                                <span>{{ project.name }}</span>
+                                {% if project.internal_link %}</a>{% endif %}
+                                <span style="margin-left: 5px; text-align: right;">
+                                    {{ footerlink(project, 'website', 'fas fa-link') }}
+                                    {{ footerlink(project, 'github', 'fab fa-github') }}
+                                </span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="{{ project.name }}Collapse" class="collapse">
+                        <div class="card-body">
+                            {% for line in project.description.split('\n') -%}
+                            <p class="card-text">{{ line.strip()|safe }}</p>
+                            {% endfor -%}
+                            {% if project.built_with %}<p class="card-text text-muted">Built with {{ project.built_with }}</p>{% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor -%}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content%}
