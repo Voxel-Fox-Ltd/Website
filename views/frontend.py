@@ -1,9 +1,8 @@
 import re as regex
 import toml
 
-from aiohttp.web import RouteTableDef, Request, HTTPFound
+from aiohttp.web import RouteTableDef, Request
 from aiohttp_jinja2 import template
-from aiohttp_session import get_session
 
 
 routes = RouteTableDef()
@@ -15,16 +14,12 @@ italics_matcher = regex.compile(r'_(.+)_')
 
 
 def get_projects_page(filename:str) -> dict:
-    """Returns a nice ol dict that can be passed to projects.j2"""
+    """
+    Returns a nice ol dict that can be passed to projects.j2.
+    """
 
-    try:
-        with open(f"projects/{filename}.toml") as a:
-            data = toml.load(a)
-    except Exception:
-        if filename == 'index1':
-            data = {'project': []}
-        else:
-            return HTTPFound(location="/")
+    with open(f"projects/{filename}.toml") as a:
+        data = toml.load(a)
     unchangeddata = [i for i in data['project'] if i['name'] != 'example']
     data = []
     for i in unchangeddata:
@@ -41,26 +36,13 @@ def get_projects_page(filename:str) -> dict:
 @routes.get("/")
 @template("projects.html.j2")
 async def index(request:Request):
-    """Index page for the website"""
+    """
+    Index page for the website.
+    """
 
     return get_projects_page('index')
 
 
-@routes.get("/projects/{project_group_name}")
-@template("projects.html.j2")
-async def project_group(request:Request):
-    """Projects page"""
-
-    name = request.match_info['project_group_name']
-    return get_projects_page(name)
-
-
-@routes.get("/identify")
-@template("identify.html.j2")
-async def identify_user(request:Request):
-    """Projects page"""
-
-    return {}
-    # name = request.match_info['project_group_name']
-    # return get_projects_page(name)
-
+@routes.get("/gforms")
+async def gforms(request:Request):
+    pass

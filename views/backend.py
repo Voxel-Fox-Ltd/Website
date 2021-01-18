@@ -12,7 +12,9 @@ routes = RouteTableDef()
 
 @routes.post('/discord/chatlog')
 async def discord_handler(request:Request):
-    """Creates you a Discord chatlog you might be able to use"""
+    """
+    Creates you a Discord chatlog you might be able to use.
+    """
 
     with open('static/css/discord/core.min.css') as a:
         core_css = a.read()
@@ -35,7 +37,9 @@ async def discord_handler(request:Request):
 
 @routes.post('/webhooks/paypal/purchase_ipn')
 async def paypal_purchase_complete(request:Request):
-    """Handles Paypal throwing data my way"""
+    """
+    Handles Paypal throwing data my way.
+    """
 
     # Get the data
     content_bytes: bytes = await request.content.read()
@@ -46,10 +50,6 @@ async def paypal_purchase_complete(request:Request):
     # Send the data back to see if it's valid
     data_send_back = "cmd=_notify-validate&" + paypal_data_string
     async with aiohttp.ClientSession(loop=request.app.loop) as session:
-        # paypal_url = {
-        #     True: "https://ipnpb.sandbox.paypal.com/cgi-bin/webscr",
-        #     False: "https://ipnpb.paypal.com/cgi-bin/webscr",
-        # }.get(request.app['config']['paypal_ipn']['sandbox'])
         paypal_url = "https://ipnpb.paypal.com/cgi-bin/webscr"
         async with session.post(paypal_url, data=data_send_back) as site:
             site_data = await site.read()
@@ -118,7 +118,7 @@ async def paypal_purchase_complete(request:Request):
         return Response(status=200)  # It's not an item we're handling
 
     # Make sure it's to the right person
-    if paypal_data['receiver_email'] != webhook_data['receiver_email']:
+    if paypal_data['receiver_email'].casefold() != webhook_data['receiver_email'].casefold():
         request.app['logger'].info("Invalid email passed for PayPal IPN")
         return Response(status=200)  # Wrong email passed
 
@@ -174,7 +174,7 @@ async def paypal_purchase_complete(request:Request):
 
     # Get the webhook url
     try:
-        if refunded is True or database['completed']:
+        if database['completed'] or refunded:
             webhook_url = webhook_data['webhook_url']
         else:
             webhook_url = None
@@ -199,7 +199,9 @@ async def paypal_purchase_complete(request:Request):
 
 @routes.post('/webhooks/topgg/vote_added')
 async def webhook_handler(request:Request):
-    """Sends a PM to the user with the webhook attached if user in owners"""
+    """
+    Sends a PM to the user with the webhook attached if user in owners.
+    """
 
     # See if we can get it
     try:
