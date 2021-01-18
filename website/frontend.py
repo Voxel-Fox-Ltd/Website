@@ -47,15 +47,13 @@ async def index(request:Request):
 
 
 @routes.get("/gforms")
+@webutils.requires_login()
 async def gforms(request:Request):
     """
     Redirect to Google forms with given items filled in with session data.
     """
 
     session = await aiohttp_session.get_session(request)
-    if session.get("logged_in", False) is False:
-        return HTTPFound("/login")
-
     alias = request.query.get('a')
     form_id = request.query.get('f')
     async with request.app['database']() as db:
