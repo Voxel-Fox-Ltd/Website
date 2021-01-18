@@ -20,7 +20,9 @@ async def login_processor(request:Request):
     Page the discord login redirects the user to when successfully logged in with Discord.
     """
 
-    await webutils.process_discord_login(request)
+    v = await webutils.process_discord_login(request)
+    if isinstance(v, Response):
+        return v
     session = await aiohttp_session.get_session(request)
     return HTTPFound(location=session.pop('redirect_on_login', '/'))
 

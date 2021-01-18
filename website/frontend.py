@@ -1,7 +1,6 @@
 import re as regex
 import toml
 from urllib.parse import quote
-import logging
 
 from aiohttp.web import RouteTableDef, Request, HTTPFound, Response
 from aiohttp_jinja2 import template
@@ -10,8 +9,6 @@ from voxelbotutils import web as webutils
 
 
 routes = RouteTableDef()
-logging.getLogger("aiohttp").setLevel(logging.DEBUG)
-logging.getLogger("aiohttp.access").setLevel(logging.DEBUG)
 
 
 image_matcher = regex.compile(r'!\[(.+?)?\]\((.+?)\)')
@@ -72,3 +69,13 @@ async def gforms(request:Request):
         f"entry.{rows[0]['username_field_id']}={quote(session['user_info']['username'] + '#' + session['user_info']['discriminator'])}&"
         f"entry.{rows[0]['user_id_field_id']}={quote(session['user_id'])}"
     ))
+
+
+@routes.get("/a")
+@webutils.requires_login()
+async def a(request:Request):
+    """
+    Redirect to Google forms with given items filled in with session data.
+    """
+
+    return Response(body="test")
