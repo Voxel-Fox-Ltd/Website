@@ -7,7 +7,20 @@ oauth_scopes = [ "identify", ]  # The scopes that should be added to the automat
 # Config files are loaded as `config/<filename>`
 # This is fully welcome to be entirely empty
 [discord_bot_configs]
-    bot = "config.toml"
+    # bot = "config.toml"
+
+# PayPal item webhooks
+[paypal_item_webhooks."MarriageBot Gold"]
+    authorization = ""  # The token that we include with the webhook so we know it's from us
+    webhook_url = "https://marriagebot.xyz/webhooks/voxel_fox/purchase"  # The URL that we want to ping
+    receiver_email = "billing@voxelfox.co.uk"  # The email that the PayPal account is set up with
+    # receiver_email = "sb-6s47tb905326@business.example.com"  # Sandbox
+
+# TopGG webhook passthrough
+[[topgg_bot_webhooks]]
+    bot_id = 468281173072805889
+    authorization = ""
+    webhook_url = "https://marriagebot.xyz/webhooks/voxel_fox/topgg"
 
 # Used for the bot's invite and login links
 [oauth]
