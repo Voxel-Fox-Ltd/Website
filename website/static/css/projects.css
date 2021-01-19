@@ -1,3 +1,28 @@
+body {
+    background: #666;
+}
+
+.card {
+    background: #444;
+    color: #eee;
+}
+
+.card-header {
+    background: #333;
+}
+
+.btn {
+    color: white;
+}
+
+.btn:hover {
+    color: grey;
+}
+
+a {
+    color: lightblue;
+}
+
 .card-columns {
     -webkit-column-count: 1;
     -moz-column-count: 1;
