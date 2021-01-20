@@ -1,26 +1,34 @@
 body {
-    background: #666;
+    background: #e1e1e1;
 }
 
 .card {
-    background: #444;
-    color: #eee;
+    background: #eee;
+    /*color: #eee;*/
 }
 
 .card-header {
-    background: #333;
+    background: #ccc;
 }
 
-.btn {
+/*.btn {
     color: white;
-}
+}*/
 
-.btn:hover {
+/*.btn:hover {
     color: grey;
+}*/
+
+/*a {
+    color: lightblue;
+}*/
+
+.contact-text {
+    margin-bottom: 0;
 }
 
-a {
-    color: lightblue;
+.contact-icon {
+    margin-right: 5px;
 }
 
 .card-columns {
@@ -34,6 +42,27 @@ a {
     padding-bottom: 0;
     border-radius: 0;
     background-color: #5dadec;
+}
+
+.built-with {
+    padding: 0;
+}
+
+.built-with-item {
+    display: inline;
+}
+
+.built-with-item:after {
+    content: "•";
+    margin: 0 5px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.built-with-item:last-child:after {
+    display: none;
 }
 
 @media (min-width: 768px) {

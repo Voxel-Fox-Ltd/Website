@@ -6,11 +6,11 @@
     discord = "https://discord.gg/vfl"
     description = """
         MarriageBot is a Discord bot made to allow users to "marry" and "adopt" each other, from which the bot can dynamically generate family trees using Graphviz.
-        ![](/static/images//marriagebot/large_tree.png)
+        ![](/static/images/marriagebot/large_tree.png)
         MarriageBot handles hundreds of thousands of concurrent users using async practices; an integrated website for settings; PayPal IPN for giving out user perks; plus a lot more.
         MarriageBot has taught me a lot about handling lots of input at once and non-blocking processing, as well as a lot about how to store, organise, and cache data correctly across multiple running instances. At over 100,000 servers, MarriageBot will continue to grow and cause me issues into the future, and I can't wait.
     """
-    built_with = "Python3, asyncio, aiohttp, PostgreSQL, Redis, Jinja2, Nginx, Graphviz"
+    built_with = ["Python3", "asyncio", "aiohttp", "PostgreSQL", "Redis", "Jinja2", "Nginx", "Graphviz"]
 
 [[project]]
     name = "Flower"
@@ -22,7 +22,7 @@
         Flower started as a small idle toy for growing virtual flowers on a Discord server, but has since grown into one of the larger bots I've made, amassing thousands of users growing their own virtual plants.
         ![](/static/images/flower/commands.png)
     """
-    built_with = "Python3, asyncio, PostgreSQL, PILLOW"
+    built_with = ["Python3", "asyncio", "PostgreSQL", "PILLOW"]
 
 [[project]]
     name = "Profile"
@@ -35,7 +35,7 @@
         ![](/static/images/profile/profile.png)
         Admins are able to create, customise, and moderate profile templates as they wish for their server. Setting up templates to be customisable in this way is a pretty difficult task - data validation on the user's inputs to make sure the bot's able to send the data; making sure they give valid resposnes (eg for what kind of field they want to set up); the balancing act between giving flexibility and being accessible to everyone still (I've looked at my analytics and seen the bot is used by quite a few international users) - it's not a particularly easy task to deal with.
     """
-    built_with = "Python3, asyncio, PostgreSQL"
+    built_with = ["Python3", "asyncio", "PostgreSQL"]
 
 [[project]]
     name = "Cerberus"
@@ -49,7 +49,7 @@
         ![](/static/images/cerberus/graph.png)
         Cerberus stores the timestamp of when a user sends a message, rather than just a message counter as other activity trackers may use, which means that it's able to see trends in user data, which I may later use for data analysis. For the graphing, the bot uses Matplotlib to dynamically show the user their specific data.
     """
-    built_with = "Python3, asyncio, PostgreSQL, Matplotlib"
+    built_with = ["Python3", "asyncio", "PostgreSQL", "Matplotlib"]
 
 [[project]]
     name = "Honey"
@@ -61,7 +61,7 @@
         Honey is a Discord bot intended for the general moderation and handling of servers made for the furry community.
         One of the main goals of Honey was to be customisable in such a way that users could run their servers as they pleased, so I needed to integrate a lot of settings within the bot, staying as far away from set data as I could. It can handle a lot of things in the running of a Discord server, including moderation, character storage, economy handling (for fake in-server money), shop handling and purchases, and other related items.
     """
-    built_with = "Python3, asyncio, PostgreSQL"
+    built_with = ["Python3", "asyncio", "PostgreSQL"]
 
 [[project]]
     name = "Synergy"
@@ -74,7 +74,7 @@
         ![](/static/images/synergy/hug_responses.png)
         The problems in building this particular bot came up fairly quickly. The library I use to write bots in - Discord.py - doesn't really support custom commands in the same way that it supports command handling by default. As such, I had to build my own command handler based upon the commands set up by the users on the website, making sure that these commands only exist on the server that the user specified.
     """
-    built_with = "Python3, asyncio, aiohttp, PostgreSQL, Jinja2, Nginx"
+    built_with = ["Python3", "asyncio", "aiohttp", "PostgreSQL", "Jinja2", "Nginx"]
 
 [[project]]
     name = "TheDogAPI"
@@ -85,4 +85,4 @@
     description = """
         Back when there was a gap in the market for APIs of dog images, I decided to take matters into my own hands and build my own. I downloaded a bunch of dog pictures from the Google Open Images database, and then threw them all up in the form of an API. The site is gone now, as is that gap in the market, but I'm proud of what I'd made for that year I had it on the internet.
     """
-    built_with = "PHP, MySQL"
+    built_with = ["PHP", "MySQL"]
