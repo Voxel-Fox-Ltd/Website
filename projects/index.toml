@@ -3,7 +3,6 @@
     internal_link = ""
     github = "https://github.com/Voxel-Fox-Ltd/MarriageBot"
     website = "https://marriagebot.xyz"
-    discord = "https://discord.gg/vfl"
     description = """
         MarriageBot is a Discord bot made to allow users to "marry" and "adopt" each other, from which the bot can dynamically generate family trees using Graphviz.
         ![](/static/images/marriagebot/large_tree.png)
@@ -17,7 +16,6 @@
     internal_link = ""
     github = "https://github.com/Voxel-Fox-Ltd/Flower"
     website = "https://flower.voxelfox.co.uk"
-    discord = "https://discord.gg/vfl"
     description = """
         Flower started as a small idle toy for growing virtual flowers on a Discord server, but has since grown into one of the larger bots I've made, amassing thousands of users growing their own virtual plants.
         ![](/static/images/flower/commands.png)
@@ -29,7 +27,6 @@
     internal_link = ""
     github = "https://github.com/Voxel-Fox-Ltd/ProfileBot"
     website = ""
-    discord = "https://discord.gg/vfl"
     description = """
         Profile is a highly customisable Discord bot which allows server owners and admins to set up profiles for users to fill out, the data for which will then be stored in the bot's database and can be pulled up at a moment's notice.
         ![](/static/images/profile/profile.png)
@@ -42,7 +39,6 @@
     internal_link = ""
     github = "https://github.com/Voxel-Fox-Ltd/Cerberus"
     website = ""
-    discord = "https://discord.gg/vfl"
     description = """
         Cerberus measures the activity of the users on a given server and assigns them roles based on that. More activity means you get a higher tier of role. There are bots like this that exist already, but what makes Cerberus stand out is the fact that if users stop being active, then those roles are taken away again. Users are judged based on their past 7 days of activity, meaning that users gain and lose roles over time.
         Users are able to view their 7-day window of activity on a graph via the bot, so they can see how close they are/have been to each role at any given time.
@@ -56,7 +52,6 @@
     internal_link = ""
     github = "https://github.com/Voxel-Fox-Ltd/Honey"
     website = ""
-    discord = "https://discord.gg/vfl"
     description = """
         Honey is a Discord bot intended for the general moderation and handling of servers made for the furry community.
         One of the main goals of Honey was to be customisable in such a way that users could run their servers as they pleased, so I needed to integrate a lot of settings within the bot, staying as far away from set data as I could. It can handle a lot of things in the running of a Discord server, including moderation, character storage, economy handling (for fake in-server money), shop handling and purchases, and other related items.
@@ -68,7 +63,6 @@
     internal_link = ""
     github = "https://github.com/Voxel-Fox-Ltd/Synergy"
     website = ""
-    discord = ""
     description = """
         Synergy is a highly customisable Discord bot built around putting user ideas first. The concept for the bot is deceptively simple - users can specify commands that they can run on their Discord servers, and they can specify responses for those commands.
         ![](/static/images/synergy/hug_responses.png)
@@ -81,7 +75,6 @@
     internal_link = ""
     github = "https://github.com/4Kaylum/TheDogAPI"
     website = ""
-    discord = ""
     description = """
         Back when there was a gap in the market for APIs of dog images, I decided to take matters into my own hands and build my own. I downloaded a bunch of dog pictures from the Google Open Images database, and then threw them all up in the form of an API. The site is gone now, as is that gap in the market, but I'm proud of what I'd made for that year I had it on the internet.
     """
