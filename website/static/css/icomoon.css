@@ -36,7 +36,7 @@
 }
 .icon-discord:before {
   content: "\e904";
-  color: #7289da;
+  /*color: #7289da;*/
 }
 .icon-link1:before {
   content: "\e9cb";
