@@ -1,66 +1,50 @@
 {% extends "layout/base.j2" %}
 
-{% macro footerlink(project, attr, fa=none) -%}
-    {% if project[attr] -%}
+{%- macro footerlink(project, attr, fa=none) -%}
+    {%- if project[attr] -%}
         <a class="mr-2" href="{{ project[attr] }}" target="_blank"><i class="{{ fa }}"></i></a>
     {%- endif -%}
-{% endmacro -%}
+{%- endmacro -%}
 
-{% block stylesheets%}
-<link rel="stylesheet" href="{{ static('css/projects.css') }}" />
-<link rel="stylesheet" href="{{ static('css/icomoon.css') }}" />
-{% endblock stylesheets %}
+{%- block stylesheets -%}
+<link rel="stylesheet" href="{{- static('css/projects.css') -}}" />
+<link rel="stylesheet" href="{{- static('css/icomoon.css') -}}" />
+{%- endblock stylesheets -%}
 
 {% block content %}
 <div class="jumbotron text-center">
     <a class="align-middle text-center" href="/">
-        <img src="{{ static('/images/logo.png') }}" alt="The Voxel Fox logo"  height="100" />
+        <img src="{{- static('/images/logo.png') -}}" alt="The Voxel Fox logo"  height="100" />
     </a>
-    {# <h1 style="display: inline" class="align-middle text-light">Voxel Fox</h1> #}
 </div>
-
 <div class="container">
-    <style>
-    .card-text img {
-        width: 100%;
-        max-width: 600px;
-    }
-    .card-title {
-        margin-bottom: 0;
-    }
-    </style>
     <div class="row">
         <div class="col">
             <div class="card-columns">
                 <div class="card" style="text-align: center; padding: 10px;">
                     <p class="contact-text">
-                        <a href="https://github.com/4Kaylum" target="_blank" style="color: inherit;">
-                            <span class="contact-icon icon-github1"></span>
-                            4Kaylum
+                        <a href="https://github.com/4Kaylum" target="_blank">
+                            <span class="contact-icon icon-github1"></span>4Kaylum
                         </a>
                     </p>
                     <p class="contact-text">
-                        <a href="https://github.com/Voxel-Fox-Ltd" target="_blank" style="color: inherit;">
-                            <i class="contact-icon icon-github1"></i>
-                            Voxel-Fox-Ltd
+                        <a href="https://github.com/Voxel-Fox-Ltd" target="_blank">
+                            <i class="contact-icon icon-github1"></i>Voxel-Fox-Ltd
                         </a>
                     </p>
                     <p class="contact-text">
-                        <a href="https://twitter.com/VoxelFoxKae" target="_blank" style="color: inherit;">
-                            <i class="contact-icon icon-twitter1"></i>
-                            VoxelFoxKae
+                        <a href="https://twitter.com/VoxelFoxKae" target="_blank">
+                            <i class="contact-icon icon-twitter1"></i>VoxelFoxKae
                         </a>
                     </p>
                     <p class="contact-text">
-                        <a href="https://discord.gg/vfl" target="_blank" style="color: inherit;">
-                            <i class="contact-icon icon-discord"></i>
-                            Voxel Fox Discord
+                        <a href="https://discord.gg/vfl" target="_blank">
+                            <i class="contact-icon icon-discord"></i>Voxel Fox Discord
                         </a>
                     </p>
                     <p class="contact-text">
-                        <a href="mailto://kae@voxelfox.co.uk" target="_blank" style="color: inherit;">
-                            <i class="contact-icon icon-at"></i>
-                            kae@voxelfox.co.uk
+                        <a href="mailto://kae@voxelfox.co.uk" target="_blank">
+                            <i class="contact-icon icon-at"></i>kae@voxelfox.co.uk
                         </a>
                     </p>
                 </div>
@@ -70,34 +54,33 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title">
-                            <button class="btn" data-toggle="collapse" data-target="#{{ project.name }}Collapse" aria-expanded="true" aria-controls="{{ project.name }}Collapse" style="width: 100%;">
-                                {% if project.internal_link %}<a href="/projects{{ project.internal_link }}">{% endif %}
-                                <span>{{ project.name }}</span>
-                                {% if project.internal_link %}</a>{% endif %}
+                            <button class="btn" data-toggle="collapse" data-target="#{{- project.name -}}Collapse" aria-expanded="true" aria-controls="{{- project.name -}}Collapse" style="width: 100%;">
+                                {%- if project.internal_link -%}<a href="/projects{{ project.internal_link }}">{%- endif -%}
+                                <span>{{- project.name -}}</span>
+                                {%- if project.internal_link -%}</a>{%- endif -%}
                                 <span style="margin-left: 5px; text-align: right;">
-                                    {{ footerlink(project, 'website', 'icon-link1') }}
-                                    {{ footerlink(project, 'github', 'icon-github1') }}
+                                    {{- footerlink(project, 'website', 'icon-link1') -}}
+                                    {{- footerlink(project, 'github', 'icon-github1') -}}
                                 </span>
                             </button>
                         </h5>
                     </div>
-                    <div id="{{ project.name }}Collapse" class="collapse">
+                    <div id="{{- project.name -}}Collapse" class="collapse">
                         <div class="card-body">
-                            {% for line in project.description.split('\n') -%}
-                            <p class="card-text">{{ line.strip()|safe }}</p>
-                            {% endfor -%}
-                            {# {% if project.built_with %}<p class="card-text text-muted">Built with {{ ", ".join(project.built_with) }}</p>{% endif %} #}
-                            {% if project.built_with %}
+                            {%- for line in project.description.split('\n') -%}
+                            <p class="card-text">{{- line.strip()|safe -}}</p>
+                            {%- endfor -%}
+                            {%- if project.built_with -%}
                                 <ul class="card-text text-muted built-with">
-                                    {% for i in project.built_with %}<li class="built-with-item">{{ i }}</li>{% endfor %}
+                                    {%- for i in project.built_with -%}<li class="built-with-item">{{- i -}}</li>{%- endfor -%}
                                 </ul>
-                            {% endif %}
+                            {%- endif -%}
                         </div>
                     </div>
                 </div>
-                {% endfor -%}
+                {%- endfor -%}
             </div>
         </div>
     </div>
 </div>
-{% endblock content%}
+{%- endblock content -%}
