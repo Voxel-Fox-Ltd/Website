@@ -61,7 +61,7 @@
 [[project]]
     name = "Synergy"
     internal_link = ""
-    github = "https://github.com/Voxel-Fox-Ltd/Synergy"
+    github = "https://github.com/4Kaylum/Synergy"
     website = ""
     description = """
         Synergy is a highly customisable Discord bot built around putting user ideas first. The concept for the bot is deceptively simple - users can specify commands that they can run on their Discord servers, and they can specify responses for those commands.
