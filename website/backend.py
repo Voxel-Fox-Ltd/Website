@@ -53,9 +53,9 @@ async def discord_handler(request:Request):
     Creates you a Discord chatlog you might be able to use.
     """
 
-    with open('static/css/discord/core.min.css') as a:
+    with open('website/static/css/discord/core.min.css') as a:
         core_css = a.read()
-    with open('static/css/discord/dark.min.css') as a:
+    with open('website/static/css/discord/dark.min.css') as a:
         dark_css = a.read()
     rendered_template: Response = render_template('discord_page.html.j2', request, {
         'data': (await request.json()),
