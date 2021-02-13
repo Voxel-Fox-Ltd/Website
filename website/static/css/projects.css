@@ -35,6 +35,15 @@ body {
 
 .built-with {
     padding: 0;
+    overflow-x: scroll;
+    height: 1.5em;
+    white-space: nowrap;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.built-with::-webkit-scrollbar {
+    display: none;
 }
 
 .built-with-item {
