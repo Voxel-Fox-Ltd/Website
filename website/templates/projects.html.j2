@@ -20,42 +20,44 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <div class="card-columns">
-                <div class="card" style="text-align: center; padding: 10px;">
-                    <p class="contact-text">
-                        <a href="https://github.com/4Kaylum" target="_blank">
-                            <span class="contact-icon icon-github1"></span>4Kaylum
-                        </a>
-                    </p>
-                    <p class="contact-text">
-                        <a href="https://github.com/Voxel-Fox-Ltd" target="_blank">
-                            <i class="contact-icon icon-github1"></i>Voxel-Fox-Ltd
-                        </a>
-                    </p>
-                    <p class="contact-text">
-                        <a href="https://twitter.com/VoxelFoxKae" target="_blank">
-                            <i class="contact-icon icon-twitter1"></i>VoxelFoxKae
-                        </a>
-                    </p>
-                    <p class="contact-text">
-                        <a href="https://discord.gg/vfl" target="_blank">
-                            <i class="contact-icon icon-discord"></i>Voxel Fox Discord
-                        </a>
-                    </p>
-                    <p class="contact-text">
-                        <a href="mailto://kae@voxelfox.co.uk" target="_blank">
-                            <i class="contact-icon icon-at"></i>kae@voxelfox.co.uk
-                        </a>
-                    </p>
+            {% if include_contact_details %}
+                <div class="card-columns">
+                    <div class="card" style="text-align: center; padding: 10px;">
+                        <p class="contact-text">
+                            <a href="https://github.com/4Kaylum" target="_blank">
+                                <span class="contact-icon icon-github1"></span>4Kaylum
+                            </a>
+                        </p>
+                        <p class="contact-text">
+                            <a href="https://github.com/Voxel-Fox-Ltd" target="_blank">
+                                <i class="contact-icon icon-github1"></i>Voxel-Fox-Ltd
+                            </a>
+                        </p>
+                        <p class="contact-text">
+                            <a href="https://twitter.com/VoxelFoxKae" target="_blank">
+                                <i class="contact-icon icon-twitter1"></i>VoxelFoxKae
+                            </a>
+                        </p>
+                        <p class="contact-text">
+                            <a href="https://discord.gg/vfl" target="_blank">
+                                <i class="contact-icon icon-discord"></i>Voxel Fox Discord
+                            </a>
+                        </p>
+                        <p class="contact-text">
+                            <a href="mailto://kae@voxelfox.co.uk" target="_blank">
+                                <i class="contact-icon icon-at"></i>kae@voxelfox.co.uk
+                            </a>
+                        </p>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
             <div class="card-columns">
                 {% for project in projects -%}
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title">
                             <button class="btn" data-toggle="collapse" data-target="#{{- project.name -}}Collapse" aria-expanded="true" aria-controls="{{- project.name -}}Collapse" style="width: 100%;">
-                                {%- if project.internal_link -%}<a href="/projects{{ project.internal_link }}">{%- endif -%}
+                                {%- if project.internal_link -%}<a href="{{ project.internal_link }}">{%- endif -%}
                                 <span>{{- project.name -}}</span>
                                 {%- if project.internal_link -%}</a>{%- endif -%}
                                 <span style="margin-left: 5px; text-align: right;">
@@ -67,7 +69,7 @@
                     </div>
                     <div id="{{- project.name -}}Collapse" class="collapse">
                         <div class="card-body">
-                            {%- for line in project.description.split('\n') -%}
+                            {%- for line in project[field].split('\n') -%}
                             <p class="card-text">{{- line.strip()|safe -}}</p>
                             {%- endfor -%}
                             {%- if project.built_with -%}
