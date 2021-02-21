@@ -63,14 +63,14 @@ body {
     display: none;
 }
 
-.card-text img {
-    width: 100%;
+.card-body img {
+    /*width: 100%;*/
     max-width: 600px;
     border-radius: 10px;
     border: 1px solid black;
 }
 
-.card-text li p {
+.card-body li p {
     margin-bottom: 0;
 }
 

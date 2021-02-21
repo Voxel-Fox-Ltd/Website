@@ -69,9 +69,7 @@
                     </div>
                     <div id="{{- project.name -}}Collapse" class="collapse">
                         <div class="card-body">
-                            {%- for line in project[field].split('\n') -%}
-                            <p class="card-text">{{- line.strip()|safe -}}</p>
-                            {%- endfor -%}
+                            {{ project[field] | safe }}
                             {%- if project.built_with -%}
                                 <ul class="card-text text-muted built-with">
                                     {%- for i in project.built_with -%}<li class="built-with-item">{{- i -}}</li>{%- endfor -%}
