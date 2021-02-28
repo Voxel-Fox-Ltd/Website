@@ -1,6 +1,5 @@
-# import re
 import toml
-from urllib.parse import quote
+from urllib.parse import quote, urlencode
 import asyncio
 
 import aiohttp
@@ -12,38 +11,6 @@ import markdown2
 
 
 routes = RouteTableDef()
-
-
-# image_matcher = re.compile(r'!\[(.+?)?\]\((.+?)(?: \"(.+?)\")?\)', re.MULTILINE)
-# url_matcher = re.compile(r'\[(.+?)\]\((.+?)(?: \"(.+?)\")?\)', re.MULTILINE)
-# italics_matcher = re.compile(r'_(.+?)_', re.MULTILINE)
-# bold_matcher = re.compile(r'\*\*(.+?)\*\*', re.MULTILINE)
-# code_matcher = re.compile(r'`(.+?)`', re.MULTILINE)
-# italics2_matcher = re.compile(r'\*(.+?)\*', re.MULTILINE)
-# header_matcher = re.compile(r'^(#+) (.+)$', re.MULTILINE)
-
-
-# def get_html_from_markdown(text:str) -> str:
-#     """
-#     Takes in some markdown text and returns rendered HTML.
-#     """
-
-#     new_text = []
-#     for line in text.strip().split("\n"):
-#         line = line.strip()
-#         if not line:
-#             continue
-#         line = image_matcher.sub(lambda m: f'<img src="{m.group(2)}" alt="{m.group(3) or ""}" />', line)
-#         line = url_matcher.sub(lambda m: f'<a href="{m.group(2)}" alt="{m.group(3) or ""}" target="_blank">{m.group(1)}</a>', line)
-#         line = italics_matcher.sub(lambda m: f'<i>{m.group(1)}</i>', line)
-#         line = bold_matcher.sub(lambda m: f'<b>{m.group(1)}</b>', line)
-#         line = code_matcher.sub(lambda m: f'<code>{m.group(1)}</code>', line)
-#         line = italics2_matcher.sub(lambda m: f'<i>{m.group(1)}</i>', line)
-#         line = header_matcher.sub(lambda m: f'<h{len(m.group(1))}>{m.group(2)}</h{len(m.group(1))}>', line)
-#         if not line.startswith(("<h", "<img",)):
-#             line = f"<p>{line}</p>"
-#         new_text.append(line)
-#     return "".join(new_text).strip()
 
 
 async def get_github_readme_html(session, url:str) -> str:
@@ -105,19 +72,33 @@ async def gforms(request:Request):
     Redirect to Google forms with given items filled in with session data.
     """
 
+    # Get our login info
     session = await aiohttp_session.get_session(request)
+
+    # Get the form info
     alias = request.query.get('a')
     form_id = request.query.get('f')
-    async with request.app['database']() as db:
-        if alias:
+    username = request.query.get('u')
+    user_id = request.query.get('i')
+
+    # See if we need to grab it from the database
+    if alias:
+        async with request.app['database']() as db:
             rows = await db("SELECT * FROM google_forms_redirects WHERE alias=$1", alias)
-        else:
-            rows = await db("SELECT * FROM google_forms_redirects WHERE form_id=$1", form_id)
-    if not rows:
-        return Response("No relevant form found.", status=404)
-    # https://docs.google.com/forms/d/e/1FAIpQLSc0Aq9H6SOArocMT7QKa4APbTwAFgfbzLb6pryY0u-MWfO1-g/viewform?usp=pp_url&entry.2031777926=owo&entry.1773918586=uwu
-    return HTTPFound((
-        f"https://docs.google.com/forms/d/e/{rows[0]['form_id']}/viewform?"
-        f"entry.{rows[0].get('username_field_id', 0)}={quote(session['user_info']['username'] + '#' + str(session['user_info']['discriminator']))}&"
-        f"entry.{rows[0].get('user_id_field_id', 0)}={quote(str(session['user_id']))}"
-    ))
+        if not rows:
+            return Response(text="No relevant form found.", status=404)
+        username = rows[0].get('username_field_id', 0)
+        user_id = rows[0].get('user_id_field_id', 0)
+        form_id = rows[0]['form_id']
+    elif None in [form_id, username, user_id]:
+        return Response(text="Missing 'f', 'u', or 'i' param.", status=400)
+
+    # Redirect them
+    params = {
+        f"entry.{username}": session['user_info']['username'] + '#' + str(session['user_info']['discriminator']),
+        f"entry.{user_id}": str(session['user_id']),
+    }
+    return HTTPFound(f"https://docs.google.com/forms/d/e/{form_id}/viewform?{urlencode(params)}")
+
+    # https://docs.google.com/forms/d/e/1FAIpQLSc0Aq9H6SOArocMT7QKa4APbTwAFgfbzLb6pryY0u-MWfO1-g/viewform?
+    # usp=pp_url&entry.2031777926=owo&entry.1773918586=uwu
