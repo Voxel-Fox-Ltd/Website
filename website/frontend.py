@@ -1,5 +1,5 @@
 import toml
-from urllib.parse import quote, urlencode
+from urllib.parse import urlencode
 import asyncio
 
 import aiohttp
@@ -102,3 +102,26 @@ async def gforms(request:Request):
 
     # https://docs.google.com/forms/d/e/1FAIpQLSc0Aq9H6SOArocMT7QKa4APbTwAFgfbzLb6pryY0u-MWfO1-g/viewform?
     # usp=pp_url&entry.2031777926=owo&entry.1773918586=uwu
+
+
+@routes.get("/invite")
+@template('invite.j2')
+async def invite(request:Request):
+    """
+    The passthrough embedded invite link.
+    """
+
+    client_id = request.rel_url.query.get("client_id", None)
+    redirect_link = f"https://discord.com/oauth2/authorize?{urlencode(request.rel_url.query)}"
+    default_data = {"name": "Bot", "description": "", "redirect_link": redirect_link}
+    if client_id is None:
+        return default_data
+
+    if "https://discordapp.com" in request.headers.get("User-Agent"):
+        async with aiohttp.ClientSession() as request:
+            async with request.get(f"https://discord.com/api/oauth2/applications/{client_id}/rpc") as resp:
+                json = await resp.json()
+                if resp.status == 200:
+                    return {**default_data, **json}
+                return default_data
+    return HTTPFound(redirect_link)
