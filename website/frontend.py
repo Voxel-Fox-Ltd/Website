@@ -105,7 +105,7 @@ async def gforms(request:Request):
 
 
 @routes.get("/invite")
-@template('invite.j2')
+@template("invite.html.j2")
 async def invite(request:Request):
     """
     The passthrough embedded invite link.
