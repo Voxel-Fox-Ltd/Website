@@ -1,6 +1,6 @@
 import json
 from datetime import datetime as dt
-from urllib.parse import unquote
+from urllib.parse import unquote, parse_qs
 
 import aiohttp
 from aiohttp.web import HTTPFound, Request, RouteTableDef, Response
@@ -95,7 +95,8 @@ async def paypal_purchase_complete(request:Request):
                 return Response(status=200)  # Oh no it was fake data
 
     # Get the data from PP
-    paypal_data = {unquote(i.split('=')[0].replace("+", " ")):unquote(i.split('=')[1].replace("+", " ")) for i in paypal_data_string.split('&')}
+    # paypal_data = {unquote(i.split('=')[0].replace("+", " ")):unquote(i.split('=')[1].replace("+", " ")) for i in paypal_data_string.split('&')}
+    paypal_data = {i: o[0] for i, o in parse_qs(paypal_data_string).items()}
     try:
         custom_data_dict = json.loads(paypal_data['custom'])
     except Exception:
@@ -143,21 +144,35 @@ async def paypal_purchase_complete(request:Request):
     web_accept - Any of the buy now buttons
     """
 
+    if "item_name" in paypal_data:
+        await process_paypal_item(request, paypal_data, "item_name")
+    index = 1
+    while f"item_name{index}" in paypal_data:
+        await process_paypal_item(request, paypal_data, f"item_name{index}")
+        index += 1
+    return Response(status=200)
+
+
+async def process_paypal_item(request, paypal_data, item_name_field):
+    """
+    Process the item in a given set of PayPal data.
+    """
+
     # Make sure they're actually buying something
-    if paypal_data.get('item_name') is None:
+    if paypal_data.get(item_name_field) is None:
         request.app['logger'].info("Item name set to null for PayPal IPN")
-        return Response(status=200)
+        return None
 
     # Get the item data
     try:
-        webhook_data = request.app['config']['paypal_item_webhooks'][paypal_data.get('item_name')]
+        webhook_data = request.app['config']['paypal_item_webhooks'][paypal_data.get(item_name_field)]
     except KeyError:
-        return Response(status=200)  # It's not an item we're handling
+        return None  # It's not an item we're handling
 
     # Make sure it's to the right person
     if paypal_data['receiver_email'].casefold() != webhook_data['receiver_email'].casefold():
         request.app['logger'].info("Invalid email passed for PayPal IPN")
-        return Response(status=200)  # Wrong email passed
+        return None  # Wrong email passed
 
     # See if it's refunded data
     refunded = False
@@ -167,7 +182,7 @@ async def paypal_purchase_complete(request:Request):
             request.app['logger'].info("IPN set as refunded payment")
         else:
             request.app['logger'].info("Payment below zero and non-reversed payment for PayPal IPN")
-            return Response(status=200)  # Payment below zero AND it's not reversed
+            return None  # Payment below zero AND it's not reversed
 
     # Set up our data to be databased
     database = {
@@ -179,9 +194,10 @@ async def paypal_purchase_complete(request:Request):
         'payment_amount': payment_amount,
         'discord_id': int(custom_data_dict.get('discord_user_id', 0)),
         'guild_id': int(custom_data_dict.get('discord_guild_id', 0)),
-        'item_name': paypal_data['item_name'],
+        'item_name': paypal_data[item_name_field],
         'option_selection': paypal_data.get('option_selection1', None),
         'custom': json.dumps(custom_data_dict),
+        'custom_dict': custom_data_dict,  # Doesn't actually go into the database
         'payment_currency': paypal_data['mc_currency'],
         'refunded': refunded,
         'quantity': int(paypal_data.get('quantity', '1')),
@@ -196,7 +212,7 @@ async def paypal_purchase_complete(request:Request):
         item_name, option_selection, custom, payment_currency, quantity
     ) VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
-    ) ON CONFLICT (id, transaction_type) DO UPDATE
+    ) ON CONFLICT (id, item_name) DO UPDATE
     SET
         customer_id=excluded.customer_id, payment_amount=excluded.payment_amount, discord_id=excluded.discord_id, guild_id=excluded.guild_id,
         completed=excluded.completed, checkout_complete_timestamp=excluded.checkout_complete_timestamp
@@ -231,7 +247,7 @@ async def paypal_purchase_complete(request:Request):
 
     # Let the user get redirected
     request.app['logger'].info(f"Processed payment for item '{database['item_name']} - {database['option_selection']}")
-    return Response(status=200)
+    return None
 
 
 @routes.post('/webhooks/topgg/vote_added')
