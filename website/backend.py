@@ -81,27 +81,25 @@ async def paypal_purchase_complete(request:Request):
     # Get the data
     content_bytes: bytes = await request.content.read()
     paypal_data_string: str = content_bytes.decode()
+    try:
+        paypal_data = {i: o[0] for i, o in parse_qs(paypal_data_string).items()}
+    except Exception:
+        paypal_data = {'receiver_email': ''}
 
     request.app['logger'].info(paypal_data_string)
 
     # Send the data back to see if it's valid
     data_send_back = "cmd=_notify-validate&" + paypal_data_string
     async with aiohttp.ClientSession(loop=request.app.loop) as session:
-        paypal_url = "https://ipnpb.paypal.com/cgi-bin/webscr"
+        paypal_url = {
+            False: "https://ipnpb.paypal.com/cgi-bin/webscr",
+            True: "https://ipnpb.sandbox.paypal.com/cgi-bin/webscr",
+        }[paypal_data['receiver_email'].casefold().endswith('@business.example.com')]
         async with session.post(paypal_url, data=data_send_back) as site:
             site_data = await site.read()
             if site_data.decode() != "VERIFIED":
                 request.app['logger'].info("Invalid data sent to PayPal IPN url")
                 return Response(status=200)  # Oh no it was fake data
-
-    # Get the data from PP
-    # paypal_data = {unquote(i.split('=')[0].replace("+", " ")):unquote(i.split('=')[1].replace("+", " ")) for i in paypal_data_string.split('&')}
-    paypal_data = {i: o[0] for i, o in parse_qs(paypal_data_string).items()}
-    try:
-        custom_data_dict = json.loads(paypal_data['custom'])
-    except Exception:
-        custom_data_dict = {}
-    payment_amount = int(paypal_data.get('mc_gross', '0').replace('.', ''))
 
     # See if we want to handle it at all
     if paypal_data.get('txn_type') is None:
@@ -144,19 +142,26 @@ async def paypal_purchase_complete(request:Request):
     web_accept - Any of the buy now buttons
     """
 
+    # Process items
     if "item_name" in paypal_data:
-        await process_paypal_item(request, paypal_data, "item_name")
+        await process_paypal_item(request, paypal_data, "item_name", None)
     index = 1
     while f"item_name{index}" in paypal_data:
-        await process_paypal_item(request, paypal_data, f"item_name{index}")
+        await process_paypal_item(request, paypal_data, f"item_name{index}", index)
         index += 1
     return Response(status=200)
 
 
-async def process_paypal_item(request, paypal_data, item_name_field):
+async def process_paypal_item(request, paypal_data, item_name_field, index):
     """
     Process the item in a given set of PayPal data.
     """
+
+    try:
+        custom_data_dict = json.loads(paypal_data['custom'])
+    except Exception:
+        custom_data_dict = {}
+    payment_amount = int(paypal_data.get('mc_gross' if index is None else f'mc_gross_{index}', '0').replace('.', ''))
 
     # Make sure they're actually buying something
     if paypal_data.get(item_name_field) is None:
@@ -195,12 +200,13 @@ async def process_paypal_item(request, paypal_data, item_name_field):
         'discord_id': int(custom_data_dict.get('discord_user_id', 0)),
         'guild_id': int(custom_data_dict.get('discord_guild_id', 0)),
         'item_name': paypal_data[item_name_field],
-        'option_selection': paypal_data.get('option_selection1', None),
+        # 'option_selection': paypal_data.get('option_selection1', None),
+        'option_selection': None,
         'custom': json.dumps(custom_data_dict),
         'custom_dict': custom_data_dict,  # Doesn't actually go into the database
         'payment_currency': paypal_data['mc_currency'],
         'refunded': refunded,
-        'quantity': int(paypal_data.get('quantity', '1')),
+        'quantity': int(paypal_data.get('quantity' if index is None else f'quantity{index}', '1')),
     }
     if database['completed'] is False:
         database['checkout_complete_timestamp'] = None
