@@ -1,18 +1,23 @@
 body {
-    background: #e1e1e1;
+    background: #111;
+    /*background: #e1e1e1;*/
 }
 
 .card {
-    background: #eee;
+    /*background: #eee;*/
+    background: #444;
     /*color: #eee;*/
+    color: white;
 }
 
 .card-header {
-    background: #ccc;
+    /*background: #ccc;*/
+    background: #666;
 }
 
 .contact-text {
     margin-bottom: 0;
+    color: white;
 }
 
 .contact-icon {
@@ -76,8 +81,17 @@ body {
 
 .card-title {
     margin-bottom: 0;
+    color: white;
 }
 
 .contact-text a {
     color: inherit;
+}
+
+.btn {
+  color: white;
+}
+
+.btn a {
+  color: lightblue;
 }

@@ -15,7 +15,7 @@
 [[project]]
     name = "Profile"
     internal_link = ""
-    github = "https://github.com/Voxel-Fox-Ltd/ProfileBot"
+    github = "https://github.com/Voxel-Fox-Ltd/Profile"
     website = ""
     built_with = ["Python3", "PostgreSQL"]
 
