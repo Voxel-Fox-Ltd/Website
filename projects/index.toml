@@ -33,16 +33,16 @@
     website = ""
     built_with = ["Python3", "PostgreSQL"]
 
-[[project]]
-    name = "Synergy"
-    internal_link = ""
-    github = "https://github.com/4Kaylum/Synergy"
-    website = ""
-    built_with = ["Python3", "PostgreSQL", "Jinja2", "Nginx"]
+# [[project]]
+#     name = "Synergy"
+#     internal_link = ""
+#     github = "https://github.com/4Kaylum/Synergy"
+#     website = ""
+#     built_with = ["Python3", "PostgreSQL", "Jinja2", "Nginx"]
 
-[[project]]
-    name = "TheDogAPI"
-    internal_link = ""
-    github = "https://github.com/4Kaylum/TheDogAPI"
-    website = ""
-    built_with = ["PHP", "MySQL"]
+# [[project]]
+#     name = "TheDogAPI"
+#     internal_link = ""
+#     github = "https://github.com/4Kaylum/TheDogAPI"
+#     website = ""
+#     built_with = ["PHP", "MySQL"]
