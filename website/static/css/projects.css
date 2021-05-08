@@ -95,3 +95,7 @@ body {
 .btn a {
   color: lightblue;
 }
+
+.btn:focus {
+    box-shadow: none;
+}
