@@ -64,7 +64,7 @@ async def index(request:Request):
     """
 
     x = await get_projects_page('index')
-    x.update({'field': 'git_text', 'include_contact_details': True})
+    x.update({'field': 'git_text', 'include_contact_details': True, 'include_commission_info': True})
     return x
 
 
