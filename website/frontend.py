@@ -19,7 +19,7 @@ async def get_github_readme_html(session, url:str) -> str:
     """
 
     site = await session.get(url.rstrip("/").replace("://github.com", "://raw.githubusercontent.com") + "/master/README.md")
-    if 300 > site.status >= 200:
+    if site.ok:
         git_text = await site.text()
         item_name = url.rstrip("/").split("/")[-1]
         if git_text.startswith(f"# {item_name}"):
