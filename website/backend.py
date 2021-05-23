@@ -175,7 +175,7 @@ def get_datetime_from_string(string) -> dt:
     """
 
     *time_string, zone_string = string.split(" ")
-    time_string = " ".join(time)
+    time_string = " ".join(time_string)
     date = dt.strptime(time_string, "%H:%M:%S %B %d, %Y")
     zone = {
         "PST": pytz.timezone("US/Pacific"),
