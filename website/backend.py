@@ -9,6 +9,7 @@ import aiohttp_session
 import discord
 from aiohttp_jinja2 import template, render_template
 import htmlmin
+import pytz
 
 
 routes = RouteTableDef()
@@ -78,34 +79,44 @@ async def paypal_purchase_complete(request:Request):
     Handles Paypal throwing data my way.
     """
 
-    # Get the data
+    # Get the data from the post request
     content_bytes: bytes = await request.content.read()
     paypal_data_string: str = content_bytes.decode()
     try:
-        paypal_data = {i: o[0] for i, o in parse_qs(paypal_data_string).items()}
+        paypal_data = {i.strip(): o[0].strip() for i, o in parse_qs(paypal_data_string).items()}
     except Exception:
         paypal_data = {'receiver_email': ''}
 
+    # Let's throw that into a logger
     request.app['logger'].info(paypal_data_string)
 
-    # Send the data back to see if it's valid
+    # Send the data back to PayPal to make sure it's valid
     data_send_back = "cmd=_notify-validate&" + paypal_data_string
     async with aiohttp.ClientSession(loop=request.app.loop) as session:
+
+        # Get the right URL based on whether this is a sandbox payment or not
         paypal_url = {
             False: "https://ipnpb.paypal.com/cgi-bin/webscr",
             True: "https://ipnpb.sandbox.paypal.com/cgi-bin/webscr",
         }[paypal_data['receiver_email'].casefold().endswith('@business.example.com')]
+
+        # Send the data back to check it
         async with session.post(paypal_url, data=data_send_back) as site:
             site_data = await site.read()
             if site_data.decode() != "VERIFIED":
                 request.app['logger'].info("Invalid data sent to PayPal IPN url")
                 return Response(status=200)  # Oh no it was fake data
 
-    # See if we want to handle it at all
+    # See what the transaction is
+    non_payment_transactions = [
+        'adjustment', 'mp_cancel', 'new_case',
+        'recurring_payment_profile_created',
+        'recurring_payment_profile_cancel',
+    ]
     if paypal_data.get('txn_type') is None:
         request.app['logger'].info("Null transaction type passed for PayPal IPN")
         return Response(status=200)  # It's a case update - we'll just discard those; we only store transactions
-    if paypal_data['txn_type'] in ['adjustment', 'mp_cancel', 'new_case']:
+    if paypal_data['txn_type'] in non_payment_transactions:
         request.app['logger'].info("Non-payment transaction type passed for PayPal IPN")
         return Response(status=200)
 
@@ -142,14 +153,36 @@ async def paypal_purchase_complete(request:Request):
     web_accept - Any of the buy now buttons
     """
 
-    # Process items
+    # Process static items
     if "item_name" in paypal_data:
         await process_paypal_item(request, paypal_data, "item_name", None)
     index = 1
     while f"item_name{index}" in paypal_data:
         await process_paypal_item(request, paypal_data, f"item_name{index}", index)
         index += 1
+
+    # Process subscription items
+    if "product_name" in paypal_data:
+        await process_paypal_item(request, paypal_data, "product_name", None)
+
+    # And we're done
     return Response(status=200)
+
+
+def get_datetime_from_string(string) -> dt:
+    """
+    Gets a datetime object from a PayPal purchase time string.
+    """
+
+    *time_string, zone_string = string.split(" ")
+    time_string = " ".join(time)
+    date = dt.strptime(time_string, "%H:%M:%S %B %d, %Y")
+    zone = {
+        "PST": pytz.timezone("US/Pacific"),
+        "PDT": pytz.timezone("US/Pacific"),
+    }.get(zone_string, pytz.utc)
+    date = date.replace(tzinfo=zone)  # PayPal always uses PST (and PDT)
+    return date
 
 
 async def process_paypal_item(request, paypal_data, item_name_field, index):
@@ -157,11 +190,19 @@ async def process_paypal_item(request, paypal_data, item_name_field, index):
     Process the item in a given set of PayPal data.
     """
 
+    # Load the custom data from the payload
     try:
         custom_data_dict = json.loads(paypal_data['custom'])
     except Exception:
         custom_data_dict = {}
-    payment_amount = int(paypal_data.get('mc_gross' if index is None else f'mc_gross_{index}', '0').replace('.', ''))
+
+    # Get the payment amount
+    payment_field = None
+    if index is None:
+        payment_field = "mc_gross"
+    else:
+        payment_field = f"mc_gross_{index}"
+    payment_amount = int(paypal_data.get(payment_field, "0").replace('.', ''))
 
     # Make sure they're actually buying something
     if paypal_data.get(item_name_field) is None:
@@ -182,7 +223,9 @@ async def process_paypal_item(request, paypal_data, item_name_field, index):
     # See if it's refunded data
     refunded = False
     if payment_amount < 0:
-        if paypal_data['payment_status'] in ['Denied', 'Expired', 'Failed', 'Voided', 'Refunded', 'Reversed']:
+        if 'payment_status' not in paypal_data:
+            request.app['logger'].info("IPN *probably* a subscription create/delete.")
+        elif paypal_data['payment_status'] in ['Denied', 'Expired', 'Failed', 'Voided', 'Refunded', 'Reversed']:
             refunded = True
             request.app['logger'].info("IPN set as refunded payment")
         else:
@@ -190,23 +233,27 @@ async def process_paypal_item(request, paypal_data, item_name_field, index):
             return None  # Payment below zero AND it's not reversed
 
     # Set up our data to be databased
+    checkout_complete_timestamp = get_datetime_from_string(paypal_data['payment_date']).timestamp()
+    next_payment_date = None
+    if 'next_payment_date' in paypal_data:
+        next_payment_date = get_datetime_from_string(paypal_data['next_payment_date']).timestamp()
     database = {
-        'completed': paypal_data['payment_status'] == 'Completed',
+        'completed': paypal_data.get('payment_status', 'Completed') == 'Completed',  # Benefit of the doubt - assume it's done
         'transaction_type': paypal_data['txn_type'],
-        'checkout_complete_timestamp': dt.utcnow().timestamp(),
+        'checkout_complete_timestamp': checkout_complete_timestamp,
         'customer_id': paypal_data['payer_id'],
         'id': paypal_data['txn_id'],
         'payment_amount': payment_amount,
         'discord_id': int(custom_data_dict.get('discord_user_id', 0)),
         'guild_id': int(custom_data_dict.get('discord_guild_id', 0)),
         'item_name': paypal_data[item_name_field],
-        # 'option_selection': paypal_data.get('option_selection1', None),
         'option_selection': None,
         'custom': json.dumps(custom_data_dict),
         'custom_dict': custom_data_dict,  # Doesn't actually go into the database
         'payment_currency': paypal_data['mc_currency'],
         'refunded': refunded,
         'quantity': int(paypal_data.get('quantity' if index is None else f'quantity{index}', '1')),
+        'next_payment_date': next_payment_date,
     }
     if database['completed'] is False:
         database['checkout_complete_timestamp'] = None
@@ -214,21 +261,24 @@ async def process_paypal_item(request, paypal_data, item_name_field, index):
     # Save the data
     sql = """
     INSERT INTO paypal_purchases (
-        id, transaction_type, customer_id, payment_amount, discord_id, guild_id, completed, checkout_complete_timestamp,
-        item_name, option_selection, custom, payment_currency, quantity
+        id, transaction_type, customer_id, payment_amount, discord_id, guild_id, completed,
+        checkout_complete_timestamp, item_name, option_selection, custom, payment_currency,
+        quantity, next_payment_date
     ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
     ) ON CONFLICT (id, item_name) DO UPDATE
     SET
-        customer_id=excluded.customer_id, payment_amount=excluded.payment_amount, discord_id=excluded.discord_id, guild_id=excluded.guild_id,
-        completed=excluded.completed, checkout_complete_timestamp=excluded.checkout_complete_timestamp
+        customer_id=excluded.customer_id, payment_amount=excluded.payment_amount, discord_id=excluded.discord_id,
+        guild_id=excluded.guild_id, completed=excluded.completed,
+        checkout_complete_timestamp=excluded.checkout_complete_timestamp, next_payment_date=excluded.next_payment_date
     """
     async with request.app['database']() as db:
         await db(
             sql, database['id'], database['transaction_type'], database['customer_id'],
             database['payment_amount'], database['discord_id'], database['guild_id'], database['completed'],
-            dt.fromtimestamp(database['checkout_complete_timestamp']), database['item_name'], database['option_selection'], database['custom'],
-            database['payment_currency'], database['quantity']
+            dt.fromtimestamp(database['checkout_complete_timestamp']), database['item_name'],
+            database['option_selection'], database['custom'], database['payment_currency'],
+            database['quantity'], dt.fromtimestamp(database['next_payment_date']),
         )
 
     # Get the webhook url

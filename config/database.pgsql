@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS paypal_purchases(
     completed BOOLEAN NOT NULL DEFAULT FALSE,
     checkout_complete_timestamp TIMESTAMP,
     quantity INTEGER NOT NULL DEFAULT 1,
+    next_payment_date TIMESTAMP,
     PRIMARY KEY (id, item_name)
 );
 
