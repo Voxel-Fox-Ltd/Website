@@ -273,12 +273,13 @@ async def process_paypal_item(request, paypal_data, item_name_field, index):
         checkout_complete_timestamp=excluded.checkout_complete_timestamp, next_payment_date=excluded.next_payment_date
     """
     async with request.app['database']() as db:
+        next_payment_date_timestamp = dt.fromtimestamp(database['next_payment_date']) if database['next_payment_date'] else None
         await db(
             sql, database['id'], database['transaction_type'], database['customer_id'],
             database['payment_amount'], database['discord_id'], database['guild_id'], database['completed'],
             dt.fromtimestamp(database['checkout_complete_timestamp']), database['item_name'],
             database['option_selection'], database['custom'], database['payment_currency'],
-            database['quantity'], dt.fromtimestamp(database['next_payment_date']),
+            database['quantity'], next_payment_date_timestamp,
         )
 
     # Get the webhook url
