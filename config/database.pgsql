@@ -52,3 +52,38 @@ CREATE TABLE IF NOT EXISTS google_forms_redirects(
     username_field_id VARCHAR(100),
     user_id_field_id VARCHAR(100)
 );
+
+
+DO $$ BEGIN
+    CREATE TYPE stripe_checkout_mode AS ENUM ('payment', 'setup', 'subscription');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+
+DO $$ BEGIN
+    CREATE TYPE stripe_recurring_interval AS ENUM ('day', 'week', 'month', 'year');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+
+CREATE TABLE IF NOT EXISTS stripe_checkout_items(
+    product_name TEXT PRIMARY KEY,
+    success_url TEXT NOT NULL,
+    cancel_url TEXT NOT NULL,
+
+    price_currency VARCHAR(5) DEFAULT 'gbp',
+    price_amount INTEGER NOT NULL,
+    price_recurring_interval stripe_recurring_interval,
+    price_recurring_interval_count SMALLINT DEFAULT 1,
+    mode stripe_checkout_mode DEFAULT 'payment',
+
+    product_id TEXT,
+
+    transaction_webhook TEXT,
+    transaction_webhook_authentication TEXT
+);
+-- A table for Stripe checkout items, used to generate a new checkout session
+-- All of the price items are conditionally optional vs the product ID - one or
+-- the other needs to be set so as to facilitate the checkout
