@@ -5,7 +5,6 @@ from base64 import b64encode
 
 import aiohttp
 from aiohttp.web import Request, RouteTableDef, Response, json_response
-import aiohttp_session
 
 
 routes = RouteTableDef()
@@ -52,20 +51,16 @@ async def create_checkout_session(request: Request):
     post_data: dict = await request.json()
     product_name = post_data.pop('product_name')
     quantity = post_data.pop('quantity', 1)
-    description = post_data.pop('description', None)
 
     # Get the user's login details for metadata
-    storage_session = await aiohttp_session.get_session(request)
-    user_id = storage_session['user_id']
-    metadata = {
-        **post_data,
-        "discord_user_id": user_id,
-    }
+    if 'discord_user_id' not in post_data:
+        raise Exception("Missing user ID from POST request")
+    metadata = post_data
 
     # Get the item data from the database
     async with request.app['database']() as db:
         item_rows = await db(
-            """SELECT * FROM stripe_checkout_items WHERE product_name=$1""",
+            """SELECT * FROM checkout_items WHERE product_name=$1""",
             product_name,
         )
     if not item_rows:
@@ -77,38 +72,16 @@ async def create_checkout_session(request: Request):
         "cancel_url": item_row['cancel_url'],
         "payment_method_types": ["card"],
         "success_url": item_row['success_url'],
-        "mode": item_row['mode'],
-        "line_items": [],
+        "mode": "subscription" if item_row['subscription'] else "payment",
+        "line_items": [
+            {
+                "price": item_row['stripe_price_id'],
+                "quantity": quantity,
+            },
+        ],
         "metadata": metadata,
     }
-    if item_row['product_id']:
-        json['line_items'].append({
-            "price": item_row['product_id'],
-            "quantity": quantity,
-        })
-    else:
-        json['line_items'].append({
-            "price_data": {
-                "currency": item_row['price_currency'],
-                "product_data": {
-                    "name": item_row['product_name'],
-                },
-                "unit_amount": item_row['price_amount'],
-            },
-            "quantity": quantity,
-        })
-        if item_row['price_recurring_interval']:
-            json['line_items'][0]['price_data'].update({
-                "recurring": {
-                    "interval": item_row['price_recurring_interval'],
-                    "interval_count": item_row['price_recurring_interval_count']
-                }
-            })
-    if description:
-        json['line_items'][0]['price_data']['product_data'].update({
-            "description": description,
-        })
-    if item_row['mode'] == "subscription":
+    if item_row['subscription']:
         json.update({"subscription_data": {"metadata": metadata}})
 
     # Send some data to Stripe
@@ -122,15 +95,16 @@ async def create_checkout_session(request: Request):
         async with session.post(url, data=data, headers=headers, auth=auth) as r:
             response = await r.json()
             if not r.ok:
-                return json_response({}, status=500)
+                return json_response(response, status=500)
 
         # And while we're here, add a Discord user ID to the customer's metadata
         url = STRIPE_BASE + "/customers/{0}".format(response['customer'])
-        data = form_encode({"metadata": {"discord_user_id": user_id}})
+        data = form_encode({"metadata": {"discord_user_id": metadata['discord_user_id']}})
         await session.post(url, data=data, headers=headers, auth=auth)
 
     # And return the session ID
-    return json_response({'id': response['id']})
+    href_url = f"https://checkout.stripe.com/pay/{response['id']}"
+    return json_response({'href': href_url, "id": response['id'], **response})
 
 
 @routes.post('/webhooks/stripe/purchase_webhook')
@@ -215,11 +189,12 @@ async def checkout_processor(request: Request, data: dict, *, refunded: bool = F
             json = {
                 "product_name": row['product_name'],
                 "quantity": row['_stripe']['quantity'],
-                "refunded": refunded,
+                "refund": refunded,
                 "subscription": row['_stripe']['type'] == "recurring",
                 **data['metadata'],
                 **data['customer']['metadata'],
-                "_stripe": row['_stripe'],
+                # "_stripe": row['_stripe'],
+                "subscription_expiry_time": None,
             }
             await session.post(row['transaction_webhook'], json=json, headers=headers)
 
@@ -287,11 +262,11 @@ async def subscription_deleted(request: Request, data: dict) -> None:
         json = {
             "product_name": item_row['product_name'],
             "quantity": subscription_item['quantity'],
-            "refunded": False,
+            "refund": False,
             "subscription": True,
             **subscription_item['metadata'],
             **customer_data['metadata'],
-            "_stripe": data,
+            # "_stripe": data,
             "subscription_expiry_time": subscription_expiry_time,
         }
         await session.post(item_row['transaction_webhook'], json=json, headers=headers)

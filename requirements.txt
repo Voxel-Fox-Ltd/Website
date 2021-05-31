@@ -1,3 +1,4 @@
 voxelbotutils[web]
 markdown2
 pytz
+openssl

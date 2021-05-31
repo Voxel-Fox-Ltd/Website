@@ -128,3 +128,15 @@ async def invite(request:Request):
                     return {**default_data, **json}
                 return default_data
     return HTTPFound(redirect_link)
+
+
+@routes.get("/arbitrary")
+@template("arbitrary.html.j2")
+@webutils.add_discord_arguments()
+@webutils.requires_login()
+async def arbitrary(request:Request):
+    """
+    The passthrough embedded invite link.
+    """
+
+    return {}
