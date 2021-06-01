@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS google_forms_redirects(
 --     product_id NOT NULL TEXT,
 
 --     transaction_webhook TEXT,
---     transaction_webhook_authentication TEXT
+--     transaction_webhook_authorization TEXT
 -- );
 -- -- A table for Stripe checkout items, used to generate a new checkout session
 
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS google_forms_redirects(
 --     cancel_url TEXT NOT NULL,
 
 --     transaction_webhook TEXT,
---     transaction_webhook_authentication TEXT
+--     transaction_webhook_authorization TEXT
 -- );
 
 
@@ -88,5 +88,5 @@ CREATE TABLE IF NOT EXISTS checkout_items(
     paypal_plan_id TEXT,
 
     transaction_webhook TEXT,
-    transaction_webhook_authentication TEXT
+    transaction_webhook_authorization TEXT NOT NULL DEFAULT ''
 );
