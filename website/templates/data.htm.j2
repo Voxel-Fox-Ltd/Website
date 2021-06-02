@@ -5,10 +5,14 @@
 
 <p>Data is below</p>
 
-<p>
-    
-</p>
 
 {% for message in data %}
-<p>{{message}}</p>
+
+<script type="text/javascript">
+    function delet() { 
+        alert('testing purposes owo uwu rawr x3'); 
+    }
+</script>
+
+<p>{{message}} <button onclick="delet();">Button</button></p>
 {% endfor %}
