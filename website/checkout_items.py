@@ -14,7 +14,7 @@ routes = RouteTableDef()
 
 @routes.get('/checkout_items')
 @webutils.requires_login()
-@template("invite.html.j2")
+@template("data.htm.j2")
 async def invite(request:Request):
 
     session = await aiohttp_session.get_session(request)
