@@ -18,7 +18,7 @@ routes = RouteTableDef()
 async def invite(request:Request):
 
     session = await aiohttp_session.get_session(request)
-    if session['user_id'] != 141231597155385344:
+    if session['user_id'] not in [141231597155385344, 263691006120165387]:
         return HTTPFound('/')
 
     async with request.app['database']() as db:
