@@ -9,9 +9,9 @@
 {% for message in data %}
 
 <script type="text/javascript">
-    function delet() { 
-        alert('Are you sure you want to delete {{message.product_name}}'); 
+    function delet(name) { 
+        alert('Are you sure you want to delete '+ name + '?'); 
     }
 </script>
-<p>{{message}} <button onclick="delet();">Delete</button></p>
+<p>{{message}} <button onclick="delet('{{message.product_name}}');">Delete</button></p>
 {% endfor %}
