@@ -1,0 +1,17 @@
+<html>
+<head>
+    <p><b>Kae's Super Cool checkout_items Data!</b></p>
+</head>
+
+<p>Data is below</p>
+
+
+{% for message in data %}
+
+<script type="text/javascript">
+    function delet(name) { 
+        alert(name + ' has been deleted.'); 
+    }
+</script>
+<p>{{message}} <button onclick="delet('{{message.product_name}}');">Delete</button></p>
+{% endfor %}
