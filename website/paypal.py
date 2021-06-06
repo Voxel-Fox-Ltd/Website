@@ -138,7 +138,7 @@ async def create_checkout_session(request: Request):
         async with session.get(url, auth=auth) as r:
             product_data = await r.json()
             if not r.ok:
-                return json_response({}, status=500)
+                return json_response({}, status=500, headers={"Access-Control-Allow-Origin": "*"})
 
     # Ask PayPal for the right data
     if item_row['subscription']:
@@ -148,7 +148,7 @@ async def create_checkout_session(request: Request):
     if data.status == 500:
         return data
     data = json.loads(data.text)
-    return json_response({"subscription": item_row['subscription'], "id": data['id']})
+    return json_response({"subscription": item_row['subscription'], "id": data['id']}, headers={"Access-Control-Allow-Origin": "*"})
 
 
 async def create_single_purchase_checkout_session(request, product_name, quantity, item_row, product_data, metadata):

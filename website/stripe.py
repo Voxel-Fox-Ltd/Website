@@ -107,7 +107,7 @@ async def create_checkout_session(request: Request):
         async with session.post(url, data=form_data, headers=headers, auth=auth) as r:
             response = await r.json()
             if not r.ok:
-                return json_response(response, status=500)
+                return json_response(response, status=500, headers={"Access-Control-Allow-Origin": "*"})
 
     # And while we're here, add a Discord user ID to the customer's metadata
     if response['customer']:
@@ -115,7 +115,7 @@ async def create_checkout_session(request: Request):
 
     # And return the session ID
     href_url = f"https://checkout.stripe.com/pay/{response['id']}"
-    return json_response({'href': href_url, "id": response['id'], **response})
+    return json_response({'href': href_url, "id": response['id'], **response}, headers={"Access-Control-Allow-Origin": "*"})
 
 
 @routes.post('/webhooks/stripe/purchase_webhook')
