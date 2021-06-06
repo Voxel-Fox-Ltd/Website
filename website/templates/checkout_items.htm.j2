@@ -1,0 +1,64 @@
+<html>
+<head>
+    <title>Kae's Super Cool checkout_items Data!</title>
+</head>
+<body>
+
+<script type="text/javascript">
+async function deleteProduct(name) {
+    alert(`${name} has been deleted.`);
+}
+</script>
+
+<div>
+    <p>Product Name</p>
+    <input type="text" name="form-product-name" required />
+
+    <p>Success URL</p>
+    <input type="text" name="form-success-url" required />
+
+    <p>Cancel URL</p>
+    <input type="text" name="form-cancel-url" required />
+
+    <p>Subscription</p>
+    <select name="form-subscription" required>
+        <option value="0" default>False</option>
+        <option value="1">True</option>
+    </select>
+
+    <p>Stripe Product ID</p>
+    <input type="text" name="form-stripe-product-id" required />
+
+    <p>Stripe Price ID</p>
+    <input type="text" name="form-stripe-price-id" required />
+
+    <p>PayPal Plan ID</p>
+    <input type="text" name="form-paypal-plan-id" />
+
+    <p>Transaction Webhook</p>
+    <input type="text" name="form-transaction-webhook" />
+
+    <p>Transaction Webhook Authorization</p>
+    <input type="text" name="form-transaction-webhook-auth" />
+</div>
+
+<table>
+    <tr>
+        <th>Product Name</th>
+        <th>Subscription</th>
+        <th>Stripe Product ID</th>
+        <th>Transaction Webhook</th>
+        <th>Delete</th>
+    </tr>
+    {% for product in data %}
+        <tr>
+            <td>{{ product.product_name }}</td>
+            <td>{{ product.subscription | string | lower }}</td>
+            <td><pre><code>{{ product.stripe_product_id }}</code></pre></td>
+            <td>{{ product.transaction_webhook }}</td>
+            <td><button onclick="deleteProduct(`{{product.product_name}}`);">Delete</button></td>
+        </tr>
+    {% endfor %}
+</table>
+
+</body>
