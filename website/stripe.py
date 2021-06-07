@@ -222,7 +222,7 @@ async def checkout_processor(request: Request, data: dict, *, refunded: bool = F
                 "source": "Stripe",
                 "subscription_delete_url": None,
             }
-            if data['mode'] == 'subscription':
+            if data.get('subscription'):
                 json_data.update({'subscription_delete_url': f"{STRIPE_BASE}/subscriptions/{data['subscription']}"})
             request.app['logger'].info(f"Sending POST {row['transaction_webhook']} {json_data}")
             async with session.post(row['transaction_webhook'], json=json_data, headers=headers) as r:
