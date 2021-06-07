@@ -308,7 +308,10 @@ async def subscription_deleted(request: Request, data: dict) -> None:
     customer_data = await get_customer_by_id(request, data['customer'])
 
     # Make a loop here so I don't need to do it while I have a session open
-    item_row = [dict(i) for i in item_rows][0]
+    try:
+        item_row = [dict(i) for i in item_rows][0]
+    except IndexError:
+        return  # We probably processed the session somewhere else
 
     # Throw our relevant data at the webhook
     async with aiohttp.ClientSession() as session:
