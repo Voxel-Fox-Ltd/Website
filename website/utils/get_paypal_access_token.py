@@ -1,3 +1,12 @@
+from datetime import datetime as dt
+
+import aiohttp
+from aiohttp.web import Request
+
+
+PAYPAL_TOKEN_CACHE = {}
+
+
 async def get_paypal_access_token(request: Request) -> str:
     """
     Get the PayPal access token from your client ID and secret.

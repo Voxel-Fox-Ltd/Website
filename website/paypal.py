@@ -13,7 +13,6 @@ from .utils.get_paypal_access_token import get_paypal_access_token
 
 routes = RouteTableDef()
 PAYPAL_BASE = "https://api-m.paypal.com"  # "https://api-m.sandbox.paypal.com"
-PAYPAL_TOKEN_CACHE = {}  # access_token, expires_at
 
 
 # json_data = {
