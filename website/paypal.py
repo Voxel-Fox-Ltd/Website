@@ -10,7 +10,7 @@ import pytz
 
 
 routes = RouteTableDef()
-PAYPAL_BASE = "https://api-m.sandbox.paypal.com"
+PAYPAL_BASE = "https://api-m.paypal.com"  # "https://api-m.sandbox.paypal.com"
 PAYPAL_TOKEN_CACHE = {}  # access_token, expires_at
 
 
@@ -406,6 +406,7 @@ async def charge_captured(request: Request, data: dict):
                 **metadata,
                 "subscription_expiry_time": None,
                 "source": "PayPal",
+                "subscription_delete_url": None,
             }
             request.app['logger'].info(f"Sending POST {row['transaction_webhook']} {json_data}")
             async with session.post(row['transaction_webhook'], json=json_data, headers=headers) as r:
@@ -449,6 +450,7 @@ async def subscription_created(request: Request, data: dict):
             **metadata,
             "subscription_expiry_time": None,
             "source": "PayPal",
+            "subscription_delete_url": f"{PAYPAL_BASE}/v1/billing/subscriptions/{recurring_payment_id}/cancel",
         }
         request.app['logger'].info(f"Sending POST {item['transaction_webhook']} {json_data}")
         async with session.post(item['transaction_webhook'], json=json_data, headers=headers) as r:
@@ -496,6 +498,7 @@ async def subscription_deleted(request: Request, data: dict):
             **metadata,
             "subscription_expiry_time": expiry_time.timestamp(),
             "source": "PayPal",
+            "subscription_delete_url": None,
         }
         request.app['logger'].info(f"Sending POST {item['transaction_webhook']} {json_data}")
         async with session.post(item['transaction_webhook'], json=json_data, headers=headers) as r:

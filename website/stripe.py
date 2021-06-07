@@ -220,7 +220,10 @@ async def checkout_processor(request: Request, data: dict, *, refunded: bool = F
                 # "_stripe": row['_stripe'],
                 "subscription_expiry_time": None,
                 "source": "Stripe",
+                "subscription_delete_url": None,
             }
+            if data['mode'] == 'subscription':
+                json_data.update({'subscription_delete_url': f"{STRIPE_BASE}/subscriptions/{data['subscription']}"})
             request.app['logger'].info(f"Sending POST {row['transaction_webhook']} {json_data}")
             async with session.post(row['transaction_webhook'], json=json_data, headers=headers) as r:
                 body = await r.read()
@@ -320,6 +323,7 @@ async def subscription_deleted(request: Request, data: dict) -> None:
             # "_stripe": data,
             "subscription_expiry_time": subscription_expiry_time,
             "source": "Stripe",
+            "subscription_delete_url": None,
         }
         request.app['logger'].info(f"Sending POST {item_row['transaction_webhook']} {json_data}")
         async with session.post(item_row['transaction_webhook'], json=json_data, headers=headers) as r:
