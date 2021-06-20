@@ -5,6 +5,7 @@ from aiohttp.web import Request
 
 
 PAYPAL_TOKEN_CACHE = {}
+PAYPAL_BASE = "https://api-m.paypal.com"  # "https://api-m.sandbox.paypal.com"
 
 
 async def get_paypal_access_token(request: Request) -> str:
