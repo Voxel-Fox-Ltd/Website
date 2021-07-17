@@ -4,9 +4,10 @@
 }
 
 body{
-    background-color: #5dadec;
+    background-color: #aa5ed6;
     color: azure;
     font-family: NotoSans;
+
 }
 
 h1{
@@ -17,37 +18,70 @@ h1{
 
 .card{
     position: absolute;
-    background-color: #b00b69;
-    color: azure;
     width: 350px;
     height: 550px;
     border-radius: 25px;
-    box-shadow: 2px 2px 20px #4d0a30;
+    box-shadow: 2px 2px 20px #581e53;
     top: 12.5%;
 }
 
-#mainCard{
+#startCard{
+    background-color: #FF0900;
     z-index: 0;
+    left: 50px;
 }
 
 #aboutCard{
+    transition: all 0.5s ease-out;
+    background-color: #FF7F00;
     z-index: -1;
-    left: 250px;
+    left: 225px;
 }
 
 #marrigeCard{
+    transition: 0.5s;
+    background-color: #FFEF00;
     z-index: -2;
-    left: 490px;
+    left: 400px;
 }
 
 #flowerCard{
+    transition: 0.5s;
+    background-color: #00F11D;
     z-index: -3;
-    left: 730px;
+    left: 575px;
 }
 
-#flowerCard{
-    z-index: -3;
-    left: 970px;
+#profileCard{
+    transition: 0.5s;
+    background-color: #0079FF;
+    z-index: -4;
+    left: 750px;
+}
+
+#cerberusCard{
+    transition: 0.5s;
+    background-color: #A800FF;
+    z-index: -5;
+    left: 925px;
+}
+
+#honeyCard{
+    transition: 0.5s;
+    background-color: #ff00d4;
+    z-index: -6;
+    left: 1100px;
+}
+
+#aboutCard:hover, #marrigeCard:hover, #flowerCard:hover, #profileCard:hover, #cerberusCard:hover, #honeyCard:hover{
+    animation: MoveForward 2s 1 forwards;
+}
+
+@keyframes MoveForward {
+    100%{
+        transform: scale(1.05);
+        z-index: 1;
+    }
 }
 
 #VFLogo{
