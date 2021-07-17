@@ -1,0 +1,57 @@
+@font-face {
+    font-family: NotoSans;
+    src: url(NotoSans-Regular.ttf);
+}
+
+body{
+    background-color: #5dadec;
+    color: azure;
+    font-family: NotoSans;
+}
+
+h1{
+    font-size: 56px;
+    margin: 0;
+    text-align: center;
+}
+
+.card{
+    position: absolute;
+    background-color: #b00b69;
+    color: azure;
+    width: 350px;
+    height: 550px;
+    border-radius: 25px;
+    box-shadow: 2px 2px 20px #4d0a30;
+    top: 12.5%;
+}
+
+#mainCard{
+    z-index: 0;
+}
+
+#aboutCard{
+    z-index: -1;
+    left: 250px;
+}
+
+#marrigeCard{
+    z-index: -2;
+    left: 490px;
+}
+
+#flowerCard{
+    z-index: -3;
+    left: 730px;
+}
+
+#flowerCard{
+    z-index: -3;
+    left: 970px;
+}
+
+#VFLogo{
+    max-width: 50%;
+    max-height: 50%;
+    margin-left: 25%;
+}
