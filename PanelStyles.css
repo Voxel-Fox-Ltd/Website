@@ -4,7 +4,7 @@
 }
 
 body{
-    background-color: #aa5ed6;
+    background-color: #d65ed6;
     color: azure;
     font-family: NotoSans;
 
@@ -16,76 +16,75 @@ h1{
     text-align: center;
 }
 
+h2{
+    font-size: 72px;
+    margin-top: 1.75%;
+    text-align: center;
+}
+
 .card{
     position: absolute;
     width: 350px;
     height: 550px;
     border-radius: 25px;
     box-shadow: 2px 2px 20px #581e53;
-    top: 12.5%;
-}
-
-#startCard{
-    background-color: #FF0900;
-    z-index: 0;
-    left: 50px;
+    top: 20%;
 }
 
 #aboutCard{
-    transition: all 0.5s ease-out;
-    background-color: #FF7F00;
+    background-color: #FF0900;
     z-index: -1;
-    left: 225px;
+    left: 50px;
 }
 
 #marrigeCard{
-    transition: 0.5s;
-    background-color: #FFEF00;
+    background-color: #FF7F00;
     z-index: -2;
-    left: 400px;
+    left: 270px;
 }
 
 #flowerCard{
-    transition: 0.5s;
-    background-color: #00F11D;
+    background-color: #FFEF00;
     z-index: -3;
-    left: 575px;
+    left: 490px;
 }
 
 #profileCard{
-    transition: 0.5s;
-    background-color: #0079FF;
+    background-color: #00F11D;
     z-index: -4;
-    left: 750px;
+    left: 710px;
 }
 
 #cerberusCard{
-    transition: 0.5s;
-    background-color: #A800FF;
+    background-color: #0079FF;
     z-index: -5;
-    left: 925px;
+    left: 930px;
 }
 
 #honeyCard{
-    transition: 0.5s;
-    background-color: #ff00d4;
+    background-color: #A800FF;
     z-index: -6;
-    left: 1100px;
+    left: 1150px;
 }
 
 #aboutCard:hover, #marrigeCard:hover, #flowerCard:hover, #profileCard:hover, #cerberusCard:hover, #honeyCard:hover{
-    animation: MoveForward 2s 1 forwards;
-}
-
-@keyframes MoveForward {
-    100%{
-        transform: scale(1.05);
-        z-index: 1;
-    }
+    animation: MoveForward 2s 1 forwards ease;
 }
 
 #VFLogo{
     max-width: 50%;
     max-height: 50%;
     margin-left: 25%;
+}
+
+#BotImg{
+    display: block;
+    margin: auto;
+}
+
+@keyframes MoveForward {
+    100%{
+        transform: scale(1.04);
+        z-index: 1;
+    }
 }
