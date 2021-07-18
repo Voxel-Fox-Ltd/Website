@@ -4,8 +4,8 @@
 }
 
 body{
-    background-color: #d65ed6;
-    color: azure;
+    background-color: #a16aa1;
+    color: whitesmoke;
     font-family: NotoSans;
 
 }
@@ -32,37 +32,37 @@ h2{
 }
 
 #aboutCard{
-    background-color: #FF0900;
+    background:url("./Images/aboutCard.png");
     z-index: -1;
     left: 50px;
 }
 
 #marrigeCard{
-    background-color: #FF7F00;
+    background:url("./Images/marrigeCard.png");
     z-index: -2;
     left: 270px;
 }
 
 #flowerCard{
-    background-color: #FFEF00;
+    background:url("./Images/flowerCard.png");
     z-index: -3;
     left: 490px;
 }
 
 #profileCard{
-    background-color: #00F11D;
+    background:url("./Images/profileCard.png");
     z-index: -4;
     left: 710px;
 }
 
 #cerberusCard{
-    background-color: #0079FF;
+    background:url("./Images/doggoCard.png");
     z-index: -5;
     left: 930px;
 }
 
 #honeyCard{
-    background-color: #A800FF;
+    background:url("./Images/BEEEEEECard.png");
     z-index: -6;
     left: 1150px;
 }
