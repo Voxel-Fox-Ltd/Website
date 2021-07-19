@@ -11,11 +11,13 @@
 }
 
 body {
-    background-color: #22262b;
+    background-image: linear-gradient(rgb(41, 41, 41), rgb(0, 0, 0));
+    width: 100vw;
+    height: 100vh;
     color: azure;
     font-family: NotoSans, Helvetica, sans-serif;
     margin: 0;
-    overflow-x: hidden; /* Since now cards are centered. When they grow they cause overflow in X(no object is out of screen its just CSS being CSS)*/
+    overflow: hidden; /* Since now cards are centered. When they grow they cause overflow in X(no object is out of screen its just CSS being CSS)*/
 }
 
 h1 {
