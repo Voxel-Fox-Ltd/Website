@@ -11,10 +11,11 @@
 }
 
 body {
-    background-color: #a16aa1;
+    background-color: #22262b;
     color: azure;
     font-family: NotoSans, Helvetica, sans-serif;
     margin: 0;
+    overflow-x: hidden; /* Since now cards are centered. When they grow they cause overflow in X(no object is out of screen its just CSS being CSS)*/
 }
 
 h1 {
@@ -34,7 +35,7 @@ h1 {
     width: var(--card-width);
     height: var(--card-height);
     border-radius: 25px;
-    box-shadow: 2px 2px 20px #581e53;
+    box-shadow: 2px 2px 20px var(--fallback); /*oh yeah now we're cookin with magic 😎*/
     transition: .5s ease;
 
     /* Calculate what's to be displayed on the cards */
@@ -46,7 +47,7 @@ h1 {
 
 .card:hover {
     transform: scale(1.04);
-    z-index: 20!important;  /* This needs to be important because ID selectors take higher presidence */
+    z-index: 20!important;  /* This needs to be important because ID selectors take higher presidence. -ohhh so thats why my thing didn't worked before*/ 
 }
 
 .card h2 {
@@ -71,29 +72,35 @@ h1 {
 #aboutCard{
     background: url("./Images/aboutCard.png");
     z-index: 19;
+    --fallback: red; /*added these from the JS demo you made*/
 }
 
 #marrigeCard{
     background: url("./Images/marrigeCard.png");
     z-index: 18;
+    --fallback: orange;
 }
 
 #flowerCard{
     background: url("./Images/flowerCard.png");
     z-index: 17;
+    --fallback: yellow;
 }
 
 #profileCard{
     background: url("./Images/profileCard.png");
     z-index: 16;
+    --fallback: lime;
 }
 
 #cerberusCard{
     background: url("./Images/doggoCard.png");
     z-index: 15;
+    --fallback: blue;
 }
 
 #honeyCard{
     background: url("./Images/BEEEEEECard.png");
     z-index: 14;
+    --fallback: purple;
 }
