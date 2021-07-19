@@ -45,6 +45,10 @@ h1 {
     background-color: var(--fallback);
 }
 
+.card:nth-of-type(2n) { 
+    margin-top: 12px; 
+}
+
 .card:hover {
     transform: scale(1.04);
     z-index: 20!important;  /* This needs to be important because ID selectors take higher presidence. -ohhh so thats why my thing didn't worked before*/ 
