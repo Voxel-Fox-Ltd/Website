@@ -37,25 +37,21 @@ h1 {
     border-radius: 25px;
     box-shadow: 2px 2px 20px var(--fallback); /*oh yeah now we're cookin with magic 😎*/
     transition: .5s ease;
-
-    /* Calculate what's to be displayed on the cards */
-    --background: "";
-    --fallback: #5dadec;
-    background-image: var(--background);
-    background-color: var(--fallback);
 }
 
 .card:nth-of-type(2n) { 
     margin-top: 12px; 
 }
+
 .card ul{
     list-style-type: none;
     text-align: center;
+    padding:0px;
 }
 
 .card:hover {
     transform: scale(1.04);
-    z-index: 20!important;  /* This needs to be important because ID selectors take higher presidence. -ohhh so thats why my thing didn't worked before*/ 
+    z-index: 20!important;  /* This needs to be important because ID selectors take higher presidence.*/
 }
 
 .card h2 {
@@ -121,4 +117,13 @@ h1 {
     background: url("../Images/BEEEEEECard.png");
     z-index: 14;
     --fallback: purple;
+}
+
+@media screen and (max-width: 550px) {
+    #cards {
+        grid-template-columns: repeat(1, var(--overlap-width));
+    }
+    .card:nth-of-type(n) { 
+        margin-bottom: 32px; 
+    }
 }
