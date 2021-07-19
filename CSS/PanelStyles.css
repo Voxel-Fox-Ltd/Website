@@ -5,7 +5,7 @@
 
 :root {
     font-size: 16px;
-    --card-width: 350px;
+    --card-width: 340px;
     --card-height: 550px;
     --overlap-width: 230px;
 }
@@ -47,6 +47,10 @@ h1 {
 
 .card:nth-of-type(2n) { 
     margin-top: 12px; 
+}
+.card ul{
+    list-style-type: none;
+    text-align: center;
 }
 
 .card:hover {
