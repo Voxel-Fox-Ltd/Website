@@ -69,6 +69,16 @@ h1 {
     border-radius: 10px;
 }
 
+.card a{
+    color: azure;
+    font-size: 1.5rem;
+    text-decoration:none;
+}
+
+.card a:hover{
+    text-decoration:underline;
+}
+
 .card img.circle {
     border-radius: 50%;
 }
