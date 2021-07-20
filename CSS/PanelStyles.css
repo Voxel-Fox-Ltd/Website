@@ -12,8 +12,9 @@
 
 body {
     background-image: linear-gradient(rgb(41, 41, 41), rgb(0, 0, 0));
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
+    background-attachment: fixed;
     color: azure;
     font-family: NotoSans, Helvetica, sans-serif;
     margin: 0;
@@ -42,8 +43,8 @@ h1 {
     transition: .5s ease;
 }
 
-.card:nth-of-type(2n) { 
-    margin-top: 12px; 
+.card:nth-of-type(2n) {
+    margin-top: 12px;
 }
 
 .card ul{
@@ -122,18 +123,26 @@ h1 {
     background: url("../Images/BEEEEEECard.png"), var(--fallback);
 }
 
-@media screen and (max-width: 550px) {
+@media screen and (max-width: 1600px) {
+    #cards {
+        grid-template-columns: repeat(4, var(--overlap-width));
+    }
+}
 
+@media screen and (max-width: 1100px) {
+    #cards {
+        grid-template-columns: repeat(2, var(--overlap-width));
+    }
+}
+
+@media screen and (max-width: 600px) {
     #cards {
         grid-template-columns: repeat(1, var(--overlap-width));
     }
-
-    .card:nth-of-type(n) { 
-        margin-bottom: 32px; 
+    .card:nth-of-type(n) {
+        margin-bottom: 32px;
     }
-
     .card:hover {
         transform: scale(1);  /* Disable hover on mobile because it's pretty cramped anyway */
     }
-
 }
