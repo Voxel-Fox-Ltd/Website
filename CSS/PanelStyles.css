@@ -17,13 +17,14 @@ body {
     color: azure;
     font-family: NotoSans, Helvetica, sans-serif;
     margin: 0;
-    overflow: hidden; /* Since now cards are centered. When they grow they cause overflow in X(no object is out of screen its just CSS being CSS)*/
+    overflow-x: hidden; /* Since now cards are centered. When they grow they cause overflow in X(no object is out of screen its just CSS being CSS)*/
 }
 
 h1 {
     font-size: 4rem;
-    margin-top: 1.5rem;
+    padding: 3rem;
     text-align: center;
+    margin: 0;
 }
 
 #cards {
@@ -74,11 +75,11 @@ h1 {
 .card a {
     color: azure;
     font-size: 1.5rem;
-    text-decoration:none;
+    text-decoration: none;
 }
 
 .card a:hover {
-    text-decoration:underline;
+    text-decoration: underline;
 }
 
 .card img.circle {
@@ -122,10 +123,17 @@ h1 {
 }
 
 @media screen and (max-width: 550px) {
+
     #cards {
         grid-template-columns: repeat(1, var(--overlap-width));
     }
+
     .card:nth-of-type(n) { 
         margin-bottom: 32px; 
     }
+
+    .card:hover {
+        transform: scale(1);  /* Disable hover on mobile because it's pretty cramped anyway */
+    }
+
 }
