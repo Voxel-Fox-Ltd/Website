@@ -71,13 +71,13 @@ h1 {
     border-radius: 10px;
 }
 
-.card a{
+.card a {
     color: azure;
     font-size: 1.5rem;
     text-decoration:none;
 }
 
-.card a:hover{
+.card a:hover {
     text-decoration:underline;
 }
 
@@ -85,40 +85,40 @@ h1 {
     border-radius: 50%;
 }
 
-#aboutCard{
-    background: url("../Images/aboutCard.png");
+#aboutCard {
     z-index: 19;
-    --fallback: red; /*added these from the JS demo you made*/
+    --fallback: red;
+    background: url("../Images/aboutCard.png"), var(--fallback);
 }
 
-#marrigeCard{
-    background: url("../Images/marrigeCard.png");
+#marrigeCard {
     z-index: 18;
     --fallback: orange;
+    background: url("../Images/marrigeCard.png"), var(--fallback);
 }
 
-#flowerCard{
-    background: url("../Images/flowerCard.png");
+#flowerCard {
     z-index: 17;
     --fallback: yellow;
+    background: url("../Images/flowerCard.png"), var(--fallback);
 }
 
-#profileCard{
-    background: url("../Images/profileCard.png");
+#profileCard {
     z-index: 16;
     --fallback: lime;
+    background: url("../Images/profileCard.png"), var(--fallback);
 }
 
-#cerberusCard{
-    background: url("../Images/doggoCard.png");
+#cerberusCard {
     z-index: 15;
     --fallback: blue;
+    background: url("../Images/doggoCard.png"), var(--fallback);
 }
 
-#honeyCard{
-    background: url("../Images/BEEEEEECard.png");
+#honeyCard {
     z-index: 14;
     --fallback: purple;
+    background: url("../Images/BEEEEEECard.png"), var(--fallback);
 }
 
 @media screen and (max-width: 550px) {
