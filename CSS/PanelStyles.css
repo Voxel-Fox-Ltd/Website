@@ -8,6 +8,7 @@
     --card-width: 340px;
     --card-height: 550px;
     --overlap-width: 230px;
+    --left-margin-overlap-offset: calc(var(--overlap-width) - var(--card-width));
 }
 
 body {
@@ -18,7 +19,7 @@ body {
     color: azure;
     font-family: NotoSans, Helvetica, sans-serif;
     margin: 0;
-    overflow-x: hidden; /* Since now cards are centered. When they grow they cause overflow in X(no object is out of screen its just CSS being CSS)*/
+    overflow-x: hidden; /* When the cards grow they cause an overflow on X */
 }
 
 h1 {
@@ -32,14 +33,14 @@ h1 {
     justify-content: center;
     display: grid;
     grid-template-columns: repeat(auto-fit, var(--overlap-width));
-    margin-left: calc(var(--overlap-width) - var(--card-width));  /* A good ol' negative margin to center the grid properly */
+    margin-left: var(--left-margin-overlap-offset);
 }
 
 .card {
     width: var(--card-width);
     height: var(--card-height);
     border-radius: 25px;
-    box-shadow: 2px 2px 20px var(--fallback); /*oh yeah now we're cookin with magic 😎*/
+    box-shadow: 2px 2px 20px var(--fallback); /* oh yeah now we're cookin with magic 😎 */
     transition: .5s ease;
 }
 
@@ -53,7 +54,7 @@ h1 {
     padding:0px;
 }
 
-.card:hover {
+.card:hover  {
     transform: scale(1.04);
     z-index: 20!important;  /* This needs to be important because ID selectors take higher presidence.*/
 }
@@ -123,26 +124,72 @@ h1 {
     background: url("../Images/BEEEEEECard.png"), var(--fallback);
 }
 
-@media screen and (max-width: 1600px) {
+/* For all devices that can't hover (touchscreens etc) */
+@media(hover: none) {
+    :root {
+        --overlap-width: var(--card-width);
+        --left-margin-overlap-offset: 0;
+    }
+    #cards {
+        gap: 40px;
+    }
+    .card:nth-of-type(n) {
+        margin-top: 0;
+    }
+    .card:hover {
+        transform: scale(1);
+    }
+}
+
+/* Desktop-sized screens that can't hover */
+@media screen and (min-width: 1600px) and (hover: none) {
     #cards {
         grid-template-columns: repeat(4, var(--overlap-width));
     }
 }
 
-@media screen and (max-width: 1100px) {
+/* Large tablets that can hover */
+@media screen and (max-width: 1600px) and (hover: hover) {
+    #cards {
+        grid-template-columns: repeat(4, var(--overlap-width));
+    }
+}
+
+/* Large tablets that can't hover */
+@media screen and (max-width: 1600px) and (hover: none) {
+    #cards {
+        grid-template-columns: repeat(3, var(--overlap-width));
+    }
+}
+
+/* Tablets that can hover */
+@media screen and (max-width: 1100px) and (hover: hover) {
     #cards {
         grid-template-columns: repeat(2, var(--overlap-width));
     }
 }
 
-@media screen and (max-width: 600px) {
+/* Tablets that can't hover */
+@media screen and (max-width: 1100px) and (hover: none) {
+    #cards {
+        grid-template-columns: repeat(2, var(--overlap-width));
+    }
+}
+
+/* Phones that can hover */
+@media screen and (max-width: 600px) and (hover: hover) {
     #cards {
         grid-template-columns: repeat(1, var(--overlap-width));
+        gap: 40px;
     }
     .card:nth-of-type(n) {
-        margin-bottom: 32px;
+        margin-top: 0;
     }
-    .card:hover {
-        transform: scale(1);  /* Disable hover on mobile because it's pretty cramped anyway */
+}
+
+/* Phones that can't hover */
+@media screen and (max-width: 800px) and (hover: none) {
+    #cards {
+        grid-template-columns: repeat(1, var(--overlap-width));
     }
 }
