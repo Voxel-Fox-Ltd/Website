@@ -24,7 +24,7 @@ body {
 
 h1 {
     font-size: 4rem;
-    padding: 3rem;
+    padding: 2.5rem;
     text-align: center;
     margin: 0;
 }
@@ -142,14 +142,14 @@ h1 {
 }
 
 /* Desktop-sized screens that can't hover */
-@media screen and (min-width: 1600px) and (hover: none) {
+@media screen and (min-width: 1400px) and (hover: none) {
     #cards {
         grid-template-columns: repeat(4, var(--overlap-width));
     }
 }
 
 /* Large tablets that can hover */
-@media screen and (max-width: 1600px) and (hover: hover) {
+@media screen and (max-width: 1400px) and (hover: hover) {
     #cards {
         grid-template-columns: repeat(4, var(--overlap-width));
     }
