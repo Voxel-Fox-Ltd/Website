@@ -88,6 +88,14 @@ h1 {
     border-radius: 50%;
 }
 
+.card p{
+    padding:0.5rem 1.5rem 0.5rem;
+    font-size: 1.20rem;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+}
+
 #aboutCard {
     z-index: 19;
     --fallback: red;
@@ -191,5 +199,12 @@ h1 {
 @media screen and (max-width: 800px) and (hover: none) {
     #cards {
         grid-template-columns: repeat(1, var(--overlap-width));
+    }
+}
+
+/* Ipads */
+@media screen and (max-width: 768px) and (max-height:1024px) {
+    #cards {
+        grid-template-columns: repeat(2, var(--overlap-width));
     }
 }
