@@ -186,7 +186,7 @@ h1 {
 }
 
 /* Phones that can hover */
-@media screen and (max-width: 600px) and (hover: hover) {
+@media screen and (max-width: 800px) and (hover: hover) {
     #cards {
         grid-template-columns: repeat(1, var(--overlap-width));
         gap: 40px;
