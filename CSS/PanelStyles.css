@@ -185,27 +185,20 @@ h1 {
     }
 }
 
-/* Phones that can hover */
-@media screen and (max-width: 800px) and (hover: hover) {
+/* Ipads */
+@media screen and (max-width: 768px) and (max-height:1024px) {
+    #cards {
+        grid-template-columns: repeat(2, var(--overlap-width));
+    }
+}
+
+/* Phones that can hover. phone screen is too small to hover */
+@media screen and (max-width: 500px){
     #cards {
         grid-template-columns: repeat(1, var(--overlap-width));
         gap: 40px;
     }
     .card:nth-of-type(n) {
         margin-top: 0;
-    }
-}
-
-/* Phones that can't hover */
-@media screen and (max-width: 800px) and (hover: none) {
-    #cards {
-        grid-template-columns: repeat(1, var(--overlap-width));
-    }
-}
-
-/* Ipads */
-@media screen and (max-width: 768px) and (max-height:1024px) {
-    #cards {
-        grid-template-columns: repeat(2, var(--overlap-width));
     }
 }
