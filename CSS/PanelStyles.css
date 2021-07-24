@@ -1,3 +1,8 @@
+/*Wibbly wobbly, You are gay now
+If you are reading this and not catdotjs or Kae, I wish you good luck understanding the fuck this code is.
+Here you'll need this | [A fucking map of this mess]ノ( ゜-゜ノ)
+*/
+
 @font-face {
     font-family: NotoSans;
     src: url(NotoSans-Regular.ttf);
@@ -12,7 +17,8 @@
 }
 
 body {
-    background-image: url("../Images/background.jpg");
+    background-color: #111;
+    background-image: url("../Images/background.png");
     background-size:cover; 
     width: 100%;
     height: 100%;
@@ -25,7 +31,7 @@ body {
 
 h1 {
     font-size: 4rem;
-    padding: 2.5rem;
+    padding: 2rem;
     text-align: center;
     margin: 0;
 }
@@ -103,7 +109,7 @@ h1 {
     background: url("../Images/aboutCard.png"), var(--fallback);
 }
 
-#marrigeCard {
+#marriageCard {
     z-index: 18;
     --fallback: orange;
     background: url("../Images/marrigeCard.png"), var(--fallback);
@@ -150,6 +156,13 @@ h1 {
     }
 }
 
+/* Large tablets that can't hover */
+@media screen and (max-width: 1600px) and (hover: none) {
+    #cards {
+        grid-template-columns: repeat(3, var(--overlap-width));
+    }
+}
+
 /* Desktop-sized screens that can't hover */
 @media screen and (min-width: 1400px) and (hover: none) {
     #cards {
@@ -161,13 +174,6 @@ h1 {
 @media screen and (max-width: 1400px) and (hover: hover) {
     #cards {
         grid-template-columns: repeat(4, var(--overlap-width));
-    }
-}
-
-/* Large tablets that can't hover */
-@media screen and (max-width: 1600px) and (hover: none) {
-    #cards {
-        grid-template-columns: repeat(3, var(--overlap-width));
     }
 }
 
@@ -202,3 +208,4 @@ h1 {
         margin-top: 0;
     }
 }
+/* pro tip: Order these from smallest screen size to biggest (O.O') */
