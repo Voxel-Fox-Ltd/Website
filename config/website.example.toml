@@ -1,12 +1,11 @@
-website_base_url = "http://localhost:8080"  # This will be used to dynamically make the redirect url internally
+website_base_url = "https://voxelfox.co.uk"  # This will be used to dynamically make the redirect url internally
 login_url = "/login"  # The url or route used to prompt the user to login
-routes = [ "frontend", "backend", ]  # These routes `/website/<filename>` will have their `routes` variable imported which will be loaded into the bot's route table
+routes = [ "frontend", "backend", "stripe", "paypal", "checkout_items", "cancel_subscription", ]  # These routes `/website/<filename>` will have their `routes` variable imported which will be loaded into the bot's route table
 oauth_scopes = [ "identify", ]  # The scopes that should be added to the automatic login url
 stripe_api_key = ""
 stripe_webhook_signing_secret = ""
 paypal_client_id = ""
 paypal_client_secret = ""
-paypal_webhook_id = ""
 
 # These are a few different tokens for Discord bots that you can use at once
 # Config files are loaded as `config/<filename>`
@@ -16,15 +15,8 @@ paypal_webhook_id = ""
 
 # Used for the bot's invite and login links
 [oauth]
-    client_id = ""
+    client_id = "800571899918417950"
     client_secret = ""
-
-# PayPal item webhooks
-[paypal_item_webhooks."MarriageBot Gold"]
-    authorization = ""  # The token that we include with the webhook so we know it's from us
-    webhook_url = "https://marriagebot.xyz/webhooks/voxel_fox/purchase"  # The URL that we want to ping
-    receiver_email = "billing@voxelfox.co.uk"  # The email that the PayPal account is set up with
-    # receiver_email = "sb-6s47tb905326@business.example.com"  # Sandbox
 
 # TopGG webhook passthrough
 [[topgg_bot_webhooks]]
@@ -35,9 +27,9 @@ paypal_webhook_id = ""
 # This data is passed directly over to asyncpg.connect()
 [database]
     enabled = true
-    user = "database_username"
-    password = "database_password"
-    database = "database_name"
+    user = "voxelfox"
+    password = ""
+    database = "voxelfox"
     host = "127.0.0.1"
     port = 5432
 
