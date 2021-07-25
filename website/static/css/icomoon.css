@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('/static/fonts/icomoon.eot?b5paf0');
-  src:  url('/static/fonts/icomoon.eot?b5paf0#iefix') format('embedded-opentype'),
-    url('/static/fonts/icomoon.ttf?b5paf0') format('truetype'),
-    url('/static/fonts/icomoon.woff?b5paf0') format('woff'),
-    url('/static/fonts/icomoon.svg?b5paf0#icomoon') format('svg');
+  src:  url('/static/fonts/icomoon.eot');
+  src:  url('/static/fonts/icomoon.eot#iefix') format('embedded-opentype'),
+    url('/static/fonts/icomoon.ttf') format('truetype'),
+    url('/static/fonts/icomoon.woff') format('woff'),
+    url('/static/fonts/icomoon.svg#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -28,8 +28,9 @@
 .icon-at:before {
   content: "\e900";
 }
-.icon-twitter:before {
-  content: "\e901";
+.icon-twitch:before {
+  content: "\e902";
+  /*color: #6441a4;*/
 }
 .icon-github:before {
   content: "\e903";
@@ -38,12 +39,9 @@
   content: "\e904";
   /*color: #7289da;*/
 }
-.icon-link1:before {
+.icon-link:before {
   content: "\e9cb";
 }
-.icon-twitter1:before {
+.icon-twitter:before {
   content: "\ea96";
-}
-.icon-github1:before {
-  content: "\eab0";
 }
