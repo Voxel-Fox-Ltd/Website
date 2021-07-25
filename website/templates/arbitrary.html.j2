@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Arbitrary HTML page</title>
+</head>
+<body>
+
+
+{# Stripe checkout button #}
+<script src="https://js.stripe.com/v3/"></script>
+<section class="stripe-payment">
+    <button type="button" id="stripe-checkout-button">Checkout</button>
+</section>
+<script type="text/javascript">
+var stripe = Stripe("pk_test_nWKiLUGlfPhPfxfbdfDDgckf00sZ696ZTs");
+document.getElementById("stripe-checkout-button").onclick = () => {
+    fetch("/webhooks/stripe/create_checkout_session", {
+        method: "POST",
+        body: JSON.stringify({
+            product_name: "[Test] Profile Single",
+            discord_user_id: "{{ session.user_id }}",
+        }),
+    }).then(function (response) {
+        return response.json();
+    }).then(function (session) {
+        return stripe.redirectToCheckout({ sessionId: session.id });
+    }).then(function (result) {
+        if (result.error) {
+            alert(result.error.message);
+        }
+    }).catch(function (error) {
+        console.error("Error:", error);
+    });
+};
+</script>
+<style type="text/css">
+#stripe-checkout-button {
+    height: 36px;
+    background: #556cd6;
+    color: white;
+    width: 100%;
+    font-size: 14px;
+    border: 0;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.6;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    box-shadow: 0px 4px 5.5px 0px rgba(0, 0, 0, 0.07);
+}
+
+#stripe-checkout-button:hover {
+    opacity: 0.8;
+}
+</style>
+
+
+{# PayPal button #}
+<div id="smart-button-container">
+    <div style="text-align: center;">
+        <h1>Fake Subscription</h1>
+        <div id="paypal-button-container"></div>
+    </div>
+</div>
+<script src="https://www.paypal.com/sdk/js?client-id=AXVzCaYyv6T1DqPGD-wqS2IkwWVWeHtTGkCfb2l0488xCkGhPoe-dnVipTOcEuuJ6zL8Y9P7cq0Vnmny&currency=GBP" data-sdk-integration-source="button-factory"></script>
+<script type="text/javascript">
+async function initPayPalButton(){
+    fetch("/webhooks/paypal/create_checkout_session", {
+        method: "POST",
+        body: JSON.stringify({
+            product_name: "[Test] Profile Single",
+            discord_user_id: "{{ session.user_id }}",
+        }),
+    }).then((response) => {
+        return response.json();
+    }).then((session) => {
+        url = "https://www.paypal.com/sdk/js?client-id=AXVzCaYyv6T1DqPGD-wqS2IkwWVWeHtTGkCfb2l0488xCkGhPoe-dnVipTOcEuuJ6zL8Y9P7cq0Vnmny&currency=GBP"
+        script = document.createElement('script');
+        script.dataset.sdkIntegrationSource = "button-factory";
+        if(session.subscription) {
+            script.src = `${url}&vault=true&intent=subscription`;
+            data = {createSubscription: function(d, a) {return session.id}};
+        }
+        else {
+            script.src = url;
+            data = {createOrder: function(d, a) {return session.id}};
+        }
+        document.body.appendChild(script);
+        script.onload = () => {
+            paypal.Buttons({
+                style: {
+                    shape: 'rect',
+                    color: 'gold',
+                    layout: 'horizontal',
+                    label: 'paypal',
+                    tagline: false,
+                },
+                ...data
+            }).render('#paypal-button-container');
+        }
+    });
+}
+initPayPalButton()
+</script>
+
+
+</body>
+</html>

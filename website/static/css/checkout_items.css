@@ -1,0 +1,28 @@
+#new-item {
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+#new-item label {
+    display: block;
+}
+
+#new-item input,
+#new-item select,
+#new-item button {
+    width: 100%;
+    box-sizing: border-box;
+    height: 2em;
+}
+
+#new-item button {
+    margin-top: 10px;
+}
+
+#current-items {
+    width: 100%;
+}
+
+#current-items th {
+    text-align: left;
+}

@@ -1,0 +1,48 @@
+[[project]]
+    name = "MarriageBot"
+    internal_link = ""
+    github = "https://github.com/Voxel-Fox-Ltd/MarriageBot"
+    website = "https://marriagebot.xyz"
+    built_with = ["Python3", "PostgreSQL", "Redis", "Jinja2", "Graphviz", "PayPal IPN"]
+
+[[project]]
+    name = "Flower"
+    internal_link = ""
+    github = "https://github.com/Voxel-Fox-Ltd/Flower"
+    website = "https://flower.voxelfox.co.uk"
+    built_with = ["Python3", "PostgreSQL", "Jinja2", "PILLOW"]
+
+[[project]]
+    name = "Profile"
+    internal_link = ""
+    github = "https://github.com/Voxel-Fox-Ltd/Profile"
+    website = ""
+    built_with = ["Python3", "PostgreSQL"]
+
+[[project]]
+    name = "Cerberus"
+    internal_link = ""
+    github = "https://github.com/Voxel-Fox-Ltd/Cerberus"
+    website = ""
+    built_with = ["Python3", "PostgreSQL", "Matplotlib"]
+
+[[project]]
+    name = "Honey"
+    internal_link = ""
+    github = "https://github.com/Voxel-Fox-Ltd/Honey"
+    website = ""
+    built_with = ["Python3", "PostgreSQL"]
+
+# [[project]]
+#     name = "Synergy"
+#     internal_link = ""
+#     github = "https://github.com/4Kaylum/Synergy"
+#     website = ""
+#     built_with = ["Python3", "PostgreSQL", "Jinja2", "Nginx"]
+
+# [[project]]
+#     name = "TheDogAPI"
+#     internal_link = ""
+#     github = "https://github.com/4Kaylum/TheDogAPI"
+#     website = ""
+#     built_with = ["PHP", "MySQL"]

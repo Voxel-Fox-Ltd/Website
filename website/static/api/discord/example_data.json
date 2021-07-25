@@ -1,0 +1,51 @@
+{
+    "channel_name": "channel name",
+    "category_name": "category name",
+    "guild_name": "guild name",
+    "guild_icon_url": "https://imgur.com/stuff.png",
+    "users": {
+        "99999": {
+            "username": "Caleb",
+            "discriminator": 2831,
+            "avatar_url": "https://imgur.com/stuff.png",
+            "bot": false,
+            "display_name": "Caleb",
+        },
+    },
+    "messages": [
+        {
+            "id": 1000000,
+            "content": "test post please ignore",
+            "author_id": 99999,
+            "timestamp": 1592325570,
+            "attachments": [
+                "https://imgur.com/stuff.png",
+                "https://imgur.com/things.png"
+            ],
+            "embeds": [
+                {
+                    "footer": {
+                        "text": "Last updated"
+                    },
+                    "fields": [
+                        {
+                            "name": "Currently Online",
+                            "value": "0/10",
+                            "inline": true
+                        },
+                        {
+                            "name": "Uptime",
+                            "value": "3d 6h 32m 25s",
+                            "inline": true
+                        }
+                    ],
+                    "color": 65280,
+                    "timestamp": 1592327291 ,
+                    "type": "rich",
+                    "description": "Currently running 1.16 Pre-release 6",
+                    "title": "149.202.84.162:25588"
+                }
+            ]
+        },
+    ]
+}

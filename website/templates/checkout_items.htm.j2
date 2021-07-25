@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kae's Super Cool checkout_items Data!</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="{{ static('/css/checkout_items.css') }}" />
+</head>
+<body>
+
+<script type="text/javascript">
+function getValue(name) {
+    return document.getElementsByName(name)[0].value;
+}
+
+
+function setValue(name, value) {
+    let node = document.getElementsByName(`form-${name}`)[0];
+    if(node.nodeName == "SELECT") {
+        let newValue = value == "True" ? "1" : "0";
+        for(const child of node.children) {
+            if(child.value == newValue) {
+                child.selected = true;
+            }
+            else {
+                child.selected = false;
+            }
+        }
+    }
+    else {
+        node.value = value;
+    }
+}
+
+
+function editProduct(button) {
+    let row = button.parentNode.parentNode;
+    let d = row.getElementsByTagName("input");
+    console.log(d);
+    for(const input of row.getElementsByTagName("input")) {
+        setValue(input.name, input.value);
+    }
+}
+
+
+async function createProduct(buttonNode) {
+    fetch("/checkout_items", {
+        method: "POST",
+        body: JSON.stringify({
+            product_name: getValue('form-product-name'),
+            success_url: getValue('form-success-url'),
+            cancel_url: getValue('form-cancel-url'),
+            subscription: getValue('form-subscription'),
+            stripe_product_id: getValue('form-stripe-product-id'),
+            stripe_price_id: getValue('form-stripe-price-id'),
+            paypal_plan_id: getValue('form-paypal-plan-id'),
+            transaction_webhook: getValue('form-transaction-webhook'),
+            transaction_webhook_authorization: getValue('form-transaction-webhook-auth'),
+        }),
+    }).then(() => {
+        alert("owo");
+        location.reload();
+    });
+}
+</script>
+
+<form id="new-item">
+    <div>
+        <label for="form-product-name">Product Name</label>
+        <input type="text" name="form-product-name" required autocomplete="off" />
+    </div>
+
+    <div>
+        <label for="form-success-url">Success URL</label>
+        <input type="text" name="form-success-url" required autocomplete="off" />
+    </div>
+
+    <div>
+        <label for="form-cancel-url">Cancel URL</label>
+        <input type="text" name="form-cancel-url" required autocomplete="off" />
+    </div>
+
+    <div>
+        <label for="form-subscription">Subscription</label>
+        <select name="form-subscription" required>
+            <option value="0" default>False</option>
+            <option value="1">True</option>
+        </select>
+    </div>
+
+    <div>
+        <label for="form-stripe-product-id">Stripe Product ID</label>
+        <input type="text" name="form-stripe-product-id" required autocomplete="off" />
+    </div>
+
+    <div>
+        <label for="form-stripe-price-id">Stripe Price ID</label>
+        <input type="text" name="form-stripe-price-id" required autocomplete="off" />
+    </div>
+
+    <div>
+        <label for="form-paypal-plan-id">PayPal Plan ID</label>
+        <input type="text" name="form-paypal-plan-id" autocomplete="off" />
+    </div>
+
+    <div>
+        <label for="form-transaction-webhook">Transaction Webhook</label>
+        <input type="text" name="form-transaction-webhook" required autocomplete="off" />
+    </div>
+
+    <div>
+        <label for="form-transaction-webhook-auth">Transaction Webhook Authorization</label>
+        <input type="text" name="form-transaction-webhook-auth" autocomplete="off" />
+    </div>
+
+    <button onclick="createProduct(this); return false;">Create new product</button>
+</form>
+
+<table id="current-items">
+    <tr>
+        <th>Product Name</th>
+        <th>Subscription</th>
+        <th>Stripe Product ID</th>
+        <th>Transaction Webhook</th>
+        <th>Edit</th>
+    </tr>
+    {% for product in data %}
+        <tr>
+            <td>{{ product.product_name }}</td>
+            <td>{{ product.subscription | string | lower }}</td>
+            <td><pre><code>{{ product.stripe_product_id }}</code></pre></td>
+            <td>{{ product.transaction_webhook }}</td>
+            <td><button onclick="editProduct(this);">Edit</button></td>
+
+            <input type="hidden" name="product-name" value="{{ product.product_name or '' }}" />
+            <input type="hidden" name="success-url" value="{{ product.success_url or '' }}" />
+            <input type="hidden" name="cancel-url" value="{{ product.cancel_url or '' }}" />
+            <input type="hidden" name="subscription" value="{{ product.subscription or '' }}" />
+            <input type="hidden" name="stripe-product-id" value="{{ product.stripe_product_id or '' }}" />
+            <input type="hidden" name="stripe-price-id" value="{{ product.stripe_price_id or '' }}" />
+            <input type="hidden" name="paypal-plan-id" value="{{ product.paypal_plan_id or '' }}" />
+            <input type="hidden" name="transaction-webhook" value="{{ product.transaction_webhook or '' }}" />
+            <input type="hidden" name="transaction-webhook-auth" value="{{ product.transaction_webhook_authorization or '' }}" />
+        </tr>
+    {% endfor %}
+</table>
+
+</body>

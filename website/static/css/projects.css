@@ -1,0 +1,101 @@
+body {
+    background: #111;
+    /*background: #e1e1e1;*/
+}
+
+.card {
+    /*background: #eee;*/
+    background: #444;
+    /*color: #eee;*/
+    color: white;
+}
+
+.card-header {
+    /*background: #ccc;*/
+    background: #666;
+}
+
+.contact-text {
+    margin-bottom: 0;
+    color: white;
+}
+
+.contact-icon {
+    margin-right: 5px;
+}
+
+.card-columns {
+    -webkit-column-count: 1;
+    -moz-column-count: 1;
+    column-count: 1;
+}
+
+.jumbotron {
+    padding: 10px;
+    padding-bottom: 0;
+    border-radius: 0;
+    background-color: #5dadec;
+    border-bottom: 2px solid black;
+}
+
+.built-with {
+    padding: 0;
+    overflow-x: scroll;
+    height: 1.5em;
+    white-space: nowrap;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.built-with::-webkit-scrollbar {
+    display: none;
+}
+
+.built-with-item {
+    display: inline;
+}
+
+.built-with-item:after {
+    content: "•";
+    margin: 0 5px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.built-with-item:last-child:after {
+    display: none;
+}
+
+.card-body img {
+    /*width: 100%;*/
+    max-width: 600px;
+    border-radius: 10px;
+    border: 1px solid black;
+}
+
+.card-body li p {
+    margin-bottom: 0;
+}
+
+.card-title {
+    margin-bottom: 0;
+    color: white;
+}
+
+.contact-text a {
+    color: inherit;
+}
+
+.btn {
+  color: white;
+}
+
+.btn a {
+  color: lightblue;
+}
+
+.btn:focus {
+    box-shadow: none;
+}
