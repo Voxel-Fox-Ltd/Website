@@ -6,7 +6,7 @@ Here you'll need this | [A fucking map of this mess] ノ( ゜-゜ノ)
 
 @font-face {
     font-family: NotoSans;
-    src: url(NotoSans-Regular.ttf);
+    src: url(/static/fonts/NotoSans-Regular.ttf);
 }
 
 :root {
@@ -19,7 +19,7 @@ Here you'll need this | [A fucking map of this mess] ノ( ゜-゜ノ)
 
 body {
     background-color: #111;
-    background-image: url("../Images/background.png");
+    background-image: url("/static/images/index/background.png");
     background-size:cover; 
     width: 100%;
     height: 100%;
@@ -107,37 +107,37 @@ h1 {
 #aboutCard {
     z-index: 19;
     --fallback: red;
-    background: url("../Images/aboutCard.png"), var(--fallback);
+    background: url("/static/images/index/aboutCard.png"), var(--fallback);
 }
 
 #marriageCard {
     z-index: 18;
     --fallback: orange;
-    background: url("../Images/marrigeCard.png"), var(--fallback);
+    background: url("/static/images/index/marrigeCard.png"), var(--fallback);
 }
 
 #flowerCard {
     z-index: 17;
     --fallback: yellow;
-    background: url("../Images/flowerCard.png"), var(--fallback);
+    background: url("/static/images/index/flowerCard.png"), var(--fallback);
 }
 
 #profileCard {
     z-index: 16;
     --fallback: lime;
-    background: url("../Images/profileCard.png"), var(--fallback);
+    background: url("/static/images/index/profileCard.png"), var(--fallback);
 }
 
 #cerberusCard {
     z-index: 15;
     --fallback: blue;
-    background: url("../Images/doggoCard.png"), var(--fallback);
+    background: url("/static/images/index/doggoCard.png"), var(--fallback);
 }
 
 #honeyCard {
     z-index: 14;
     --fallback: purple;
-    background: url("../Images/BEEEEEECard.png"), var(--fallback);
+    background: url("/static/images/index/BEEEEEECard.png"), var(--fallback);
 }
 
 /* For all devices that can't hover (touchscreens etc) */
