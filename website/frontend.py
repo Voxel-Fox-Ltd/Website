@@ -11,7 +11,7 @@ routes = RouteTableDef()
 
 
 @routes.get("/")
-@template("index.htm.j2")
+@template("index/display.htm.j2")
 async def index(request: Request):
     """
     Index page for the website.
