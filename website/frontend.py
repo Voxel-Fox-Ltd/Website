@@ -1,76 +1,28 @@
-import toml
 from urllib.parse import urlencode
-import asyncio
 
 import aiohttp
 from aiohttp.web import RouteTableDef, Request, HTTPFound, Response
 from aiohttp_jinja2 import template
 import aiohttp_session
 from voxelbotutils import web as webutils
-import markdown2
 
 
 routes = RouteTableDef()
 
 
-async def get_github_readme_html(session, url:str) -> str:
-    """
-    Get the README text from a Github page as rendered HTML.
-    """
-
-    site = await session.get(url.rstrip("/").replace("://github.com", "://raw.githubusercontent.com") + "/master/README.md")
-    if site.ok:
-        git_text = await site.text()
-        item_name = url.rstrip("/").split("/")[-1]
-        if git_text.startswith(f"# {item_name}"):
-            git_text = git_text.replace(f"# {item_name}", "", 1).lstrip()
-    else:
-        return ""
-    v = markdown2.markdown(git_text)
-    return v.replace("\n", "").replace("<p></p>", "")
-
-
-async def fill_git_text_field(session, project) -> None:
-    """
-    Fills the git_text attr of the given project dict.
-    """
-
-    git_url = project.get("github")
-    project['git_text'] = ""
-    if git_url:
-        project['git_text'] = await get_github_readme_html(session, git_url)
-
-
-async def get_projects_page(filename:str) -> dict:
-    """
-    Returns a nice ol dict that can be passed to projects.j2.
-    """
-
-    with open(f"projects/{filename}.toml") as a:
-        data = toml.load(a)
-    projects = data['project']
-    async with aiohttp.ClientSession() as session:
-        await asyncio.gather(*[fill_git_text_field(session, i) for i in projects])
-    return {
-        'projects': projects
-    }
-
-
 @routes.get("/")
-@template("projects.html.j2")
-async def index(request:Request):
+@template("index.htm.j2")
+async def index(request: Request):
     """
     Index page for the website.
     """
 
-    x = await get_projects_page('index')
-    x.update({'field': 'git_text', 'include_contact_details': True, 'include_commission_info': True})
-    return x
+    return {}
 
 
 @routes.get("/gforms")
 @webutils.requires_login()
-async def gforms(request:Request):
+async def gforms(request: Request):
     """
     Redirect to Google forms with given items filled in with session data.
     """
@@ -109,7 +61,7 @@ async def gforms(request:Request):
 
 @routes.get("/invite")
 @template("invite.html.j2")
-async def invite(request:Request):
+async def invite(request: Request):
     """
     The passthrough embedded invite link.
     """
@@ -128,15 +80,3 @@ async def invite(request:Request):
                     return {**default_data, **json}
                 return default_data
     return HTTPFound(redirect_link)
-
-
-@routes.get("/arbitrary")
-@template("arbitrary.html.j2")
-@webutils.add_discord_arguments()
-@webutils.requires_login()
-async def arbitrary(request:Request):
-    """
-    The passthrough embedded invite link.
-    """
-
-    return {}
