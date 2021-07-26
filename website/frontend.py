@@ -32,9 +32,9 @@ async def gforms(request: Request):
 
     # Get the form info
     alias = request.query.get('a')
-    form_id = request.query.get('f')
-    username = request.query.get('u')
-    user_id = request.query.get('i')
+    form_id = request.query.get('f', None)
+    username = request.query.getall('u', list())
+    user_id = request.query.getall('i', list())
 
     # See if we need to grab it from the database
     if alias:
@@ -42,16 +42,16 @@ async def gforms(request: Request):
             rows = await db("SELECT * FROM google_forms_redirects WHERE alias=$1", alias)
         if not rows:
             return Response(text="No relevant form found.", status=404)
-        username = rows[0].get('username_field_id', 0)
-        user_id = rows[0].get('user_id_field_id', 0)
+        username = [rows[0].get('username_field_id', 0)]
+        user_id = [rows[0].get('user_id_field_id', 0)]
         form_id = rows[0]['form_id']
-    elif None in [form_id, username, user_id]:
-        return Response(text="Missing 'f', 'u', or 'i' param.", status=400)
+    elif form_id is None:
+        return Response(text="Missing 'f' param.", status=400)
 
     # Redirect them
     params = {
-        f"entry.{username}": session['user_info']['username'] + '#' + str(session['user_info']['discriminator']),
-        f"entry.{user_id}": str(session['user_id']),
+        **{f"entry.{u}": session['user_info']['username'] + '#' + str(session['user_info']['discriminator']) for u in username},
+        **{f"entry.{i}": str(session['user_id']) for i in user_id},
     }
     return HTTPFound(f"https://docs.google.com/forms/d/e/{form_id}/viewform?{urlencode(params)}")
 
