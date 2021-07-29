@@ -19,7 +19,7 @@ Here you'll need this | [A fucking map of this mess] ノ( ゜-゜ノ)
 
 body {
     background-color: #111;
-    background-image: url("/static/images/index/background.png");
+    background-image: url("/static/images/index/Background.png");
     background-size:cover; 
     width: 100%;
     height: 100%;
@@ -102,42 +102,6 @@ h1 {
     color: white;
     font-weight: bold;
     text-align: center;
-}
-
-#aboutCard {
-    z-index: 19;
-    --fallback: red;
-    background: url("/static/images/index/aboutCard.png"), var(--fallback);
-}
-
-#marriageCard {
-    z-index: 18;
-    --fallback: orange;
-    background: url("/static/images/index/marrigeCard.png"), var(--fallback);
-}
-
-#flowerCard {
-    z-index: 17;
-    --fallback: yellow;
-    background: url("/static/images/index/flowerCard.png"), var(--fallback);
-}
-
-#profileCard {
-    z-index: 16;
-    --fallback: lime;
-    background: url("/static/images/index/profileCard.png"), var(--fallback);
-}
-
-#cerberusCard {
-    z-index: 15;
-    --fallback: blue;
-    background: url("/static/images/index/doggoCard.png"), var(--fallback);
-}
-
-#honeyCard {
-    z-index: 14;
-    --fallback: purple;
-    background: url("/static/images/index/BEEEEEECard.png"), var(--fallback);
 }
 
 /* For all devices that can't hover (touchscreens etc) */
