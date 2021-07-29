@@ -1,37 +1,83 @@
-[[project]]
+#Currently used by website for displaying cards, feel free to tap in and use it if you need so
+# background_image all are from "/index/" feel free to put Images you need there
+# foreground are links because idk -catdotjs
+[[card]] 
+    name = "About Kae"
+    background_image = "AboutCard.png"
+    fallback_colour = "#FF0000"
+    foreground_image = "https://voxelfox.co.uk/static/images/logo2.svg"
+    description = ""
+    [[card.links]]
+        name = "4Kaylum"
+        link = "https://www.github.com/4Kaylum"
+    [[card.links]]
+        name = "Voxel-Fox-Ltd"
+        link = "https://www.github.com/Voxel-Fox-Ltd/"
+    [[card.links]]
+        name = "VoxelFoxKae"
+        link = "https://www.twitter.com/VoxelFoxKae"
+    [[card.links]]
+        name = "Voxel Fox Discord"
+        link = "https://discord.gg/vfl"
+    [[card.links]]
+        name = "kae@voxelfox.co.uk"
+        link = "mailto:kae@voxelfox.co.uk"
+
+[[card]]
     name = "MarriageBot"
-    internal_link = ""
-    github = "https://github.com/Voxel-Fox-Ltd/MarriageBot"
-    website = "https://marriagebot.xyz"
-    built_with = ["Python3", "PostgreSQL", "Redis", "Jinja2", "Graphviz", "PayPal IPN"]
+    background_image = "MarriageCard.png"
+    fallback_colour = "#FFAA00"
+    foreground_image = "https://cdn.discordapp.com/avatars/468281173072805889/8fdd9d260556b9e75407208b3b7760c4.png"
+    description = "The most popular family tree bot on Discord"
+    [[card.links]]
+        name = "Website"
+        link = "https://www.marriagebot.xyz/"
+    [[card.links]]
+        name = "Github Page"
+        link = "https://www.github.com/Voxel-Fox-Ltd/MarriageBot"
 
-[[project]]
+[[card]]
     name = "Flower"
-    internal_link = ""
-    github = "https://github.com/Voxel-Fox-Ltd/Flower"
-    website = "https://flower.voxelfox.co.uk"
-    built_with = ["Python3", "PostgreSQL", "Jinja2", "PILLOW"]
+    background_image = "FlowerCard.png"
+    fallback_colour = "#FFFF00"
+    foreground_image = "https://cdn.discordapp.com/avatars/731736201400418314/507a2b2e50edf15b5c4fc12ce811a083.png"
+    description = "A Discord bot for growing virtual gardens"
+    [[card.links]]
+        name = "Website"
+        link = "https://flower.voxelfox.co.uk/"
+    [[card.links]]
+        name = "Github Page"
+        link = "https://www.github.com/Voxel-Fox-Ltd/Flower"
 
-[[project]]
+[[card]]
     name = "Profile"
-    internal_link = ""
-    github = "https://github.com/Voxel-Fox-Ltd/Profile"
-    website = ""
-    built_with = ["Python3", "PostgreSQL"]
+    background_image = "ProfileCard.png"
+    fallback_colour = "#00FF00"
+    foreground_image = "https://cdn.discordapp.com/avatars/598553427592871956/5355294c33eb9a0baa0c0c98e23b9d9b.png"
+    description = "A highly modular user forms bot"
+    [[card.links]]
+        name = "Github Page"
+        link = "https://www.github.com/Voxel-Fox-Ltd/Profile"
 
-[[project]]
+[[card]]
     name = "Cerberus"
-    internal_link = ""
-    github = "https://github.com/Voxel-Fox-Ltd/Cerberus"
-    website = ""
-    built_with = ["Python3", "PostgreSQL", "Matplotlib"]
+    background_image = "CerberusCard.png"
+    fallback_colour = "#0000FF"
+    foreground_image = "https://cdn.discordapp.com/avatars/647301314732097560/e1623d5513807d4b815055aa9fd0b606.png"
+    description = "A persistent user activity tracker"
+    [[card.links]]
+        name = "Github Page"
+        link = "https://www.github.com/Voxel-Fox-Ltd/Cerberus"
 
-[[project]]
+[[card]]
     name = "Honey"
-    internal_link = ""
-    github = "https://github.com/Voxel-Fox-Ltd/Honey"
-    website = ""
-    built_with = ["Python3", "PostgreSQL"]
+    background_image = "HoneyCard.png"
+    fallback_colour = "#AA00FF"
+    foreground_image = "https://cdn.discordapp.com/app-icons/690477072270753792/7b7f9c27c67ca047fa7cf7b05a8621e4.png"
+    description = "A general purpose Discord bot"
+    [[card.links]]
+        name = "Github Page"
+        link = "https://www.github.com/Voxel-Fox-Ltd/Honey"
 
 # [[project]]
 #     name = "Synergy"
@@ -46,3 +92,6 @@
 #     github = "https://github.com/4Kaylum/TheDogAPI"
 #     website = ""
 #     built_with = ["PHP", "MySQL"]
+
+# Oh look its oreo again, say hi to oreo :3
+# ฅ(^・ω・^ฅ) 

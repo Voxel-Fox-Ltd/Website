@@ -1,60 +1,38 @@
-{% block body %}
+{#
+    This macro allows you to create your own cards. I advise you to create your cards by adding a new [[card]], inside project/index.toml.
+    The macro reads that TOML file to create these cards. You shouldn't touch the code at the moment.
+    - <3 catdotjs <3
+#}
+{% macro card_create(name, description, background_image, foreground_image, fallback_colour, link_items) -%}
+<div class="card" style="--fallback: {{ fallback_colour }}; background: url('static/images/index/{{ background_image }}'); background-color: var(--fallback);">
+    {# I've integrated the cardID system into here, everything is still same, except z-index is now removed for being useless #}
+    <img src="{{ foreground_image }}" />
+    <h2>{{ name }}</h2>
+    {% if description %}
+        <p>{{ description }}</p>
+    {% endif %}
+    <ul>
+        {% for i in link_items %}  {# loop through the list of items to list #}
+            {% set icon_name = i.link.split('.')[1] %}  {# this code gets the middle part of a link, example: www.github.com -> github #}
+            {% if icon_name in ["github", "twitter", "discord"] %}  {# is it known link icon #}
+                <li><a href="{{ i.link }}"><i class="icon-{{ icon_name }}"></i> {{ i.name }}</a></li>
+            {% elif i.link.startswith("mailto") %}
+                <li><a href="{{ i.link }}"><i class="icon-at"></i> {{ i.name }}</a></li>  {# mail icon #}
+            {% else %}
+                <li><a href="{{ i.link }}"><i class="icon-link"></i> {{ i.name }}</a></li>  {# generic link icon #}
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>
+{%- endmacro %}
 
+ 
+{% block body %}
 <h1>Welcome to Voxel Fox Website!</h1>
 <div id="cards">
-    <div class="card" id="aboutCard">
-        <img src="{{ static('images/logo2.svg') }}"/>
-        <h2>Kae</h2>
-        <ul>
-            <li></li><a href="https://github.com/4Kaylum"><i class="icon-github"></i> 4Kaylum</a></li>
-            <li><a href="https://github.com/Voxel-Fox-Ltd"><i class="icon-github"></i> Voxel-Fox-Ltd</a></li>
-            <li><a href="https://twitter.com/VoxelFoxKae"><i class="icon-twitter"></i> VoxelFoxKae</a></li>
-            <li><a href="https://discord.com/invite/vfl"><i class="icon-discord"></i> Voxel Fox Discord</a></li>
-            <li><a href="mailto:kae@voxelfox.co.uk"><i class="icon-at"></i> kae@voxelfox.co.uk </a></li>
-        </ul>
-    </div>
-    <div class="card" id="marriageCard">
-        <img src="https://cdn.discordapp.com/avatars/468281173072805889/8fdd9d260556b9e75407208b3b7760c4.png"/>
-        <h2>MarriageBot</h2>
-        <p>The most popular family tree bot on Discord</p>
-        <ul>
-            <li><a href="https://marriagebot.xyz/"><i class="icon-link"></i> Website</a></li>
-            <li><a href="https://github.com/Voxel-Fox-Ltd/MarriageBot"><i class="icon-github"></i> Github Page</a></li>
-        </ul>
-    </div>
-    <div class="card" id="flowerCard">
-        <img src="https://cdn.discordapp.com/avatars/731736201400418314/507a2b2e50edf15b5c4fc12ce811a083.png"/>
-        <h2>Flower</h2>
-        <p>A Discord bot for growing virtual gardens</p>
-        <ul>
-            <li><a href="https://flower.voxelfox.co.uk/"><i class="icon-link"></i> Website</a></li>
-            <li><a href="https://github.com/Voxel-Fox-Ltd/Flower"><i class="icon-github"></i> Github Page</a></li>
-        </ul>
-    </div>
-    <div class="card" id="profileCard">
-        <img src="https://cdn.discordapp.com/avatars/598553427592871956/5355294c33eb9a0baa0c0c98e23b9d9b.png"/>
-        <h2>Profile Bot</h2>
-        <p>A highly modular user forms bot</p>
-        <ul>
-            <li><a href="https://github.com/Voxel-Fox-Ltd/Profile"><i class="icon-github"></i> Github Page</a></li>
-        </ul>
-    </div>
-    <div class="card" id="cerberusCard">
-        <img src="https://cdn.discordapp.com/avatars/647301314732097560/e1623d5513807d4b815055aa9fd0b606.png"/>
-        <h2>Cerberus</h2>
-        <p>A persistent user activity tracker</p>
-        <ul>
-            <li><a href="https://github.com/Voxel-Fox-Ltd/Cerberus"><i class="icon-github"></i> Github Page</a></li>
-        </ul>
-    </div>
-    <div class="card" id="honeyCard">
-        <img src="https://cdn.discordapp.com/app-icons/690477072270753792/7b7f9c27c67ca047fa7cf7b05a8621e4.png"/>
-        <h2>Honey Bot</h2>
-        <p>A general purpose Discord bot</p>
-        <ul>
-            <li><a href="https://github.com/Voxel-Fox-Ltd/Honey"><i class="icon-github"></i> Github Page</a></li>
-        </ul>
-    </div>
+    {% for i in data.card %}
+        {{ card_create(i.name, i.description, i.background_image, i.foreground_image, i.fallback_colour, i.links) }}
+    {% endfor %}
 </div>
 
 <!-- Here's a cat. Her name is Oreo. Be nice to oreo :)-->
@@ -65,5 +43,4 @@
 <!--======(...........)-->
 <!--=====(.(..)...(..).)-->
 <!--====(__(__)___(__)__)-->
-
 {% endblock body %}
