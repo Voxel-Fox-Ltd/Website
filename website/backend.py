@@ -1,17 +1,9 @@
-import json
-from datetime import datetime as dt
-from urllib.parse import unquote, parse_qs
-import hmac
-from hashlib import sha1
-
 import aiohttp
 from aiohttp.web import HTTPFound, Request, RouteTableDef, Response
 from voxelbotutils import web as webutils
 import aiohttp_session
-import discord
-from aiohttp_jinja2 import template, render_template
+from aiohttp_jinja2 import render_template
 import htmlmin
-import pytz
 
 import io
 from PIL import Image
@@ -20,7 +12,7 @@ routes = RouteTableDef()
 
 
 @routes.get('/login_processor')
-async def login_processor(request:Request):
+async def login_processor(request: Request):
     """
     Page the discord login redirects the user to when successfully logged in with Discord.
     """
@@ -33,7 +25,7 @@ async def login_processor(request:Request):
 
 
 @routes.get('/logout')
-async def logout(request:Request):
+async def logout(request: Request):
     """
     Destroy the user's login session.
     """
@@ -44,7 +36,7 @@ async def logout(request:Request):
 
 
 @routes.get('/login')
-async def login(request:Request):
+async def login(request: Request):
     """
     Direct the user to the bot's Oauth login page.
     """
@@ -53,7 +45,7 @@ async def login(request:Request):
 
 
 @routes.post('/discord/chatlog')
-async def discord_handler(request:Request):
+async def discord_handler(request: Request):
     """
     Creates you a Discord chatlog you might be able to use.
     """
@@ -78,7 +70,7 @@ async def discord_handler(request:Request):
 
 
 @routes.post('/webhooks/topgg/vote_added')
-async def webhook_handler(request:Request):
+async def webhook_handler(request: Request):
     """
     Sends a PM to the user with the webhook attached if user in owners.
     """
@@ -200,4 +192,9 @@ async def colour(request: Request):
     img.save(file, format="PNG")
     file.seek(0)
 
-    return Response(body=file.read(), headers={'Content-Type': 'image/png'})
+    # And respond
+    headers = {
+        "Content-Type": "image/png",
+        "Cache-Control": "public, max-age=604800, immutable",
+    }
+    return Response(body=file.read(), headers=headers)
