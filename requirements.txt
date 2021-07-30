@@ -2,3 +2,4 @@ voxelbotutils[web]
 markdown2
 pytz
 pyopenssl
+pillow

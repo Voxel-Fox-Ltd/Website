@@ -13,6 +13,8 @@ from aiohttp_jinja2 import template, render_template
 import htmlmin
 import pytz
 
+import io
+from PIL import Image
 
 routes = RouteTableDef()
 
@@ -141,3 +143,69 @@ async def webhook_handler(request:Request):
     request.app['logger'].info(f"Pinged TopGG webhook data to {url}")
 
     return Response(status=200)
+
+
+@routes.get("/colour")
+async def colour(request: Request):
+    """
+    A HTTP get that produces a png of given HEX or RGB colour.
+
+        /****** Colours *****/
+        
+        /colour?hex=#ff00ff
+        /colour?r=255&g=000&b=255
+
+        - If not given enough arguments for R/G/B, it will assume missing tag is 255.
+        - If both tags exist, hex is prioritised.
+        - If no tags are given, image will be white.
+
+        /****** Size *****/
+        
+        /colour?width=200&height=1000
+        /colour?w=200&h=1000
+
+        - Short and normal tags can be used mixed.
+        - If diementions not specified, image is 100px to 100px.
+    """
+
+    size_limit=(1000,1000)           #maximum width and height of PNG
+    image_colour=(255,255,255)       #RGB base values
+    image_size=(100,100)             #Base size values
+    # This variable is used to give hex priority. 
+    # If rgb is used then Hex is used, hex will be last applied so it is fine
+    # however if hex is applied first, RGB will be locked and hex will stay
+    hex_used = False                 
+
+    def clamp(numb,min_num,max_num):    #Simple clamp function 
+        return max(min_num,min(int(numb),max_num))
+    
+    #arguments of HTTP get are split into an array. example : "/colour?hex=ff00ff" -> ["hex=ff00ff"]
+    args = request.path_qs.removeprefix("/colour?").split('&')
+    if(args != ["/colour"]):
+        for argument in args:
+            key,value=argument.split("=") #hex=ff00ff -> key="hex",value="ff00ff"
+            #I wish there was actual switch case ;w;
+            if(key=="hex"):
+                r, g, b = value[0:2], value[2:4], value[4:6]    #value="ff00ff" -> r="ff, g="00", b="ff"
+                image_colour = (int(r,16),int(g,16),int(b,16))
+                hex_used=True
+
+            if(key in ["r","g","b"] and hex_used==False): #Trust me on this one. This is the best way to make this work
+                value_int = int(value)
+                image_colour = (value_int if key=="r" else image_colour[0],
+                                value_int if key=="g" else image_colour[1],
+                                value_int if key=="b" else image_colour[2])
+
+            if(key in ["width","w"]):
+                image_size=(clamp(value,1,size_limit[0]),image_size[1])  #limits the size for a image between 1 to size_limit
+
+            if(key in ["height","h"]):
+                image_size=(image_size[0],clamp(value,1,size_limit[1])) #limits the size for a image between 1 to size_limit
+
+    #Image processing  m a g i c
+    img = Image.new("RGB", image_size, color=image_colour)
+    file = io.BytesIO()
+    img.save(file, format="PNG")
+    file.seek(0)
+    
+    return Response(body=file.read(),headers={'content-type': 'image/png'})
