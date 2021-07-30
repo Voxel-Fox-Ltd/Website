@@ -1,11 +1,11 @@
-#Currently used by website for displaying cards, feel free to tap in and use it if you need so
+# Currently used by website for displaying cards, feel free to tap in and use it if you need so
 # background_image all are from "/index/" feel free to put Images you need there
 # foreground are links because idk -catdotjs
-[[card]] 
+[[card]]
     name = "About Kae"
-    background_image = "AboutCard.png"
-    fallback_colour = "#FF0000"
-    foreground_image = "https://voxelfox.co.uk/static/images/logo2.svg"
+    colour = [255, 0, 0]
+    emoji = "🦊"
+    image = "https://voxelfox.co.uk/static/images/logo2.svg"
     description = ""
     [[card.links]]
         name = "4Kaylum"
@@ -25,9 +25,9 @@
 
 [[card]]
     name = "MarriageBot"
-    background_image = "MarriageCard.png"
-    fallback_colour = "#FFAA00"
-    foreground_image = "https://cdn.discordapp.com/avatars/468281173072805889/8fdd9d260556b9e75407208b3b7760c4.png"
+    colour = [255, 170, 0]
+    emoji = "💍"
+    image = "https://cdn.discordapp.com/avatars/468281173072805889/8fdd9d260556b9e75407208b3b7760c4.png?size=256"
     description = "The most popular family tree bot on Discord"
     [[card.links]]
         name = "Website"
@@ -38,9 +38,9 @@
 
 [[card]]
     name = "Flower"
-    background_image = "FlowerCard.png"
-    fallback_colour = "#FFFF00"
-    foreground_image = "https://cdn.discordapp.com/avatars/731736201400418314/507a2b2e50edf15b5c4fc12ce811a083.png"
+    colour = [255, 255, 0]
+    emoji = "🌻"
+    image = "https://cdn.discordapp.com/avatars/731736201400418314/507a2b2e50edf15b5c4fc12ce811a083.png?size=256"
     description = "A Discord bot for growing virtual gardens"
     [[card.links]]
         name = "Website"
@@ -51,9 +51,9 @@
 
 [[card]]
     name = "Profile"
-    background_image = "ProfileCard.png"
-    fallback_colour = "#00FF00"
-    foreground_image = "https://cdn.discordapp.com/avatars/598553427592871956/5355294c33eb9a0baa0c0c98e23b9d9b.png"
+    colour = [0, 255, 0]
+    emoji = "🔎"
+    image = "https://cdn.discordapp.com/avatars/598553427592871956/5355294c33eb9a0baa0c0c98e23b9d9b.png?size=256"
     description = "A highly modular user forms bot"
     [[card.links]]
         name = "Github Page"
@@ -61,9 +61,9 @@
 
 [[card]]
     name = "Cerberus"
-    background_image = "CerberusCard.png"
-    fallback_colour = "#0000FF"
-    foreground_image = "https://cdn.discordapp.com/avatars/647301314732097560/e1623d5513807d4b815055aa9fd0b606.png"
+    colour = [0, 0, 255]
+    emoji = "🐶"
+    image = "https://cdn.discordapp.com/avatars/647301314732097560/e1623d5513807d4b815055aa9fd0b606.png?size=256"
     description = "A persistent user activity tracker"
     [[card.links]]
         name = "Github Page"
@@ -71,9 +71,9 @@
 
 [[card]]
     name = "Honey"
-    background_image = "HoneyCard.png"
-    fallback_colour = "#AA00FF"
-    foreground_image = "https://cdn.discordapp.com/app-icons/690477072270753792/7b7f9c27c67ca047fa7cf7b05a8621e4.png"
+    colour = [170, 0, 255]
+    emoji = "🐝"
+    image = "https://cdn.discordapp.com/app-icons/690477072270753792/7b7f9c27c67ca047fa7cf7b05a8621e4.png?size=256"
     description = "A general purpose Discord bot"
     [[card.links]]
         name = "Github Page"

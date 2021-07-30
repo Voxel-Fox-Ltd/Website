@@ -47,8 +47,8 @@ h1 {
 .card {
     width: var(--card-width);
     height: var(--card-height);
+    box-shadow: 2px 2px 20px rgb(var(--fallback)); /* oh yeah now we're cookin with magic 😎 */
     border-radius: 25px;
-    box-shadow: 2px 2px 20px var(--fallback); /* oh yeah now we're cookin with magic 😎 */
     transition: 0.05s ease;
 }
 
@@ -56,15 +56,50 @@ h1 {
     margin-top: 12px;
 }
 
-.card ul{
+.card .background {
+    position: absolute;
+    height: var(--card-height);
+    width: var(--card-width);
+    overflow: hidden;
+    z-index: -1;
+    border-radius: 25px;
+}
+
+.card .background:after {
+    background: rgba(var(--fallback), 0.5);
+    height: 100%;
+    width: 100%;
+    content: "";
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.card .background p {
+    padding: 0;
+    margin: 0;
+    font-size: 1.5em;
+    line-height: 1.8em;
+    width: 100%;
+    white-space: nowrap;
+    user-select: none;
+    letter-spacing: 10px;
+}
+
+.card .background p:nth-child(2n) {
+    margin-left: -1em;
+}
+
+.card ul {
     list-style-type: none;
     text-align: center;
     padding:0px;
 }
 
-.card:hover  {
+.card:hover {
     transform: scale(1.04);
-    z-index: 20!important;  /* This needs to be important because ID selectors take higher presidence.*/
+    z-index: 100!important;  /* This needs to be important because ID selectors take higher presidence.*/
 }
 
 .card h2 {
@@ -173,4 +208,3 @@ h1 {
         margin-top: 0;
     }
 }
-/* pro tip: Order these from smallest screen size to biggest (O.O') */

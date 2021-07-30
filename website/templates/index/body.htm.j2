@@ -1,38 +1,43 @@
-{#
-    This macro allows you to create your own cards. I advise you to create your cards by adding a new [[card]], inside project/index.toml.
-    The macro reads that TOML file to create these cards. You shouldn't touch the code at the moment.
-    - <3 catdotjs <3
-#}
-{% macro card_create(name, description, background_image, foreground_image, fallback_colour, link_items) -%}
-<div class="card" style="--fallback: {{ fallback_colour }}; background: url('static/images/index/{{ background_image }}'); background-color: var(--fallback);">
-    {# I've integrated the cardID system into here, everything is still same, except z-index is now removed for being useless #}
-    <img src="{{ foreground_image }}" />
-    <h2>{{ name }}</h2>
-    {% if description %}
-        <p>{{ description }}</p>
-    {% endif %}
-    <ul>
-        {% for i in link_items %}  {# loop through the list of items to list #}
-            {% set icon_name = i.link.split('.')[1] %}  {# this code gets the middle part of a link, example: www.github.com -> github #}
-            {% if icon_name in ["github", "twitter", "discord"] %}  {# is it known link icon #}
-                <li><a href="{{ i.link }}"><i class="icon-{{ icon_name }}"></i> {{ i.name }}</a></li>
-            {% elif i.link.startswith("mailto") %}
-                <li><a href="{{ i.link }}"><i class="icon-at"></i> {{ i.name }}</a></li>  {# mail icon #}
-            {% else %}
-                <li><a href="{{ i.link }}"><i class="icon-link"></i> {{ i.name }}</a></li>  {# generic link icon #}
-            {% endif %}
-        {% endfor %}
-    </ul>
+{%- macro card_create(card, z) -%}
+<div class="card" style="z-index: {{ z }}; --fallback: {{ card.colour[0] }}, {{ card.colour[1] }}, {{ card.colour[2] }};">
+    <div class="background" style="background: rgb(var(--fallback));">
+        {%- for i in range(13) -%}
+            <p>{{ card.emoji * 17 }}</p>
+        {%- endfor -%}
+    </div>
+    <div class="content">
+        <img src="{{ card.image }}" />
+        <h2>{{ card.name }}</h2>
+        {%- if card.description -%}
+            <p>{{ card.description }}</p>
+        {%- endif -%}
+        <ul>
+            {%- for i in card.links -%}  {# loop through the list of items to list #}
+                {% set icon_name = i.link.split('.')[1] %}  {# this code gets the middle part of a link, example: www.github.com -> github #}
+                {%- if icon_name in ["github", "twitter", "discord"] -%}  {# is it known link icon #}
+                    <li><a href="{{ i.link }}"><i class="icon-{{ icon_name }}"></i> {{ i.name }}</a></li>
+                {%- elif i.link.startswith("mailto") -%}
+                    <li><a href="{{ i.link }}"><i class="icon-at"></i> {{ i.name }}</a></li>  {# mail icon #}
+                {%- else -%}
+                    <li><a href="{{ i.link }}"><i class="icon-link"></i> {{ i.name }}</a></li>  {# generic link icon #}
+                {%- endif -%}
+            {%- endfor -%}
+        </ul>
+    </div>
 </div>
-{%- endmacro %}
+{%- endmacro -%}
 
  
 {% block body %}
 <h1>Voxel Fox</h1>
 <div id="cards">
-    {% for i in data.card %}
-        {{ card_create(i.name, i.description, i.background_image, i.foreground_image, i.fallback_colour, i.links) }}
-    {% endfor %}
+    {%- for i in data.card -%}
+        {# {{- card_create(i.name, i.description, i.background_image, i.foreground_image, i.fallback_colour, i.links) -}} #}
+        {{- card_create(i, 100 - loop.index) -}}
+    {%- endfor -%}
+
+
+
 </div>
 
 <!-- Here's a cat. Her name is Oreo. Be nice to oreo :)-->
