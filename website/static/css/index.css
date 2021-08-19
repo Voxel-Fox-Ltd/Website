@@ -18,13 +18,13 @@ Here you'll need this | [A fucking map of this mess] ノ( ゜-゜ノ)
 }
 
 body {
+    color: azure;
     background-color: #111;
     background-image: url("/static/images/index/Background.png");
     background-size:cover; 
     width: 100%;
     height: 100%;
     background-attachment: fixed;
-    color: azure;
     font-family: NotoSans, Helvetica, sans-serif;
     margin: 0;
     overflow-x: hidden; /* When the cards grow they cause an overflow on X */
@@ -118,7 +118,7 @@ h1 {
 }
 
 .card a {
-    color: azure;
+    color: inherit;
     font-size: 1.5rem;
     text-decoration: none;
 }
@@ -134,7 +134,7 @@ h1 {
 .card p {
     padding:0.5rem 1.5rem 0.5rem;
     font-size: 1.20rem;
-    color: white;
+    color: inherit;
     font-weight: bold;
     text-align: center;
 }

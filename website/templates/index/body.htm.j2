@@ -1,10 +1,17 @@
 {%- macro card_create(card, z) -%}
-<div class="card" style="z-index: {{ z }}; --fallback: {{ card.colour[0] }}, {{ card.colour[1] }}, {{ card.colour[2] }};">
+<div
+        class="card"
+        style="
+            z-index: {{ z }};
+            --fallback: {{ card.colour[0] }}, {{ card.colour[1] }}, {{ card.colour[2] }};
+            color: rgb({{ card.font_colour[0] }}, {{ card.font_colour[1] }}, {{ card.font_colour[2] }});
+">
     <div class="background" style="background: rgb(var(--fallback));">
         {%- for i in range(13) -%}
             <p>{{ card.emoji * 17 }}</p>
         {%- endfor -%}
     </div>
+    <div class="background" style="background: rgba(var(--fallback), 0.6);"></div>
     <div class="content">
         <img src="{{ card.image }}" />
         <h2>{{ card.name }}</h2>
