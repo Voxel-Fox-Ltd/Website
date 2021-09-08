@@ -20,13 +20,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/solarized-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.pre--multiline').forEach(block => hljs.highlightBlock(block));
-        });
-    </script>
+    <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
 
-    {# Local scripts #}
     <script>
         function scrollToMessage(event, id) {
             var element = document.getElementById('message-' + id);
@@ -49,6 +44,15 @@
                 element.classList.remove('spoiler--hidden');
             }
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.pre--multiline').forEach(block => hljs.highlightBlock(block));
+            twemoji.parse(document.body);
+            for(e of document.getElementsByClassName("chatlog__timestamp")) {
+                timestamp = parseInt(e.dataset.timestamp) * 1_000
+                e.innerHTML = moment(timestamp).calendar();
+            }
+        });
     </script>
 </head>
 <body>
@@ -92,7 +96,7 @@
     <div class="chatlog__message" data-message-id="{{ message.id }}" id="message-{{ message.id }}">
     {% if message.content %}
         <div class="chatlog__content">
-            <div class="markdown">{{ message.content.strip() | escape_text | markdown | display_mentions(data.users) | safe }}</div> <!-- markdown -->
+            <div class="markdown">{{ message.content.strip() | escape_text | markdown | display_mentions(data.users) | display_emojis | safe }}</div> <!-- markdown -->
         </div> <!-- chatlog__content -->
     {% endif %}
 
@@ -143,7 +147,7 @@
                     {% endif %}
 
                     {% if embed.description %}
-                    <div class="chatlog__embed-description"><div class="markdown">{{ embed.description | escape_text | markdown | display_mentions(data.users) | safe }}</div></div>
+                    <div class="chatlog__embed-description"><div class="markdown">{{ embed.description | escape_text | markdown | display_mentions(data.users) | display_emojis | safe }}</div></div>
                     {% endif %}
 
                     {% if embed.get('fields', []) %}
@@ -151,7 +155,7 @@
                         {% for field in embed.fields %}
                         <div class="chatlog__embed-field{% if field.inline %} chatlog__embed-field--inline{% endif %}">
                             <div class="chatlog__embed-field-name"><div class="markdown">{{ field.name }}</div></div>
-                            <div class="chatlog__embed-field-value"><div class="markdown">{{ field.value | escape_text | display_mentions(data.users) | safe }}</div></div>
+                            <div class="chatlog__embed-field-value"><div class="markdown">{{ field.value | escape_text | display_mentions(data.users) | display_emojis | safe }}</div></div>
                         </div>
                         {% endfor %}
                     </div>
@@ -219,13 +223,7 @@
 
 </div>
 
-{# Fix up the timestamps #}
-<script type="text/javascript">
-for(e of document.getElementsByClassName("chatlog__timestamp")) {
-    timestamp = parseInt(e.dataset.timestamp) * 1_000
-    e.innerHTML = moment(timestamp).calendar();
-}
-</script>
+<style type="text/css">.discord_emoji{height:1.5em!important}</style>
 
 </body>
 </html>
