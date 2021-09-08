@@ -3,7 +3,13 @@
 @font-face {
     font-family: Whitney;
     src: url(https://voxelfox.co.uk/static/fonts/whitney-book.woff);
-    font-weight: 300;
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: Whitney;
+    src: url(https://voxelfox.co.uk/static/fonts/whitney-bold.woff);
+    font-weight: bold;
 }
 
 body {
