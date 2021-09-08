@@ -140,7 +140,7 @@ code, .code {
 /* Preamble */
 
 .preamble {
-    display: grid;
+    display: flex;
     margin: 0 0.3em 0.6em 0.3em;
     max-width: 100%;
     grid-template-columns: auto 1fr;
@@ -178,7 +178,7 @@ code, .code {
 }
 
 .chatlog__message-group {
-    display: grid;
+    display: flex;
     margin: 0 0.6em;
     padding: 0.9em 0;
     border-top: 1px solid;
