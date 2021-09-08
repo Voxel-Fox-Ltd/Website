@@ -19,6 +19,7 @@
     {# Syntax highlighting #}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/solarized-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.pre--multiline').forEach(block => hljs.highlightBlock(block));
@@ -84,7 +85,7 @@
             {# Author name and timestamp #}
             <span class="chatlog__author-name" title="{{ author.username }}#{{ author.discriminator }}" data-user-id="{{ author.id }}"{% if author.color %}  style="color: #{{ author.color | int_to_hex}}"{% endif %}>{{ author.display_name or author.username }}</span>
             {% if author.bot %}<span class="chatlog__bot-tag">BOT</span>{% endif %}
-            <span class="chatlog__timestamp">{{ message.timestamp | timestamp }}</span>
+            <span class="chatlog__timestamp" data-timestamp="{{ message.timestamp }}">{{ message.timestamp | timestamp }}</span>
     {% endif %}
     {% if previous_author.update({'data': author}) %}{% endif %}
 
@@ -217,5 +218,14 @@
 </div> <!-- chatlog__message-group -->
 
 </div>
+
+{# Fix up the timestamps #}
+<script type="text/javascript">
+for(e of document.getElementsByClassName("chatlog__timestamp")) {
+    timestamp = parseInt(e.dataset.timestamp) * 1_000
+    e.innerHTML = moment(timestamp).calendar();
+}
+</script>
+
 </body>
 </html>
