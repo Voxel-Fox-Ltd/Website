@@ -155,6 +155,7 @@ code, .code {
     max-width: 88px;
     max-height: 88px;
     border-radius: 50%;
+    image-rendering: auto;
 }
 
 .preamble__entries-container {
@@ -198,6 +199,7 @@ code, .code {
     border-radius: 50%;
     height: 40px;
     width: 40px;
+    image-rendering: auto;
 }
 
 .chatlog__messages {
