@@ -236,8 +236,9 @@ code, .code {
 }
 
 .chatlog__mention {
-    color: #7289da;
-    background: rgba(114,137,218,.1);
+    font-weight: 500;
+    color: hsl(236, calc(1 * 83.3%), 92.9%);
+    background: hsla(235, calc(1 * 85.6%), 64.7%, 0.3);
 }
 
 .chatlog__mention:hover {
@@ -245,7 +246,7 @@ code, .code {
     transition: background-color 50ms ease-out,color 50ms ease-out;
     cursor: pointer;
     color: #fff;
-    background-color: #7289da;
+    background-color: hsl(235, calc(1 * 85.6%), 64.7%);
 }
 
 .chatlog__content p {
