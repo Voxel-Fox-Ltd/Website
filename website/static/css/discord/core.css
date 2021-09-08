@@ -2,37 +2,17 @@
 
 @font-face {
     font-family: Whitney;
-    src: url(https://discordapp.com/assets/6c6374bad0b0b6d204d8d6dc4a18d820.woff);
+    src: url(/static/fonts/whitney-book.woff);
     font-weight: 300;
-}
-
-@font-face {
-    font-family: Whitney;
-    src: url(https://discordapp.com/assets/e8acd7d9bf6207f99350ca9f9e23b168.woff);
-    font-weight: 400;
-}
-
-@font-face {
-    font-family: Whitney;
-    src: url(https://discordapp.com/assets/3bdef1251a424500c1b3a78dea9b7e57.woff);
-    font-weight: 500;
-}
-
-@font-face {
-    font-family: Whitney;
-    src: url(https://discordapp.com/assets/be0060dafb7a0e31d2a1ca17c0708636.woff);
-    font-weight: 600;
-}
-
-@font-face {
-    font-family: Whitney;
-    src: url(https://discordapp.com/assets/8e12fb4f14d9c4592eb8ec9f22337b04.woff);
-    font-weight: 700;
 }
 
 body {
     font-family: "Whitney", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 17px;
+}
+
+p {
+    margin: 0;
 }
 
 a {
@@ -164,6 +144,7 @@ code, .code {
     margin: 0 0.3em 0.6em 0.3em;
     max-width: 100%;
     grid-template-columns: auto 1fr;
+    border-bottom: 1px solid currentcolor;
 }
 
 .preamble__guild-icon-container {
@@ -173,6 +154,7 @@ code, .code {
 .preamble__guild-icon {
     max-width: 88px;
     max-height: 88px;
+    border-radius: 50%;
 }
 
 .preamble__entries-container {
@@ -202,6 +184,10 @@ code, .code {
     grid-template-columns: auto 1fr;
 }
 
+.chatlog__message-group:first-of-type {
+    border-top: none;
+}
+
 .chatlog__author-avatar-container {
     grid-column: 1;
     width: 40px;
@@ -225,7 +211,7 @@ code, .code {
 }
 
 .chatlog__timestamp {
-    margin-left: 0.3em;
+    margin-left: 0.5em;
     font-size: 0.75em;
 }
 
@@ -290,7 +276,7 @@ code, .code {
 .chatlog__embed-content-container {
     display: flex;
     flex-direction: column;
-    padding: 0.5em 0.6em;
+    padding: 1em .6em;
     border: 1px solid;
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
@@ -417,13 +403,13 @@ code, .code {
 
 .chatlog__bot-tag {
     position: relative;
-    top: -.2em;
-    margin-left: 0.3em;
+    top: -.1em;
+    margin-left: 0.5em;
     padding: 0.05em 0.3em;
     border-radius: 3px;
     vertical-align: middle;
     line-height: 1.3;
-    background: #7289da;
+    background: rgb(88, 101, 242);
     color: #ffffff;
     font-size: 0.625em;
     font-weight: 500;

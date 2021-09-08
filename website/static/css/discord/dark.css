@@ -1,8 +1,8 @@
 /* General */
 
 body {
-    background-color: #36393e;
-    color: #dcddde;
+    background-color: #36393f;
+    color: #ffffff;
 }
 
 a {
@@ -35,6 +35,10 @@ code, .code {
 }
 
 /* === Preamble === */
+
+.preamble {
+    border-color: rgba(255, 255, 255, 0.1);
+}
 
 .preamble__entry {
     color: #ffffff;
@@ -71,7 +75,7 @@ code, .code {
 }
 
 .chatlog__embed-content-container {
-    background-color: rgba(46, 48, 54, 0.3);
+    background-color: rgb(47, 49, 54);
     border-color: rgba(46, 48, 54, 0.6);
 }
 
@@ -88,7 +92,7 @@ code, .code {
 }
 
 .chatlog__embed-description {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgb(220, 221, 222);
 }
 
 .chatlog__embed-field-name {
@@ -96,11 +100,7 @@ code, .code {
 }
 
 .chatlog__embed-field-value {
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.chatlog__embed-footer {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgb(220, 221, 222);
 }
 
 .chatlog__reaction {
