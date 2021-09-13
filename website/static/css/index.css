@@ -94,7 +94,8 @@ h1 {
 .card ul {
     list-style-type: none;
     text-align: center;
-    padding:0px;
+    padding: 0px;
+    margin: 10px;
 }
 
 .card:hover {
@@ -137,6 +138,11 @@ h1 {
     color: inherit;
     font-weight: bold;
     text-align: center;
+    margin: 0;
+}
+
+.card .guild-count {
+
 }
 
 /* For all devices that can't hover (touchscreens etc) */
