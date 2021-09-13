@@ -1,12 +1,15 @@
+import time
+import io
+import json
+
 import aiohttp
 from aiohttp.web import HTTPFound, Request, RouteTableDef, Response
 from voxelbotutils import web as webutils
 import aiohttp_session
 from aiohttp_jinja2 import render_template
 import htmlmin
-
-import io
 from PIL import Image
+
 
 routes = RouteTableDef()
 
@@ -198,3 +201,33 @@ async def colour(request: Request):
         "Cache-Control": "public, max-age=604800, immutable",
     }
     return Response(body=file.read(), headers=headers)
+
+
+@routes.get("/bot_guild_count")
+async def bot_guild_count(request: Request):
+    """
+    Get the guild counts for many bots
+    """
+
+    # Make our request
+    headers = {
+        "DD-API-KEY": request.app['config']['datadog']['api_key'],
+        "DD-APPLICATION-KEY": request.app['config']['datadog']['application_key'],
+    }
+    params = {
+        "to": time.time(),
+        "from": time.time() - 100,
+        "query": "max:discord.stats.guild_count{*} by {service}",
+    }
+    url = "https://api.datadoghq.com/api/v1/query"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, params=params, headers=headers) as r:
+            data = await r.json()
+    bot_guilds = {i['scope'].split(":")[-1]: int(max(i['pointlist'])[1]) for i in data['series']}
+
+    # And respond
+    response_headers = {
+        "Content-Type": "application/json",
+        "Cache-Control": "public, max-age=3600, immutable",
+    }
+    return Response(body=json.dumps(bot_guilds).encode(), headers=response_headers)
