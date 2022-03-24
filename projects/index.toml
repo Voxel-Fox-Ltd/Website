@@ -26,6 +26,30 @@
         link = "mailto:kae@voxelfox.co.uk"
 
 [[card]]
+    name = "Commissions"
+    colour = [255, 99, 99]
+    font_colour = [0x11, 0x11, 0x11]
+    emoji = "🦊"
+    width = 1
+    # image = "https://voxelfox.co.uk/static/images/logo2.svg"
+    description = "If you want a bot, script, program, or website, I might be able to help! Send me an email with your requirements and budget and I'll get back to you."
+    # [[card.links]]
+    #     name = "4Kaylum"
+    #     link = "https://www.github.com/4Kaylum"
+    # [[card.links]]
+    #     name = "Voxel-Fox-Ltd"
+    #     link = "https://www.github.com/Voxel-Fox-Ltd/"
+    # [[card.links]]
+    #     name = "VoxelFoxKae"
+    #     link = "https://www.twitter.com/VoxelFoxKae"
+    # [[card.links]]
+    #     name = "Voxel Fox Discord"
+    #     link = "https://discord.gg/vfl"
+    [[card.links]]
+        name = "comms@voxelfox.co.uk"
+        link = "mailto:comms@voxelfox.co.uk"
+
+[[card]]
     name = "MarriageBot"
     colour = [255, 170, 0]
     font_colour = [0x11, 0x11, 0x11]
