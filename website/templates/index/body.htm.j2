@@ -5,6 +5,9 @@
             z-index: {{ z }};
             --fallback: {{ card.colour[0] }}, {{ card.colour[1] }}, {{ card.colour[2] }};
             color: rgb({{ card.font_colour[0] }}, {{ card.font_colour[1] }}, {{ card.font_colour[2] }});
+            --individual-card-width: calc(var(--card-width) + (var(--overlap-width) * {{ card.width - 1 }}));
+            width: var(--individual-card-width);
+            grid-column-end: span {{ card.width }};
 ">
     <div class="background" style="background: rgb(var(--fallback));">
         {%- for i in range(13) -%}
@@ -13,7 +16,9 @@
     </div>
     <div class="background" style="background: rgba(var(--fallback), 0.6);"></div>
     <div class="content">
-        <img src="{{ card.image }}" />
+        {% if card.image %}
+            <img src="{{ card.image }}" />
+        {% endif %}
         <h2>{{ card.name }}</h2>
         <p class="guild-count" data-bot-name="{{ card.name }}" style="display: none"></p>
         {%- if card.description -%}

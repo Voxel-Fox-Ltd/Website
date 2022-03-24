@@ -6,6 +6,7 @@
     colour = [255, 0, 0]
     font_colour = [0x11, 0x11, 0x11]
     emoji = "🦊"
+    width = 1
     image = "https://voxelfox.co.uk/static/images/logo2.svg"
     description = ""
     [[card.links]]
@@ -29,6 +30,7 @@
     colour = [255, 170, 0]
     font_colour = [0x11, 0x11, 0x11]
     emoji = "💍"
+    width = 1
     image = "https://cdn.discordapp.com/avatars/468281173072805889/8fdd9d260556b9e75407208b3b7760c4.png?size=256"
     description = "The most popular family tree bot on Discord"
     [[card.links]]
@@ -43,6 +45,7 @@
     colour = [255, 255, 0]
     font_colour = [0x11, 0x11, 0x11]
     emoji = "🌻"
+    width = 1
     image = "https://cdn.discordapp.com/avatars/731736201400418314/507a2b2e50edf15b5c4fc12ce811a083.png?size=256"
     description = "A Discord bot for growing virtual gardens"
     [[card.links]]
@@ -57,6 +60,7 @@
     colour = [0, 255, 0]
     font_colour = [0x11, 0x11, 0x11]
     emoji = "🔎"
+    width = 1
     image = "https://cdn.discordapp.com/avatars/598553427592871956/5355294c33eb9a0baa0c0c98e23b9d9b.png?size=256"
     description = "A highly modular user forms bot"
     [[card.links]]
@@ -68,6 +72,7 @@
     colour = [0, 0, 255]
     font_colour = [0x11, 0x11, 0x11]
     emoji = "🐶"
+    width = 1
     image = "https://cdn.discordapp.com/avatars/647301314732097560/e1623d5513807d4b815055aa9fd0b606.png?size=256"
     description = "A persistent user activity tracker"
     [[card.links]]
@@ -79,6 +84,7 @@
     colour = [170, 0, 255]
     font_colour = [0x11, 0x11, 0x11]
     emoji = "🐝"
+    width = 1
     image = "https://cdn.discordapp.com/app-icons/690477072270753792/7b7f9c27c67ca047fa7cf7b05a8621e4.png?size=256"
     description = "A general purpose Discord bot"
     [[card.links]]

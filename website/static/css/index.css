@@ -50,6 +50,7 @@ h1 {
     box-shadow: 2px 2px 20px rgb(var(--fallback)); /* oh yeah now we're cookin with magic 😎 */
     border-radius: 25px;
     transition: 0.05s ease;
+    display: flex;
 }
 
 .card:nth-of-type(2n) {
@@ -59,7 +60,8 @@ h1 {
 .card .background {
     position: absolute;
     height: var(--card-height);
-    width: var(--card-width);
+    /*width: var(--card-width);*/
+    width: var(--individual-card-width);
     overflow: hidden;
     z-index: -1;
     border-radius: 25px;
@@ -141,8 +143,9 @@ h1 {
     margin: 0;
 }
 
-.card .guild-count {
-
+.card .content {
+    width: 100%;
+    align-self: center;
 }
 
 /* For all devices that can't hover (touchscreens etc) */
