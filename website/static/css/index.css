@@ -40,8 +40,10 @@ h1 {
 #cards {
     justify-content: center;
     display: grid;
-    grid-template-columns: repeat(auto-fit, var(--overlap-width));
-    margin-left: var(--left-margin-overlap-offset);
+    /*grid-template-columns: repeat(auto-fit, var(--overlap-width));*/
+    grid-template-columns: repeat(auto-fit, var(--card-width));
+    grid-gap: 15px;
+    /*margin-left: var(--left-margin-overlap-offset);*/
 }
 
 .card {
