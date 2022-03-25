@@ -7,6 +7,33 @@
 </head>
 <body>
 
+<style type="text/css">
+    body {
+        height: 100vh;
+        width: 100vw;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Century Gothic";
+        background-color: black;
+    }
+
+    #container {
+        text-align: center;
+        color: white;
+    }
+
+    #container p {
+        margin: 0;
+    }
+
+    #age-section {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+</style>
+
 <div id="container">
     <p>To be 18, you must have been born on</p>
     <span id="age-section">Loading...</span>
@@ -16,7 +43,7 @@
     function updateDate() {
         d = new Date()
         d.setFullYear(d.getFullYear() - 18)
-        document.getElementById("age-section").outerHTML = d.toLocaleDateString();
+        document.getElementById("age-section").textContent = d.toLocaleDateString();
         setTimeout(1_000, updateDate);
     }
     updateDate();
