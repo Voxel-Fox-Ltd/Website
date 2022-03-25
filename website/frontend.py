@@ -84,3 +84,13 @@ async def invite(request: Request):
                     return {**default_data, **json}
                 return default_data
     return HTTPFound(redirect_link)
+
+
+@routes.get("/18")
+@template("18.html.j2")
+async def over_18(request: Request):
+    """
+    A page that shows when a person must have been born to be 18 on this current day.
+    """
+
+    return {}
