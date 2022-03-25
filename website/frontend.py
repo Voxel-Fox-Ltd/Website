@@ -76,9 +76,9 @@ async def invite(request: Request):
     if client_id is None:
         return default_data
 
-    if "https://discordapp.com" in request.headers.get("User-Agent"):
-        async with aiohttp.ClientSession() as request:
-            async with request.get(f"https://discord.com/api/oauth2/applications/{client_id}/rpc") as resp:
+    if "https://discordapp.com" in request.headers.get("User-Agent", ""):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"https://discord.com/api/oauth2/applications/{client_id}/rpc") as resp:
                 json = await resp.json()
                 if resp.status == 200:
                     return {**default_data, **json}
