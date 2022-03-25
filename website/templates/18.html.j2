@@ -44,7 +44,7 @@
         d = new Date()
         d.setFullYear(d.getFullYear() - 18)
         document.getElementById("age-section").textContent = d.toLocaleDateString();
-        setTimeout(1_000, updateDate);
+        setTimeout(updateDate, 1_000);
     }
     updateDate();
 </script>
