@@ -1,0 +1,8 @@
+[[card]]
+    name = "Profile"
+    [[card.links]]
+        name = "Terms of Service"
+        link = "/static/docs/terms_of_service/Profile.md"
+    [[card.links]]
+        name = "Privacy Policy"
+        link = "/static/docs/privacy_policy/Profile.md"

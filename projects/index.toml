@@ -1,13 +1,10 @@
-# Currently used by website for displaying cards, feel free to tap in and use it if you need so
-# background_image all are from "/index/" feel free to put Images you need there
-# foreground are links because idk -catdotjs
 [[card]]
     name = "About Kae"
     colour = [255, 0, 0]
     font_colour = [0x11, 0x11, 0x11]
     emoji = "🦊"
     width = 1
-    image = "https://voxelfox.co.uk/static/images/logo2.svg"
+    image = "/static/images/logo2.svg"
     description = ""
     [[card.links]]
         name = "4Kaylum"
@@ -33,18 +30,6 @@
     width = 1
     # image = "https://voxelfox.co.uk/static/images/logo2.svg"
     description = "If you want a bot, script, program, or website, I might be able to help! Send me an email with your requirements and budget and I'll get back to you."
-    # [[card.links]]
-    #     name = "4Kaylum"
-    #     link = "https://www.github.com/4Kaylum"
-    # [[card.links]]
-    #     name = "Voxel-Fox-Ltd"
-    #     link = "https://www.github.com/Voxel-Fox-Ltd/"
-    # [[card.links]]
-    #     name = "VoxelFoxKae"
-    #     link = "https://www.twitter.com/VoxelFoxKae"
-    # [[card.links]]
-    #     name = "Voxel Fox Discord"
-    #     link = "https://discord.gg/vfl"
     [[card.links]]
         name = "comms@voxelfox.co.uk"
         link = "mailto:comms@voxelfox.co.uk"
@@ -63,6 +48,9 @@
     [[card.links]]
         name = "Github Page"
         link = "https://www.github.com/Voxel-Fox-Ltd/MarriageBot"
+    [[card.links]]
+        name = "Policies"
+        link = "/p/marriagebot"
 
 [[card]]
     name = "Flower"
@@ -78,6 +66,9 @@
     [[card.links]]
         name = "Github Page"
         link = "https://www.github.com/Voxel-Fox-Ltd/Flower"
+    [[card.links]]
+        name = "Policies"
+        link = "/p/flower"
 
 [[card]]
     name = "Profile"
@@ -90,6 +81,9 @@
     [[card.links]]
         name = "Github Page"
         link = "https://www.github.com/Voxel-Fox-Ltd/Profile"
+    [[card.links]]
+        name = "Policies"
+        link = "/p/profile"
 
 [[card]]
     name = "Cerberus"
@@ -102,6 +96,9 @@
     [[card.links]]
         name = "Github Page"
         link = "https://www.github.com/Voxel-Fox-Ltd/Cerberus"
+    [[card.links]]
+        name = "Policies"
+        link = "/p/cerberus"
 
 [[card]]
     name = "Honey"
@@ -114,6 +111,9 @@
     [[card.links]]
         name = "Github Page"
         link = "https://www.github.com/Voxel-Fox-Ltd/Honey"
+    [[card.links]]
+        name = "Policies"
+        link = "/p/honey"
 
 # [[project]]
 #     name = "Synergy"

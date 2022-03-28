@@ -3,16 +3,31 @@
         class="card"
         style="
             z-index: {{ z }};
-            --fallback: {{ card.colour[0] }}, {{ card.colour[1] }}, {{ card.colour[2] }};
-            color: rgb({{ card.font_colour[0] }}, {{ card.font_colour[1] }}, {{ card.font_colour[2] }});
-            --individual-card-width: calc(var(--card-width) + (var(--overlap-width) * {{ card.width - 1 }}));
+            {% if card.colour %}
+                --fallback: {{ card.colour[0] }}, {{ card.colour[1] }}, {{ card.colour[2] }};
+            {% else %}
+                --fallback: 169, 169, 169;
+            {% endif %}
+            {% if card.font_colour %}
+                color: rgb({{ card.font_colour[0] }}, {{ card.font_colour[1] }}, {{ card.font_colour[2] }});
+            {% else %}
+                color: rgb(0, 0, 0);
+            {% endif %}
             width: var(--individual-card-width);
-            grid-column-end: span {{ card.width }};
+            {% if card.width %}
+                --individual-card-width: calc(var(--card-width) + (var(--overlap-width) * {{ card.width - 1 }}));
+                grid-column-end: span {{ card.width }};
+            {% else %}
+                --individual-card-width: calc(var(--card-width) + (var(--overlap-width) * 0));
+                grid-column-end: span 1;
+            {% endif %}
 ">
     <div class="background" style="background: rgb(var(--fallback));">
-        {%- for i in range(13) -%}
-            <p>{{ card.emoji * 17 }}</p>
-        {%- endfor -%}
+        {% if card.emoji %}
+            {%- for i in range(13) -%}
+                <p>{{ card.emoji * 17 }}</p>
+            {%- endfor -%}
+        {% endif %}
     </div>
     <div class="background" style="background: rgba(var(--fallback), 0.6);"></div>
     <div class="content">
@@ -44,9 +59,22 @@
 {% block body %}
 <h1>Voxel Fox</h1>
 <div id="cards">
+    {% if include_back_button %}
+        {{- card_create({
+            "colour": [0, 0, 0],
+            "font_colour": [255, 255, 255],
+            "width": 1,
+            "emoji": "",
+            "links": [
+                {
+                    "name": "Back",
+                    "link": "/"
+                }
+            ]}, 100)
+        }}
+    {% endif %}
     {%- for i in data.card -%}
-        {# {{- card_create(i.name, i.description, i.background_image, i.foreground_image, i.fallback_colour, i.links) -}} #}
-        {{- card_create(i, 100 - loop.index) -}}
+        {{- card_create(i, 100 - loop.index - 1) -}}
     {%- endfor -%}
 </div>
 

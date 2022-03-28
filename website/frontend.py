@@ -2,14 +2,20 @@ from urllib.parse import urlencode
 
 import aiohttp
 from aiohttp.web import RouteTableDef, Request, HTTPFound, Response
-from aiohttp.web_routedef import route
 from aiohttp_jinja2 import template
 import aiohttp_session
 from voxelbotutils import web as webutils
-
 import toml
 
+
 routes = RouteTableDef()
+
+
+def get_project_file(filename: str) -> list:
+    with open(f"projects/{filename}.toml") as a:
+        data = toml.load(a)
+    return data  # type: ignore
+
 
 @routes.get("/")
 @template("index/display.htm.j2")
@@ -18,9 +24,26 @@ async def index(request: Request):
     Index page for the website.
     """
 
-    with open("projects/index.toml") as a:
-        data = toml.load(a)
     return {
+        "include_back_button": False,
+        "data": get_project_file("index"),
+    }
+
+
+@routes.get("/p/{project}")
+@template("index/display.htm.j2")
+async def project(request: Request):
+    """
+    Project page for the website.
+    """
+
+    try:
+        request.match_info["project"]
+        data = get_project_file(request.match_info["project"])
+    except Exception:
+        return HTTPFound("/")
+    return {
+        "include_back_button": True,
         "data": data,
     }
 
@@ -62,6 +85,7 @@ async def gforms(request: Request):
 
     # https://docs.google.com/forms/d/e/1FAIpQLSc0Aq9H6SOArocMT7QKa4APbTwAFgfbzLb6pryY0u-MWfO1-g/viewform?
     # usp=pp_url&entry.2031777926=owo&entry.1773918586=uwu
+
 
 @routes.get("/invite")
 @template("invite.html.j2")
