@@ -71,6 +71,17 @@
         link = "/p/flower"
 
 [[card]]
+    name = "Over 18"
+    colour = [30, 30, 30]
+    font_colour = [0xEE, 0xEE, 0xEE]
+    emoji = "🔞"
+    width = 1
+    description = "A simple page to see when someone is over 18."
+    [[card.links]]
+        name = "Website"
+        link = "/18"
+
+[[card]]
     name = "Profile"
     colour = [0, 255, 0]
     font_colour = [0x11, 0x11, 0x11]
@@ -114,6 +125,20 @@
     [[card.links]]
         name = "Policies"
         link = "/p/honey"
+
+[[card]]
+    name = "Prefill Gforms"
+    colour = [83, 227, 213]
+    font_colour = [0x11, 0x11, 0x11]
+    emoji = "📧"
+    width = 1
+    description = "An Oauth page to autofill Google Forms with Discord info"
+    [[card.links]]
+        name = "Website"
+        link = "/"
+    [[card.links]]
+        name = "How To"
+        link = "/p/gforms"
 
 # [[project]]
 #     name = "Synergy"
