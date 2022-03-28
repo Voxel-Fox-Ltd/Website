@@ -48,21 +48,11 @@
         {# {{- card_create(i.name, i.description, i.background_image, i.foreground_image, i.fallback_colour, i.links) -}} #}
         {{- card_create(i, 100 - loop.index) -}}
     {%- endfor -%}
-
-    <script type="text/javascript">
-        fetch("/bot_guild_count").then(site => {
-            site.json().then(data => {
-                for(i of document.getElementsByClassName("guild-count")){
-                    botName = i.dataset.botName.toLowerCase();
-                    if(data.hasOwnProperty(botName)) {
-                        i.innerHTML = `In ${parseInt(data[botName]).toLocaleString()} guilds`;
-                        i.style.display = "block";
-                    }
-                }
-            });
-        })
-    </script>
 </div>
+
+<script type="text/javascript">
+    fetchBotCount();
+</script>
 
 <!-- Here's a cat. Her name is Oreo. Be nice to oreo :)-->
 <!--========/\_____/\-->
