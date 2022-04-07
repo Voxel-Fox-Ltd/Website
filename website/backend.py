@@ -1,6 +1,7 @@
 import time
 import io
 import json
+import typing
 
 import aiohttp
 from aiohttp.web import HTTPFound, Request, RouteTableDef, Response
@@ -163,15 +164,15 @@ async def colour(request: Request):
         - If diementions not specified, image is 100px to 100px.
     """
 
-    size_limit: list[int] = [1000, 1000]  # Maximum width and height of PNG
-    image_size: list[int] = [100, 100]  # Base size values
+    size_limit: typing.Iterable[int] = [1000, 1000]  # Maximum width and height of PNG
+    image_size: typing.Iterable[int] = [100, 100]  # Base size values
 
     # Simple clamp function
     def clamp(numb: int, min_num: int, max_num: int) -> int:
         return max(min_num, min(int(numb), max_num))
 
     # I wish there was actual switch case ;w;
-    image_colour: list[int] = None
+    image_colour: typing.Iterable[int] = None
     if "hex" in request.query:
         value = request.query["hex"].lstrip("#")
         r, g, b = value[0:2], value[2:4], value[4:6]    # value="ff00ff" -> r="ff, g="00", b="ff"
@@ -184,9 +185,9 @@ async def colour(request: Request):
         )
 
     # Work out the size
-    if (value := request.query.get("width", request.query.get("w"))):
+    if (value := request.query.get("width", request.query.get("w", image_size[0]))):
         image_size[0] = clamp(value, 1, size_limit[0])
-    if (value := request.query.get("height", request.query.get("h"))):
+    if (value := request.query.get("height", request.query.get("h", image_size[1]))):
         image_size[1] = clamp(value, 1, size_limit[1])
 
     # Image processing  m a g i c

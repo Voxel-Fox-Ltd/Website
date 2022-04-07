@@ -1,4 +1,5 @@
 from urllib.parse import urlencode
+import pathlib
 
 import aiohttp
 from aiohttp.web import RouteTableDef, Request, HTTPFound, Response
@@ -118,3 +119,28 @@ async def over_18(request: Request):
     """
 
     return {}
+
+
+@routes.get("/md/{filename:.+}")
+@template("markdown.htm.j2")
+async def project(request: Request):
+    """
+    Project page for the website.
+    """
+
+    # Get the user's target file
+    filename: str = request.match_info["filename"]
+
+    # Get the user's target file as a path
+    assert ".." not in filename
+    filename = filename.lstrip("/")
+    target_file = pathlib.Path(f"./website/static/docs/{filename}")
+    assert target_file.exists()  # Make sure it exists
+
+    # And send
+    with target_file.open() as a:
+        content = a.read()
+    return {
+        "filename": filename,
+        "content": content,
+    }
