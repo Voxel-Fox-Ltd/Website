@@ -137,10 +137,13 @@ async def project(request: Request):
     target_file = pathlib.Path(f"./website/static/docs/{filename}")
     assert target_file.exists()  # Make sure it exists
 
+    # Make sure it's a markdown file
+    assert filename.endswith(".md")
+
     # And send
     with target_file.open() as a:
         content = a.read()
     return {
-        "filename": filename,
+        "filename": filename.split("/")[-1][:-3],
         "content": content,
     }
