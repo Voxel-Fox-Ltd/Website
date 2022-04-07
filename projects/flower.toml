@@ -2,7 +2,7 @@
     name = "Flower"
     [[card.links]]
         name = "Terms of Service"
-        link = "/static/docs/terms_of_service/Flower.md"
+        link = "/md/terms_of_service/Flower.md"
     [[card.links]]
         name = "Privacy Policy"
-        link = "/static/docs/privacy_policy/Flower.md"
+        link = "/md/privacy_policy/Flower.md"

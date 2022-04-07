@@ -2,7 +2,7 @@
     name = "Honey"
     [[card.links]]
         name = "Terms of Service"
-        link = "/static/docs/terms_of_service/Honey.md"
+        link = "/md/terms_of_service/Honey.md"
     [[card.links]]
         name = "Privacy Policy"
-        link = "/static/docs/privacy_policy/Honey.md"
+        link = "/md/privacy_policy/Honey.md"

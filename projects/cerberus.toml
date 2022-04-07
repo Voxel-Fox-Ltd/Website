@@ -2,7 +2,7 @@
     name = "Cerberus"
     [[card.links]]
         name = "Terms of Service"
-        link = "/static/docs/terms_of_service/Cerberus.md"
+        link = "/md/terms_of_service/Cerberus.md"
     [[card.links]]
         name = "Privacy Policy"
-        link = "/static/docs/privacy_policy/Cerberus.md"
+        link = "/md/privacy_policy/Cerberus.md"

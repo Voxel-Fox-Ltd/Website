@@ -2,7 +2,7 @@
     name = "Profile"
     [[card.links]]
         name = "Terms of Service"
-        link = "/static/docs/terms_of_service/Profile.md"
+        link = "/md/terms_of_service/Profile.md"
     [[card.links]]
         name = "Privacy Policy"
-        link = "/static/docs/privacy_policy/Profile.md"
+        link = "/md/privacy_policy/Profile.md"

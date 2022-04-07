@@ -2,7 +2,7 @@
     name = "MarriageBot"
     [[card.links]]
         name = "Terms of Service"
-        link = "/static/docs/terms_of_service/MarriageBot.md"
+        link = "/md/terms_of_service/MarriageBot.md"
     [[card.links]]
         name = "Privacy Policy"
-        link = "/static/docs/privacy_policy/MarriageBot.md"
+        link = "/md/privacy_policy/MarriageBot.md"
