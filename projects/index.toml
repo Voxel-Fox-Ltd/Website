@@ -98,7 +98,7 @@
 
 [[card]]
     name = "TitleScraper"
-    colour = [30, 255, 30]
+    colour = [152, 48, 57]
     font_colour = [0xEE, 0xEE, 0xEE]
     emoji = "🖊"
     width = 1
