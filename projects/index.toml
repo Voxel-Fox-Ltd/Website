@@ -97,6 +97,17 @@
         link = "/p/profile"
 
 [[card]]
+    name = "TitleScraper"
+    colour = [30, 255, 30]
+    font_colour = [0xEE, 0xEE, 0xEE]
+    emoji = "🖊"
+    width = 1
+    description = "A program that captures the title of one of your desktop windows."
+    [[card.links]]
+        name = "Github Page"
+        link = "https://www.github.com/Voxel-Fox-Ltd/TitleScraper"
+
+[[card]]
     name = "Cerberus"
     colour = [0, 0, 255]
     font_colour = [0x11, 0x11, 0x11]
