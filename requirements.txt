@@ -1,4 +1,4 @@
-voxelbotutils[web]
+novus[vbu,speed]>=0.1.0
 markdown2
 pytz
 pyopenssl
