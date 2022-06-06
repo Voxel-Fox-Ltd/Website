@@ -19,7 +19,7 @@ def get_project_file(filename: str) -> list:
 
 
 @routes.get("/")
-@template("index/display.htm.j2")
+@template("index.htm.j2")
 async def index(request: Request):
     """
     Index page for the website.

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{ static('/css/newindex.css') }}" />
+    <link rel="stylesheet" href="{{ static('/css/fonts.css') }}" />
+    <title>Voxel Fox</title>
+</head>
+<body>
+
+<div id="main" class="content hidable" data-hidden="0">
+    <img class="logo" src="{{ static('/images/logo3.svg') }}" />
+    <h1>Voxel Fox</h1>
+    <ul class="contact-links">
+        <li><a href="mailto:kae@voxelfox.co.uk" target="_blank"><span class="icon-at" /></a></li>
+        <li><a href="https://discord.gg/vfl" target="_blank"><span class="icon-discord" /></a></li>
+        <li><a href="https://twitter.com/VoxelFoxKae" target="_blank"><span class="icon-twitter" /></a></li>
+        <li><a href="https://twitch.tv/VoxelFoxKae" target="_blank"><span class="icon-twitch" /></a></li>
+        <li><a href="https://www.youtube.com/c/kaevf" target="_blank"><span class="icon-youtube" /></a></li>
+        <li><a href="https://github.com/4Kaylum" target="_blank"><span class="icon-github" /></a></li>
+        <li><a href="https://github.com/Voxel-Fox-Ltd" target="_blank"><span class="icon-github" /></a></li>
+    </ul>
+    <p><a href="#projects" onclick="changeContent(this);">Projects</a></p>
+</div>
+
+<div id="projects" class="content hidable" data-hidden="1">
+    <a href="#main" onclick="changeContent(this);">
+        <img class="logo" src="{{ static('/images/logo3.svg') }}" />
+    </a>
+    <div class="project-list">
+        <p>
+            <a href="#project-marriagebot" onclick="changeContent(this);">
+                MarriageBot <span class="icon icon-discord" />
+            </a>
+        </p>
+        <p>
+            <a href="#project-flower" onclick="changeContent(this);">
+                Flower <span class="icon icon-discord" />
+            </a>
+        </p>
+        <p>
+            <a href="#project-over18" onclick="changeContent(this);">
+                Over 18 <span class="icon icon-link" />
+            </a>
+        </p>
+        <p>
+            <a href="#project-profile" onclick="changeContent(this);">
+                Profile <span class="icon icon-discord" />
+            </a>
+        </p>
+        <p>
+            <a href="#project-titlescraper" onclick="changeContent(this);">
+                TitleScraper <span class="icon icon-computer" />
+            </a>
+        </p>
+        <p>
+            <a href="#project-cerberus" onclick="changeContent(this);">
+                Cerberus <span class="icon icon-discord" />
+            </a>
+        </p>
+        <p>
+            <a href="#project-gforms" onclick="changeContent(this);">
+                Discord Gforms <span class="icon icon-link" />
+            </a>
+        </p>
+    </div>
+</div>
+
+<div id="project-marriagebot" class="content project hidable" data-hidden="1">
+    <a href="#projects" onclick="changeContent(this);">
+        <img class="image" src="{{ static('/images/marriagebot/rings.png') }}" />
+    </a>
+    <h1>MarriageBot</h1>
+    <p>The most popular family tree bot on Discord.</p>
+    <ul class="links">
+        <li>
+            <a href="https://marriagebot.xyz" target="_blank">
+                Website <span class="icon icon-link" />
+            </a>
+        </li>
+        <li>
+            <a href="https://github.com/Voxel-Fox-Ltd/MarriageBot" target="_blank">
+                Github <span class="icon icon-github" />
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                Privacy <span class="icon icon-link" />
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                ToS <span class="icon icon-link" />
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div id="project-flower" class="content project hidable" data-hidden="1">
+    <a href="#projects" onclick="changeContent(this);">
+        <img class="image" src="{{ static('/images/flower/FlowerTransparentCropped.png') }}" />
+    </a>
+    <h1>Flower</h1>
+    <p>Grow a virtual garden from right in Discord.</p>
+    <ul class="links">
+        <li>
+            <a href="https://flower.voxelfox.co.uk" target="_blank">
+                Website <span class="icon icon-link" />
+            </a>
+        </li>
+        <li>
+            <a href="https://github.com/Voxel-Fox-Ltd/Flower" target="_blank">
+                Github <span class="icon icon-github" />
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                Privacy <span class="icon icon-link" />
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                ToS <span class="icon icon-link" />
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div id="project-over18" class="content project hidable" data-hidden="1">
+    <a href="#projects" onclick="changeContent(this);">
+        <img class="logo" src="{{ static('/images/logo3.svg') }}" />
+    </a>
+    <h1>Over 18</h1>
+    <p>A tiny page to show you when someone's date of birth has to be to be 18 today.</p>
+    <p>Made for a nightclub's ticket office.</p>
+    <ul class="links">
+        <li>
+            <a href="https://voxelfox.co.uk/18" target="_blank">
+                Website <span class="icon icon-link" />
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div id="project-profile" class="content project hidable" data-hidden="1">
+    <a href="#projects" onclick="changeContent(this);">
+        <img class="image rounded" src="{{ static('/images/profile/logo.png') }}" />
+    </a>
+    <h1>Profile</h1>
+    <p>An incredibly modular user forms bot on Discord.</p>
+    <ul class="links">
+        <li>
+            <a href="https://profile.voxelfox.co.uk" target="_blank">
+                Website <span class="icon icon-link" />
+            </a>
+        </li>
+        <li>
+            <a href="https://github.com/Voxel-Fox-Ltd/Profile" target="_blank">
+                Github <span class="icon icon-github" />
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                Privacy <span class="icon icon-link" />
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                ToS <span class="icon icon-link" />
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div id="project-titlescraper" class="content project hidable" data-hidden="1">
+    <a href="#projects" onclick="changeContent(this);">
+        <img class="logo" src="{{ static('/images/logo3.svg') }}" />
+    </a>
+    <h1>TitleScraper</h1>
+    <p>A simple program to find an open window and write its title to a file.</p>
+    <p>Written to scrape Spotify's currently playing song for use on a livestream.</p>
+    <ul class="links">
+        <li>
+            <a href="https://github.com/Voxel-Fox-Ltd/TitleScraper" target="_blank">
+                Github <span class="icon icon-github" />
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div id="project-cerberus" class="content project hidable" data-hidden="1">
+    <a href="#projects" onclick="changeContent(this);">
+        <img class="image rounded" src="{{ static('/images/cerberus/Cerberus.png') }}" />
+    </a>
+    <h1>Cerberus</h1>
+    <p>An activity tracking bot for Discord users.</p>
+    <ul class="links">
+        <!-- <li>
+            <a href="https://profile.voxelfox.co.uk" target="_blank">
+                Website <span class="icon icon-link" />
+            </a>
+        </li> -->
+        <li>
+            <a href="https://github.com/Voxel-Fox-Ltd/Cerberus" target="_blank">
+                Github <span class="icon icon-github" />
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                Privacy <span class="icon icon-link" />
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                ToS <span class="icon icon-link" />
+            </a>
+        </li>
+    </ul>
+</div>
+
+<script type="text/javascript">
+function changeContent(linkNode) {
+    let link = linkNode.getAttribute("href").slice(1);
+    let hidables = document.querySelectorAll(".hidable");
+    let found = false;
+    for(h of hidables) {
+        h.dataset.hidden = link == h.id ? "0" : "1";
+        found = link == h.id || found;
+    }
+    if(!found) document.querySelector("#main").dataset.hidden = "0";
+}
+</script>
+    
+</body>
+</html>
