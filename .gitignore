@@ -4,4 +4,5 @@ config/website.toml
 config/test.toml
 research/
 _*
+!_/*
 app.py

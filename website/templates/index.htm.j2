@@ -3,12 +3,22 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="{{ static('/images/_voxelfox/logo.png') }}" />
     <link rel="stylesheet" href="{{ static('/css/newindex.css') }}" />
     <link rel="stylesheet" href="{{ static('/css/fonts.css') }}" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@VoxelFoxKae" />
+    <meta name="twitter:title" content="Voxel Fox" />
+    <meta name="twitter:description" content="I make things on the internet and sometimes they get popular." />
+    <meta property="og:image" content="https://voxelfox.co.uk/static/images/_voxelfox/logo.png" />
+    <meta name="theme-color" content="#f17824">
     <title>Voxel Fox</title>
 </head>
-<body>
 
+<body>
+<div id="body">
+
+<!-- Main -->
 <div id="main" class="content hidable" data-hidden="0">
     <img class="logo" src="{{ static('/images/logo3.svg') }}" />
     <h1>Voxel Fox</h1>
@@ -22,8 +32,46 @@
         <li><a href="https://github.com/Voxel-Fox-Ltd" target="_blank"><span class="icon-github" /></a></li>
     </ul>
     <p><a href="#projects" onclick="changeContent(this);">Projects</a></p>
+    <p><a href="#branding" onclick="changeContent(this);">Branding</a></p>
 </div>
 
+<!-- Branding -->
+<div id="branding" class="content hidable" data-hidden="1">
+    <a href="#main" onclick="changeContent(this);">
+        <img class="logo" src="{{ static('/images/logo3.svg') }}" />
+    </a>
+    <h1>Branding</h1>
+    <div class="brand">
+        <h2>Voxel Fox</h2>
+        <p>The Voxel Fox logo. The logo may not be deformed, rotated, or flipped. The image <i>may</i> be recoloured, provided the fill and outline are colours that stand out against each other. Use your own discretion.</p>
+        <div class="figures">
+            <figure>
+                <img src="{{ static('/images/_voxelfox/black.svg') }}" />
+                <ul>
+                    <li><a href="{{ static('/images/_voxelfox/logo.png') }}" download>PNG100px</a></li>
+                    <li><a href="{{ static('/images/_voxelfox/black.svg') }}" download>SVG</a></li>
+                </ul>
+                <figcaption>Orange fill, black outline. The normal logo for use on light backgrounds.</figcaption>
+            </figure>
+            <figure>
+                <img src="{{ static('/images/_voxelfox/white.svg') }}" />
+                <ul>
+                    <li><a href="{{ static('/images/_voxelfox/white.svg') }}" download>SVG</a></li>
+                </ul>
+                <figcaption>Orange fill, white outline. The normal logo for use on dark backgrounds.</figcaption>
+            </figure>
+            <figure>
+                <img src="{{ static('/images/_voxelfox/gay.svg') }}" />
+                <ul>
+                    <li><a href="{{ static('/images/_voxelfox/gay.svg') }}" download>SVG</a></li>
+                </ul>
+                <figcaption>Gay pride fill, black outline.</figcaption>
+            </figure>
+        </div>
+    </div>
+</div>
+
+<!-- Project list -->
 <div id="projects" class="content hidable" data-hidden="1">
     <a href="#main" onclick="changeContent(this);">
         <img class="logo" src="{{ static('/images/logo3.svg') }}" />
@@ -67,6 +115,7 @@
     </div>
 </div>
 
+<!-- Project - MarriageBot -->
 <div id="project-marriagebot" class="content project hidable" data-hidden="1">
     <a href="#projects" onclick="changeContent(this);">
         <img class="image" src="{{ static('/images/marriagebot/rings.png') }}" />
@@ -97,6 +146,7 @@
     </ul>
 </div>
 
+<!-- Project - Flower -->
 <div id="project-flower" class="content project hidable" data-hidden="1">
     <a href="#projects" onclick="changeContent(this);">
         <img class="image" src="{{ static('/images/flower/FlowerTransparentCropped.png') }}" />
@@ -127,6 +177,7 @@
     </ul>
 </div>
 
+<!-- Project - Over 18 -->
 <div id="project-over18" class="content project hidable" data-hidden="1">
     <a href="#projects" onclick="changeContent(this);">
         <img class="logo" src="{{ static('/images/logo3.svg') }}" />
@@ -143,6 +194,7 @@
     </ul>
 </div>
 
+<!-- Project - Profile -->
 <div id="project-profile" class="content project hidable" data-hidden="1">
     <a href="#projects" onclick="changeContent(this);">
         <img class="image rounded" src="{{ static('/images/profile/logo.png') }}" />
@@ -173,6 +225,7 @@
     </ul>
 </div>
 
+<!-- Project - TitleScraper -->
 <div id="project-titlescraper" class="content project hidable" data-hidden="1">
     <a href="#projects" onclick="changeContent(this);">
         <img class="logo" src="{{ static('/images/logo3.svg') }}" />
@@ -189,6 +242,7 @@
     </ul>
 </div>
 
+<!-- Project - Cerberus -->
 <div id="project-cerberus" class="content project hidable" data-hidden="1">
     <a href="#projects" onclick="changeContent(this);">
         <img class="image rounded" src="{{ static('/images/cerberus/Cerberus.png') }}" />
@@ -196,11 +250,6 @@
     <h1>Cerberus</h1>
     <p>An activity tracking bot for Discord users.</p>
     <ul class="links">
-        <!-- <li>
-            <a href="https://profile.voxelfox.co.uk" target="_blank">
-                Website <span class="icon icon-link" />
-            </a>
-        </li> -->
         <li>
             <a href="https://github.com/Voxel-Fox-Ltd/Cerberus" target="_blank">
                 Github <span class="icon icon-github" />
@@ -219,6 +268,7 @@
     </ul>
 </div>
 
+<!-- Script to change displayed content with anchor click -->
 <script type="text/javascript">
 function changeContent(linkNode) {
     let link = linkNode.getAttribute("href").slice(1);
@@ -232,5 +282,6 @@ function changeContent(linkNode) {
 }
 </script>
     
+</div>
 </body>
 </html>

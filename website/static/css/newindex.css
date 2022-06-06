@@ -1,15 +1,25 @@
+html {
+    background: black;
+}
+
 body {
+    background: black;
+    min-width: 100vw;
+    min-height: 100vh;
+    margin: 0;
+}
+
+#body {
     background: black;
     color: white;
     font-family: "Century Gothic", "Helvetica", sans-serif;
     display: flex;
+    margin: 0 auto;
     justify-content: center;
     align-items: center;
-    /*margin: 5px 0;*/
-    margin: 0;
-    min-width: calc(100vw - 100px);
     min-height: calc(100vh - 100px);
     font-size: 1.2rem;
+    max-width: 1200px;
 }
 
 @media screen and (max-height: 500px) {
@@ -37,7 +47,8 @@ body {
     }
 }
 
-.content h1 {
+.content h1,
+.content h2 {
     margin: 0 0 10px 0;
     text-align: center;
 }
@@ -79,4 +90,26 @@ a:visited {
 
 #projects .project-list .icon {
     margin-left: 6px;
+}
+
+.brand .figures {
+    display: flex;
+}
+
+.brand figure {
+    padding: 10px;
+    border-radius: 15px;
+    text-align: center;
+    background: #1f1f1f;
+    width: 400px;
+}
+
+.brand figure ul {
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+}
+
+.brand figure img {
+    width: 150px;
 }
