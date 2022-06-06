@@ -4,13 +4,7 @@ html {
 
 body {
     background: black;
-    min-width: 100vw;
-    min-height: 100vh;
-    margin: 0;
-}
-
-#body {
-    background: black;
+    width: 100vw;
     color: white;
     font-family: "Century Gothic", "Helvetica", sans-serif;
     display: flex;
@@ -92,8 +86,14 @@ a:visited {
     margin-left: 6px;
 }
 
+.brand {
+    max-width: calc(100vw - 20px)
+}
+
 .brand .figures {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .brand figure {
@@ -102,6 +102,10 @@ a:visited {
     text-align: center;
     background: #1f1f1f;
     width: 400px;
+}
+
+figure {
+    margin: 5px;
 }
 
 .brand figure ul {

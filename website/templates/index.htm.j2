@@ -16,7 +16,6 @@
 </head>
 
 <body>
-<div id="body">
 
 <!-- Main -->
 <div id="main" class="content hidable" data-hidden="0">
@@ -41,6 +40,8 @@
         <img class="logo" src="{{ static('/images/logo3.svg') }}" />
     </a>
     <h1>Branding</h1>
+
+    <!-- Voxel Fox -->
     <div class="brand">
         <h2>Voxel Fox</h2>
         <p>The Voxel Fox logo. The logo may not be deformed, rotated, or flipped. The image <i>may</i> be recoloured, provided the fill and outline are colours that stand out against each other. Use your own discretion.</p>
@@ -69,6 +70,30 @@
             </figure>
         </div>
     </div>
+
+    <!-- MarriageBot -->
+    <div class="brand">
+        <h2>MarriageBot</h2>
+        <p>The MarriageBot logo. The logo may not be deformed, rotated, flipped, or recoloured.</p>
+        <div class="figures">
+            <figure>
+                <img src="{{ static('/images/marriagebot/rings.png') }}" />
+                <ul>
+                    <li><a href="{{ static('/images/marriagebot/rings.png') }}" download>PNG1200px</a></li>
+                </ul>
+                <figcaption>The MarriageBot logo without a background.</figcaption>
+            </figure>
+            <figure>
+                <img src="{{ static('/images/marriagebot/MarriageBot.150.png') }}" />
+                <ul>
+                    <li><a href="{{ static('/images/marriagebot/MarriageBot.png') }}" download>PNG1280px</a></li>
+                    <li><a href="{{ static('/images/marriagebot/MarriageBot.150.png') }}" download>PNG150px</a></li>
+                </ul>
+                <figcaption>The MarriageBot logo with the normal bot background.</figcaption>
+            </figure>
+        </div>
+    </div>
+
 </div>
 
 <!-- Project list -->
@@ -107,11 +132,11 @@
                 Cerberus <span class="icon icon-discord" />
             </a>
         </p>
-        <p>
+        {# <p>
             <a href="#project-gforms" onclick="changeContent(this);">
                 Discord Gforms <span class="icon icon-link" />
             </a>
-        </p>
+        </p> #}
     </div>
 </div>
 
@@ -281,7 +306,6 @@ function changeContent(linkNode) {
     if(!found) document.querySelector("#main").dataset.hidden = "0";
 }
 </script>
-    
-</div>
+
 </body>
 </html>
