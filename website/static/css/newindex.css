@@ -22,6 +22,14 @@ body {
     }
 }
 
+code {
+    font-family: "Courier";
+    padding: 0 5px;
+    background: darkgray;
+    color: black;
+    border-radius: 8px;
+}
+
 .hidable[data-hidden="1"] {
     display: none!important;
 }

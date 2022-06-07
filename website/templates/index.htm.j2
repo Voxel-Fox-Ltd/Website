@@ -17,9 +17,19 @@
 
 <body>
 
+{# Set the main logo #}
+{% set index_logo_url = (
+    [
+        '/images/_voxelfox/gay.svg',
+        '/images/_voxelfox/trans.svg'
+    ] | random)
+%}
+{% set index_logo = static(index_logo_url) %}
+{% set logo = static('/images/_voxelfox/white.svg') %}
+
 <!-- Main -->
 <div id="main" class="content hidable" data-hidden="0">
-    <img class="logo" src="{{ static('/images/logo3.svg') }}" />
+    <img class="logo" src="{{ index_logo }}" />
     <h1>Voxel Fox</h1>
     <ul class="contact-links">
         <li><a href="mailto:kae@voxelfox.co.uk" target="_blank"><span class="icon-at" /></a></li>
@@ -37,7 +47,7 @@
 <!-- Branding -->
 <div id="branding" class="content hidable" data-hidden="1">
     <a href="#main" onclick="changeContent(this);">
-        <img class="logo" src="{{ static('/images/logo3.svg') }}" />
+        <img class="logo" src="{{ logo }}" />
     </a>
     <h1>Branding</h1>
 
@@ -52,21 +62,42 @@
                     <li><a href="{{ static('/images/_voxelfox/logo.png') }}" download>PNG100px</a></li>
                     <li><a href="{{ static('/images/_voxelfox/black.svg') }}" download>SVG</a></li>
                 </ul>
-                <figcaption>Orange fill, black outline. The normal logo for use on light backgrounds.</figcaption>
+                <figcaption>Orange (<code>#f17824</code>) fill, black outline. The normal logo for use on light backgrounds.</figcaption>
             </figure>
             <figure>
                 <img src="{{ static('/images/_voxelfox/white.svg') }}" />
                 <ul>
                     <li><a href="{{ static('/images/_voxelfox/white.svg') }}" download>SVG</a></li>
                 </ul>
-                <figcaption>Orange fill, white outline. The normal logo for use on dark backgrounds.</figcaption>
+                <figcaption>Orange (<code>#f17824</code>) fill, white outline. The normal logo for use on dark backgrounds.</figcaption>
+            </figure>
+            <figure>
+                <img src="{{ static('/images/_voxelfox/gayBlack.svg') }}" />
+                <ul>
+                    <li><a href="{{ static('/images/_voxelfox/gayBlack.svg') }}" download>SVG</a></li>
+                </ul>
+                <figcaption>Gay pride fill, black outline.</figcaption>
             </figure>
             <figure>
                 <img src="{{ static('/images/_voxelfox/gay.svg') }}" />
                 <ul>
                     <li><a href="{{ static('/images/_voxelfox/gay.svg') }}" download>SVG</a></li>
                 </ul>
-                <figcaption>Gay pride fill, black outline.</figcaption>
+                <figcaption>Gay pride fill, white outline.</figcaption>
+            </figure>
+            <figure>
+                <img src="{{ static('/images/_voxelfox/transBlack.svg') }}" />
+                <ul>
+                    <li><a href="{{ static('/images/_voxelfox/transBlack.svg') }}" download>SVG</a></li>
+                </ul>
+                <figcaption>Trans pride fill, black outline.</figcaption>
+            </figure>
+            <figure>
+                <img src="{{ static('/images/_voxelfox/trans.svg') }}" />
+                <ul>
+                    <li><a href="{{ static('/images/_voxelfox/trans.svg') }}" download>SVG</a></li>
+                </ul>
+                <figcaption>Trans pride fill, white outline.</figcaption>
             </figure>
         </div>
     </div>
@@ -99,7 +130,7 @@
 <!-- Project list -->
 <div id="projects" class="content hidable" data-hidden="1">
     <a href="#main" onclick="changeContent(this);">
-        <img class="logo" src="{{ static('/images/logo3.svg') }}" />
+        <img class="logo" src="{{ logo }}" />
     </a>
     <div class="project-list">
         <p>
@@ -205,7 +236,7 @@
 <!-- Project - Over 18 -->
 <div id="project-over18" class="content project hidable" data-hidden="1">
     <a href="#projects" onclick="changeContent(this);">
-        <img class="logo" src="{{ static('/images/logo3.svg') }}" />
+        <img class="logo" src="{{ logo }}" />
     </a>
     <h1>Over 18</h1>
     <p>A tiny page to show you when someone's date of birth has to be to be 18 today.</p>
@@ -253,7 +284,7 @@
 <!-- Project - TitleScraper -->
 <div id="project-titlescraper" class="content project hidable" data-hidden="1">
     <a href="#projects" onclick="changeContent(this);">
-        <img class="logo" src="{{ static('/images/logo3.svg') }}" />
+        <img class="logo" src="{{ logo }}" />
     </a>
     <h1>TitleScraper</h1>
     <p>A simple program to find an open window and write its title to a file.</p>

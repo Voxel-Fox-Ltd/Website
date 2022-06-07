@@ -5,4 +5,5 @@ config/test.toml
 research/
 _*
 !_/*
+!_voxelfox/
 app.py
