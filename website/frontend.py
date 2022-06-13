@@ -123,7 +123,7 @@ async def over_18(request: Request):
 
 @routes.get("/md/{filename:.+}")
 @template("markdown.htm.j2")
-async def project(request: Request):
+async def markdown(request: Request):
     """
     Project page for the website.
     """

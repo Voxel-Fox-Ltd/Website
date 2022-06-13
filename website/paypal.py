@@ -1,6 +1,5 @@
 import json
 from urllib.parse import parse_qs
-import binascii
 from datetime import datetime as dt, timedelta
 import typing
 
@@ -14,18 +13,6 @@ from .utils.get_paypal_access_token import get_paypal_access_token
 routes = RouteTableDef()
 PAYPAL_BASE = "https://api-m.paypal.com"  # "https://api-m.sandbox.paypal.com"
 
-
-# json_data = {
-#     "product_name": row['product_name'],
-#     "quantity": row['_stripe']['quantity'],
-#     "refund": refunded,
-#     "subscription": row['_stripe']['price']['type'] == "recurring",
-#     **data['metadata'],
-#     **customer_data['metadata'],
-#     # "_stripe": row['_stripe'],
-#     "subscription_expiry_time": None,
-#     "source": "Stripe",
-# }
 
 
 """
@@ -70,16 +57,6 @@ subscr_signup - Subscription signup (doesn't mean payment received)
 
 virtual_terminal - Payment received via virtual terminal
 """
-
-
-def get_expected_signature(transmission_id, timestamp, webhook_id, event_body):
-    """
-    Get the input string to generate the HMAC signature
-    """
-
-    data = str(binascii.crc32(event_body) & 0xffffffff)
-    expected_sig = f"{transmission_id}|{timestamp}|{webhook_id}|{data}"
-    return expected_sig.encode()
 
 
 @routes.post('/webhooks/paypal/create_checkout_session')
@@ -128,7 +105,13 @@ async def create_checkout_session(request: Request):
     return json_response({"subscription": item_row['subscription'], "id": data['id']}, headers={"Access-Control-Allow-Origin": "*"})
 
 
-async def create_single_purchase_checkout_session(request, product_name, quantity, item_row, product_data, metadata):
+async def create_single_purchase_checkout_session(
+        request: Request,
+        product_name: str,
+        quantity: int,
+        item_row: dict,
+        product_data: dict,
+        metadata: dict):
     """
     Create a single checkout session item.
     """
@@ -182,7 +165,13 @@ async def create_single_purchase_checkout_session(request, product_name, quantit
     return json_response(response)
 
 
-async def create_subscription_checkout_session(request, product_name, quantity, item_row, product_data, metadata):
+async def create_subscription_checkout_session(
+        request: Request,
+        product_name: str,
+        quantity: int,
+        item_row: dict,
+        product_data: dict,
+        metadata: dict):
     """
     Create a single checkout session item.
     """
@@ -225,7 +214,7 @@ async def paypal_ipn_complete(request: Request):
         paypal_data = {'receiver_email': '@business.example.com'}
 
     # Let's throw that into a logger
-    request.app['logger'].error(paypal_data_string)
+    request.app['logger'].debug(f"Data from PayPal: {paypal_data_string}")
 
     # Send the data back to PayPal to make sure it's valid
     data_send_back = "cmd=_notify-validate&" + paypal_data_string
@@ -241,21 +230,21 @@ async def paypal_ipn_complete(request: Request):
         async with session.post(paypal_url, data=data_send_back) as site:
             site_data = await site.read()
             if site_data.decode() != "VERIFIED":
-                request.app['logger'].error("Invalid data sent to PayPal IPN url")
+                request.app['logger'].info("Invalid data sent to PayPal IPN url")
                 return Response(status=200)  # Oh no it was fake data
 
     # Process the data
     event = paypal_data.get('txn_type')
     if event in ["cart", "express_checkout", "web_accept", None]:
-        request.app['logger'].error("charge captured")
+        request.app['logger'].info("charge captured")
         await charge_captured(request, paypal_data)  # Also refunds
     elif event == "recurring_payment_profile_created":
-        request.app['logger'].error("subscritpion created")
+        request.app['logger'].info("subscritpion created")
         await subscription_created(request, paypal_data)
     elif event in [
             "recurring_payment_profile_cancel", "recurring_payment_suspended",
             "recurring_payment_suspended_due_to_max_failed_payment"]:
-        request.app['logger'].error("subscrpitpin stopped")
+        request.app['logger'].info("subscrpitpin stopped")
         await subscription_deleted(request, paypal_data)
 
     # And we have no more events to process
@@ -370,25 +359,30 @@ async def charge_captured(request: Request, data: dict):
 
     # And send a POST request for each of the items
     async with aiohttp.ClientSession() as session:
-        for row in item_rows:
-            if not row['transaction_webhook']:
-                request.app['logger'].info(f"No transaction webhook for {row['product_name']}")
-                continue
-            headers = {"Authorization": row['transaction_webhook_authorization']}
-            json_data = {
-                "product_name": row['product_name'],
-                "quantity": row['quantity'],
-                "refund": refunded,
-                "subscription": False,
-                **metadata,
-                "subscription_expiry_time": None,
-                "source": "PayPal",
-                "subscription_delete_url": None,
-            }
-            request.app['logger'].info(f"Sending POST {row['transaction_webhook']} {json_data}")
-            async with session.post(row['transaction_webhook'], json=json_data, headers=headers) as r:
-                body = await r.read()
-                request.app['logger'].info(f"POST {row['transaction_webhook']} returned {r.status} {body}")
+        async with request.app['database']() as db:
+            for row in item_rows:
+                if not row['transaction_webhook']:
+                    request.app['logger'].info(f"No transaction webhook for {row['product_name']}")
+                    continue
+                headers = {"Authorization": row['transaction_webhook_authorization']}
+                json_data = {
+                    "product_name": row['product_name'],
+                    "quantity": row['quantity'],
+                    "refund": refunded,
+                    "subscription": False,
+                    **metadata,
+                    "subscription_expiry_time": None,
+                    "source": "PayPal",
+                    "subscription_delete_url": None,
+                }
+                await db.call(
+                    """INSERT INTO transactions (timestamp, data) VALUES ($1, $2)""",
+                    dt.utcnow(), json_data,
+                )
+                request.app['logger'].info(f"Sending POST {row['transaction_webhook']} {json_data}")
+                async with session.post(row['transaction_webhook'], json=json_data, headers=headers) as r:
+                    body = await r.read()
+                    request.app['logger'].info(f"POST {row['transaction_webhook']} returned {r.status} {body}")
 
 
 async def subscription_created(request: Request, data: dict):
@@ -429,6 +423,11 @@ async def subscription_created(request: Request, data: dict):
             "source": "PayPal",
             "subscription_delete_url": f"{PAYPAL_BASE}/v1/billing/subscriptions/{recurring_payment_id}/cancel",
         }
+        async with request.app['database']() as db:
+            await db.call(
+                """INSERT INTO transactions (timestamp, data) VALUES ($1, $2)""",
+                dt.utcnow(), json_data,
+            )
         request.app['logger'].info(f"Sending POST {item['transaction_webhook']} {json_data}")
         async with session.post(item['transaction_webhook'], json=json_data, headers=headers) as r:
             body = await r.read()
@@ -477,6 +476,11 @@ async def subscription_deleted(request: Request, data: dict):
             "source": "PayPal",
             "subscription_delete_url": None,
         }
+        async with request.app['database']() as db:
+            await db.call(
+                """INSERT INTO transactions (timestamp, data) VALUES ($1, $2)""",
+                dt.utcnow(), json_data,
+            )
         request.app['logger'].info(f"Sending POST {item['transaction_webhook']} {json_data}")
         async with session.post(item['transaction_webhook'], json=json_data, headers=headers) as r:
             body = await r.read()

@@ -27,25 +27,6 @@ CREATE TABLE IF NOT EXISTS channel_list(
 );
 
 
-CREATE TABLE IF NOT EXISTS paypal_purchases(
-    id VARCHAR(64) NOT NULL,
-    transaction_type VARCHAR(50) NOT NULL,
-    customer_id VARCHAR(18),
-    item_name VARCHAR(200) NOT NULL,
-    option_selection VARCHAR(200),
-    payment_amount INTEGER NOT NULL,
-    payment_currency VARCHAR(10) NOT NULL,
-    discord_id BIGINT NOT NULL,
-    guild_id BIGINT NOT NULL,
-    custom TEXT,
-    completed BOOLEAN NOT NULL DEFAULT FALSE,
-    checkout_complete_timestamp TIMESTAMP,
-    quantity INTEGER NOT NULL DEFAULT 1,
-    next_payment_date TIMESTAMP,
-    PRIMARY KEY (id, item_name)
-);
-
-
 CREATE TABLE IF NOT EXISTS google_forms_redirects(
     form_id VARCHAR(100) NOT NULL,
     alias VARCHAR(100),
@@ -89,4 +70,10 @@ CREATE TABLE IF NOT EXISTS checkout_items(
 
     transaction_webhook TEXT,
     transaction_webhook_authorization TEXT NOT NULL DEFAULT ''
+);
+
+
+CREATE TABLE IF NOT EXISTS transactions(
+    timestamp TIMESTAMP,
+    data JSON
 );
