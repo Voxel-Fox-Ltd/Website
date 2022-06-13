@@ -135,10 +135,11 @@ async def project(request: Request):
     assert ".." not in filename
     filename = filename.lstrip("/")
     target_file = pathlib.Path(f"./website/static/docs/{filename}")
-    assert target_file.exists()  # Make sure it exists
-
-    # Make sure it's a markdown file
-    assert filename.endswith(".md")
+    try:
+        assert target_file.exists()  # Make sure it exists
+        assert filename.endswith(".md")  # Make sure it's a markdown file
+    except AssertionError:
+        return Response(status=404)
 
     # And send
     with target_file.open() as a:
