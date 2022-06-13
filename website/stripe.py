@@ -1,6 +1,7 @@
 import json
 import hmac
 from hashlib import sha256
+from datetime import datetime as dt
 
 import aiohttp
 from aiohttp.web import Request, RouteTableDef, Response, json_response
@@ -205,29 +206,34 @@ async def checkout_processor(request: Request, data: dict, *, refunded: bool = F
 
     # Throw all the relevant data to the specified webhook
     async with aiohttp.ClientSession() as session:
-        for row in item_rows:
-            if not row['transaction_webhook']:
-                request.app['logger'].info(f"No transaction webhook for {row['product_name']}")
-                continue
-            headers = {"Authorization": row['transaction_webhook_authorization']}
-            json_data = {
-                "product_name": row['product_name'],
-                "quantity": row['_stripe']['quantity'],
-                "refund": refunded,
-                "subscription": row['_stripe']['price']['type'] == "recurring",
-                **data['metadata'],
-                **customer_data['metadata'],
-                # "_stripe": row['_stripe'],
-                "subscription_expiry_time": None,
-                "source": "Stripe",
-                "subscription_delete_url": None,
-            }
-            if data.get('subscription'):
-                json_data.update({'subscription_delete_url': f"{STRIPE_BASE}/subscriptions/{data['subscription']}"})
-            request.app['logger'].info(f"Sending POST {row['transaction_webhook']} {json_data}")
-            async with session.post(row['transaction_webhook'], json=json_data, headers=headers) as r:
-                body = await r.read()
-                request.app['logger'].info(f"POST {row['transaction_webhook']} returned {r.status} {body}")
+        async with request.app['database']() as db:
+            for row in item_rows:
+                if not row['transaction_webhook']:
+                    request.app['logger'].info(f"No transaction webhook for {row['product_name']}")
+                    continue
+                headers = {"Authorization": row['transaction_webhook_authorization']}
+                json_data = {
+                    "product_name": row['product_name'],
+                    "quantity": row['_stripe']['quantity'],
+                    "refund": refunded,
+                    "subscription": row['_stripe']['price']['type'] == "recurring",
+                    **data['metadata'],
+                    **customer_data['metadata'],
+                    # "_stripe": row['_stripe'],
+                    "subscription_expiry_time": None,
+                    "source": "Stripe",
+                    "subscription_delete_url": None,
+                }
+                if data.get('subscription'):
+                    json_data.update({'subscription_delete_url': f"{STRIPE_BASE}/subscriptions/{data['subscription']}"})
+                await db.call(
+                    """INSERT INTO transactions (timestamp, data) VALUES ($1, $2)""",
+                    dt.utcnow(), json_data,
+                )
+                request.app['logger'].info(f"Sending POST {row['transaction_webhook']} {json_data}")
+                async with session.post(row['transaction_webhook'], json=json_data, headers=headers) as r:
+                    body = await r.read()
+                    request.app['logger'].info(f"POST {row['transaction_webhook']} returned {r.status} {body}")
 
 
 async def set_customer_metadata(request: Request, customer_id: str, metadata: dict):
@@ -328,6 +334,11 @@ async def subscription_deleted(request: Request, data: dict) -> None:
             "source": "Stripe",
             "subscription_delete_url": None,
         }
+        async with request.app['database']() as db:
+            await db.call(
+                """INSERT INTO transactions (timestamp, data) VALUES ($1, $2)""",
+                dt.utcnow(), json_data,
+            )
         request.app['logger'].info(f"Sending POST {item_row['transaction_webhook']} {json_data}")
         async with session.post(item_row['transaction_webhook'], json=json_data, headers=headers) as r:
             body = await r.read()
