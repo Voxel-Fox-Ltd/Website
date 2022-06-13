@@ -232,20 +232,25 @@ async def paypal_ipn_complete(request: Request):
             if site_data.decode() != "VERIFIED":
                 request.app['logger'].info("Invalid data sent to PayPal IPN url")
                 return Response(status=200)  # Oh no it was fake data
+        request.app['logger'].info("Valid data sent to PayPal IPN url :)")
 
     # Process the data
     event = paypal_data.get('txn_type')
-    if event in ["cart", "express_checkout", "web_accept", None]:
-        request.app['logger'].info("charge captured")
-        await charge_captured(request, paypal_data)  # Also refunds
-    elif event == "recurring_payment_profile_created":
-        request.app['logger'].info("subscritpion created")
-        await subscription_created(request, paypal_data)
-    elif event in [
-            "recurring_payment_profile_cancel", "recurring_payment_suspended",
-            "recurring_payment_suspended_due_to_max_failed_payment"]:
-        request.app['logger'].info("subscrpitpin stopped")
-        await subscription_deleted(request, paypal_data)
+    try:
+        if event in ["cart", "express_checkout", "web_accept", None]:
+            request.app['logger'].info("charge captured")
+            await charge_captured(request, paypal_data)  # Also refunds
+        elif event == "recurring_payment_profile_created":
+            request.app['logger'].info("subscritpion created")
+            await subscription_created(request, paypal_data)
+        elif event in [
+                "recurring_payment_profile_cancel", "recurring_payment_suspended",
+                "recurring_payment_suspended_due_to_max_failed_payment"]:
+            request.app['logger'].info("subscrpitpin stopped")
+            await subscription_deleted(request, paypal_data)
+    except Exception as e:
+        request.app['logger'].error("Errored when processing PayPal IPN data", exc_info=e)
+        raise
 
     # And we have no more events to process
     return Response(status=200)
