@@ -132,7 +132,10 @@ async def project(request: Request):
     filename: str = request.match_info["filename"]
 
     # Get the user's target file as a path
-    assert ".." not in filename
+    try:
+        assert ".." not in filename
+    except AssertionError:
+        return Response(status=401)
     filename = filename.lstrip("/")
     target_file = pathlib.Path(f"./website/static/docs/{filename}")
     try:
