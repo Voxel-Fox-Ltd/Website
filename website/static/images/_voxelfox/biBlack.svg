@@ -15,7 +15,7 @@
             <stop offset="33.3333333%" stop-color="#8C4799" />
 
             <stop offset="66.6666666%" stop-color="#8C4799" />
-            <stop offset="66.6666666%" stop-color="0032A0" />
+            <stop offset="66.6666666%" stop-color="#0032A0" />
         </linearGradient>
     </defs>
     <g>
