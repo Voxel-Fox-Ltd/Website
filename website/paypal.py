@@ -384,7 +384,7 @@ async def charge_captured(request: Request, data: dict):
                 }
                 await db.call(
                     """INSERT INTO transactions (timestamp, data) VALUES ($1, $2)""",
-                    dt.utcnow(), json_data,
+                    dt.utcnow(), json.dumps(json_data),
                 )
                 request.app['logger'].info(f"Sending POST {row['transaction_webhook']} {json_data}")
                 async with session.post(row['transaction_webhook'], json=json_data, headers=headers) as r:
@@ -433,7 +433,7 @@ async def subscription_created(request: Request, data: dict):
         async with request.app['database']() as db:
             await db.call(
                 """INSERT INTO transactions (timestamp, data) VALUES ($1, $2)""",
-                dt.utcnow(), json_data,
+                dt.utcnow(), json.dumps(json_data),
             )
         request.app['logger'].info(f"Sending POST {item['transaction_webhook']} {json_data}")
         async with session.post(item['transaction_webhook'], json=json_data, headers=headers) as r:
@@ -486,7 +486,7 @@ async def subscription_deleted(request: Request, data: dict):
         async with request.app['database']() as db:
             await db.call(
                 """INSERT INTO transactions (timestamp, data) VALUES ($1, $2)""",
-                dt.utcnow(), json_data,
+                dt.utcnow(), json.dumps(json_data),
             )
         request.app['logger'].info(f"Sending POST {item['transaction_webhook']} {json_data}")
         async with session.post(item['transaction_webhook'], json=json_data, headers=headers) as r:
