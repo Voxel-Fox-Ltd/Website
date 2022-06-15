@@ -5,7 +5,10 @@ from voxelbotutils import web as webutils
 
 
 routes = RouteTableDef()
-VALID_USERS = [141231597155385344]
+VALID_USERS = [
+    141231597155385344,
+    607952795794145281,
+]
 
 
 @routes.get('/checkout_items')
