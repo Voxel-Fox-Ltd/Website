@@ -184,12 +184,12 @@ async def create_subscription_checkout_session(
     }
 
     # Ask PayPal for a session object
+    url = PAYPAL_BASE + "/v1/billing/subscriptions"
+    auth = aiohttp.BasicAuth(
+        request.app['config']['paypal_client_id'],
+        request.app['config']['paypal_client_secret'],
+    )
     async with aiohttp.ClientSession() as session:
-        url = PAYPAL_BASE + "/v1/billing/subscriptions"
-        auth = aiohttp.BasicAuth(
-            request.app['config']['paypal_client_id'],
-            request.app['config']['paypal_client_secret'],
-        )
         async with session.post(url, json=data, auth=auth) as r:
             response = await r.json()
             if not r.ok:
@@ -216,15 +216,15 @@ async def paypal_ipn_complete(request: Request):
     # Let's throw that into a logger
     request.app['logger'].debug(f"Data from PayPal: {paypal_data_string}")
 
+    # Get the right URL based on whether this is a sandbox payment or not
+    paypal_url = {
+        False: "https://ipnpb.paypal.com/cgi-bin/webscr",
+        True: "https://ipnpb.sandbox.paypal.com/cgi-bin/webscr",
+    }[paypal_data['receiver_email'].casefold().endswith('@business.example.com')]
+
     # Send the data back to PayPal to make sure it's valid
     data_send_back = "cmd=_notify-validate&" + paypal_data_string
     async with aiohttp.ClientSession(loop=request.app.loop) as session:
-
-        # Get the right URL based on whether this is a sandbox payment or not
-        paypal_url = {
-            False: "https://ipnpb.paypal.com/cgi-bin/webscr",
-            True: "https://ipnpb.sandbox.paypal.com/cgi-bin/webscr",
-        }[paypal_data['receiver_email'].casefold().endswith('@business.example.com')]
 
         # Send the data back to check it
         async with session.post(paypal_url, data=data_send_back) as site:
@@ -248,6 +248,8 @@ async def paypal_ipn_complete(request: Request):
                 "recurring_payment_suspended_due_to_max_failed_payment"]:
             request.app['logger'].info("subscrpitpin stopped")
             await subscription_deleted(request, paypal_data)
+        else:
+            request.app['logger'].info(f"unhandled paypal event '{event}'")
     except Exception as e:
         request.app['logger'].error("Errored when processing PayPal IPN data", exc_info=e)
         raise
