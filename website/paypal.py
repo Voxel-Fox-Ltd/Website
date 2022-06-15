@@ -240,7 +240,7 @@ async def paypal_ipn_complete(request: Request):
         if event in ["cart", "express_checkout", "web_accept", None]:
             request.app['logger'].info("charge captured")
             await charge_captured(request, paypal_data)  # Also refunds
-        elif event == "recurring_payment_profile_created":
+        elif event in ["recurring_payment_profile_created", "recurring_payment"]:
             request.app['logger'].info("subscritpion created")
             await subscription_created(request, paypal_data)
         elif event in [
