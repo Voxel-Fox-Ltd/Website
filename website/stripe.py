@@ -227,7 +227,8 @@ async def checkout_processor(request: Request, data: dict, *, refunded: bool = F
                 if data.get('subscription'):
                     json_data.update({'subscription_delete_url': f"{STRIPE_BASE}/subscriptions/{data['subscription']}"})
                 await db.call(
-                    """INSERT INTO transactions (timestamp, data) VALUES ($1, $2)""",
+                    """INSERT INTO transactions (timestamp, source, data)
+                    VALUES ($1, 'Stripe', $2)""",
                     dt.utcnow(), json.dumps(json_data),
                 )
                 request.app['logger'].info(f"Sending POST {row['transaction_webhook']} {json_data}")
@@ -336,7 +337,8 @@ async def subscription_deleted(request: Request, data: dict) -> None:
         }
         async with request.app['database']() as db:
             await db.call(
-                """INSERT INTO transactions (timestamp, data) VALUES ($1, $2)""",
+                """INSERT INTO transactions (timestamp, source, data)
+                VALUES ($1, 'Stripe', $2)""",
                 dt.utcnow(), json.dumps(json_data),
             )
         request.app['logger'].info(f"Sending POST {item_row['transaction_webhook']} {json_data}")

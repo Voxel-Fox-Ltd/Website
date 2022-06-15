@@ -75,5 +75,6 @@ CREATE TABLE IF NOT EXISTS checkout_items(
 
 CREATE TABLE IF NOT EXISTS transactions(
     timestamp TIMESTAMP,
+    source TEXT NOT NULL,
     data JSON
 );

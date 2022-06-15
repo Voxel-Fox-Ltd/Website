@@ -383,7 +383,8 @@ async def charge_captured(request: Request, data: dict):
                     "subscription_delete_url": None,
                 }
                 await db.call(
-                    """INSERT INTO transactions (timestamp, data) VALUES ($1, $2)""",
+                    """INSERT INTO transactions (timestamp, source, data)
+                    VALUES ($1, 'PayPal', $2)""",
                     dt.utcnow(), json.dumps(json_data),
                 )
                 request.app['logger'].info(f"Sending POST {row['transaction_webhook']} {json_data}")
@@ -432,7 +433,8 @@ async def subscription_created(request: Request, data: dict):
         }
         async with request.app['database']() as db:
             await db.call(
-                """INSERT INTO transactions (timestamp, data) VALUES ($1, $2)""",
+                """INSERT INTO transactions (timestamp, source, data)
+                VALUES ($1, 'PayPal', $2)""",
                 dt.utcnow(), json.dumps(json_data),
             )
         request.app['logger'].info(f"Sending POST {item['transaction_webhook']} {json_data}")
@@ -485,7 +487,8 @@ async def subscription_deleted(request: Request, data: dict):
         }
         async with request.app['database']() as db:
             await db.call(
-                """INSERT INTO transactions (timestamp, data) VALUES ($1, $2)""",
+                """INSERT INTO transactions (timestamp, source, data)
+                VALUES ($1, 'PayPal', $2)""",
                 dt.utcnow(), json.dumps(json_data),
             )
         request.app['logger'].info(f"Sending POST {item['transaction_webhook']} {json_data}")
