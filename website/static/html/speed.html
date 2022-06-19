@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Phone Speed</title>
+</head>
+<body>
+
+<style type="text/css">
+    body {
+        background: black;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100vw;
+        height: 100vh;
+        font-family: "Century Gothic", "Helvetica", sans-serif;
+        margin: 0;
+    }
+</style>
+
+<h1 id="speed">If you see this for more than a few seconds, your device isn't compatible with the accelorometer API.</h1>
+
+<script type="text/javascript">
+
+var speed = {
+    x: 0,
+    y: 0,
+    z: 0,
+}
+var linearSpeed = 0;
+function handleMotionEvent(event) {
+    let newSpeed = {
+        x: speed.x + event.acceleration.x,
+        y: speed.y + event.acceleration.y,
+        z: speed.z + event.acceleration.z,
+    };
+    let newLinearSpeed = Math.sqrt(
+        Math.pow(speed.x + newSpeed.x, 2) +
+        Math.pow(speed.y + newSpeed.y, 2) +
+        Math.pow(speed.z + newSpeed.z, 2)
+    );
+    linearSpeed = Math.max(newLinearSpeed, linearSpeed);
+    document.querySelector("#speed").innerHTML = linearSpeed.toFixed(2) + "m/s";
+}
+window.addEventListener("devicemotion", handleMotionEvent, true);
+
+</script>
+
+</body>
+</html>
