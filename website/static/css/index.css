@@ -1,221 +1,127 @@
-/*
-Wibbly wobbly, you are gay now
-If you are reading this and not catdotjs or Kae, I wish you good luck understanding the fuck this code is.
-Here you'll need this | [A fucking map of this mess] ノ( ゜-゜ノ)
-*/
-
-@font-face {
-    font-family: NotoSans;
-    src: url(/static/fonts/NotoSans-Regular.ttf);
-}
-
-:root {
-    font-size: 16px;
-    --card-width: 340px;
-    --card-height: 550px;
-    --overlap-width: 230px;
-    --left-margin-overlap-offset: calc(var(--overlap-width) - var(--card-width));
+html {
+    background: black;
 }
 
 body {
-    color: azure;
-    background-color: #111;
-    background-image: url("/static/images/index/Background.png");
-    background-size:cover; 
-    width: 100%;
-    height: 100%;
-    background-attachment: fixed;
-    font-family: NotoSans, Helvetica, sans-serif;
-    margin: 0;
-    overflow-x: hidden; /* When the cards grow they cause an overflow on X */
-}
-
-h1 {
-    font-size: 4rem;
-    padding: 1.5rem;
-    text-align: center;
-    margin: 0;
-}
-
-#cards {
-    justify-content: center;
-    display: grid;
-    /*grid-template-columns: repeat(auto-fit, var(--overlap-width));*/
-    grid-template-columns: repeat(auto-fit, var(--card-width));
-    grid-gap: 15px;
-    /*margin-left: var(--left-margin-overlap-offset);*/
-}
-
-.card {
-    width: var(--card-width);
-    height: var(--card-height);
-    box-shadow: 2px 2px 20px rgb(var(--fallback)); /* oh yeah now we're cookin with magic 😎 */
-    border-radius: 25px;
-    transition: 0.05s ease;
+    background: black;
+    width: 100vw;
+    color: white;
+    font-family: "Century Gothic", "Helvetica", sans-serif;
     display: flex;
+    margin: 0 auto;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 100px);
+    font-size: 1.2rem;
+    max-width: 1200px;
 }
 
-.card:nth-of-type(2n) {
-    margin-top: 12px;
+@media screen and (max-height: 500px) {
+    body {
+        min-height: 100vh;
+    }
 }
 
-.card .background {
-    position: absolute;
-    height: var(--card-height);
-    /*width: var(--card-width);*/
-    width: var(--individual-card-width);
-    overflow: hidden;
-    z-index: -1;
-    border-radius: 25px;
+code {
+    font-family: "Courier";
+    padding: 0 5px;
+    background: darkgray;
+    color: black;
+    border-radius: 8px;
 }
 
-.card .background:after {
-    background: rgba(var(--fallback), 0.5);
-    height: 100%;
-    width: 100%;
-    content: "";
-    display: block;
-    position: absolute;
-    left: 0;
-    top: 0;
+.hidable[data-hidden="1"] {
+    display: none!important;
 }
 
-.card .background p {
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /*margin-bottom: 100px;*/
+}
+
+@media screen and (max-width: 770px) {
+    .content {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+}
+
+.content h1,
+.content h2 {
+    margin: 0 0 10px 0;
+    text-align: center;
+}
+
+.content p {
+    margin: 0;
+    text-align: center;
+    padding: 2px 0;
+}
+
+.logo, .project .image {
+    width: 300px;
+    margin-bottom: 20px;
+}
+
+img.rounded {
+    border-radius: 15px;
+}
+
+ul {
+    list-style: none;
+    display: flex;
     padding: 0;
-    margin: 0;
-    font-size: 1.5em;
-    line-height: 1.8em;
-    width: 100%;
-    white-space: nowrap;
-    user-select: none;
-    letter-spacing: 10px;
-}
-
-.card .background p:nth-child(2n) {
-    margin-left: -1em;
-}
-
-.card ul {
-    list-style-type: none;
-    text-align: center;
-    padding: 0px;
-    margin: 10px;
-}
-
-.card:hover {
-    transform: scale(1.04);
-    z-index: 100!important;  /* This needs to be important because ID selectors take higher presidence.*/
-}
-
-.card h2 {
-    font-size: 3rem;
-    margin: 35px 0 0 0;
+    margin: 0 0 10px 0;
     text-align: center;
 }
 
-.card img {
+.project .links {
     display: block;
-    margin: 60px auto 0 auto;
-    height: 176px;
-    width: 176px;
-    object-fit: contain;
-    border-radius: 10px;
+    margin-top: 10px;
 }
 
-.card a {
-    color: inherit;
-    font-size: 1.5rem;
+a,
+a:visited {
+    padding: 0 10px;
     text-decoration: none;
+    color: lightblue;
 }
 
-.card a:hover {
-    text-decoration: underline;
+#projects .project-list .icon {
+    margin-left: 6px;
 }
 
-.card img.circle {
-    border-radius: 50%;
+.brand {
+    max-width: calc(100vw - 20px)
 }
 
-.card p {
-    padding:0.5rem 1.5rem 0.5rem;
-    font-size: 1.20rem;
-    color: inherit;
-    font-weight: bold;
+.brand .figures {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.brand figure {
+    padding: 10px;
+    border-radius: 15px;
     text-align: center;
-    margin: 0;
+    background: #1f1f1f;
+    width: 400px;
 }
 
-.card .content {
-    width: 100%;
-    align-self: center;
+figure {
+    margin: 5px;
 }
 
-/* For all devices that can't hover (touchscreens etc) */
-@media(hover: none) {
-    :root {
-        --overlap-width: var(--card-width);
-        --left-margin-overlap-offset: 0;
-    }
-    #cards {
-        gap: 40px;
-    }
-    .card:nth-of-type(n) {
-        margin-top: 0;
-    }
-    .card:hover {
-        transform: scale(1);
-    }
+.brand figure ul {
+    padding: 0;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Large tablets that can't hover */
-@media screen and (max-width: 1600px) and (hover: none) {
-    #cards {
-        grid-template-columns: repeat(3, var(--overlap-width));
-    }
-}
-
-/* Desktop-sized screens that can't hover */
-@media screen and (min-width: 1400px) and (hover: none) {
-    #cards {
-        grid-template-columns: repeat(4, var(--overlap-width));
-    }
-}
-
-/* Large tablets that can hover */
-@media screen and (max-width: 1400px) and (hover: hover) {
-    #cards {
-        grid-template-columns: repeat(4, var(--overlap-width));
-    }
-}
-
-/* Tablets that can hover */
-@media screen and (max-width: 1100px) and (hover: hover) {
-    #cards {
-        grid-template-columns: repeat(2, var(--overlap-width));
-    }
-}
-
-/* Tablets that can't hover */
-@media screen and (max-width: 1100px) and (hover: none) {
-    #cards {
-        grid-template-columns: repeat(2, var(--overlap-width));
-    }
-}
-
-/* Ipads */
-@media screen and (max-width: 768px) and (max-height:1024px) {
-    #cards {
-        grid-template-columns: repeat(2, var(--overlap-width));
-    }
-}
-
-/* Phones that can hover. phone screen is too small to hover */
-@media screen and (max-width: 500px){
-    #cards {
-        grid-template-columns: repeat(1, var(--overlap-width));
-        gap: 40px;
-    }
-    .card:nth-of-type(n) {
-        margin-top: 0;
-    }
+.brand figure img {
+    width: 150px;
 }
