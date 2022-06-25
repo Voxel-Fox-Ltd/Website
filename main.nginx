@@ -1,0 +1,181 @@
+# voxelfox.co.uk
+server {
+    server_name voxelfox.co.uk www.voxelfox.co.uk;
+    if ($host = "www.voxelfox.co.uk") {
+        return 301 http://voxelfox.co.uk;
+    }
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://localhost:8000;
+        add_header 'Access-Control-Allow-Origin' '*';
+    }
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/voxelfox.co.uk-0002/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/voxelfox.co.uk-0002/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+
+
+# applepy.voxelfox.co.uk
+server {
+    server_name applepy.voxelfox.co.uk;
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://localhost:8001;
+    }
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/voxelfox.co.uk/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/voxelfox.co.uk/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+
+# flower.voxelfox.co.uk
+server {
+    server_name flower.voxelfox.co.uk;
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://localhost:8002;
+    }
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/voxelfox.co.uk/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/voxelfox.co.uk/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+
+# gardendale.voxelfox.co.uk
+server {
+    server_name gardendale.voxelfox.co.uk;
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://localhost:8003;
+    }
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/voxelfox.co.uk/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/voxelfox.co.uk/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+
+# profile.voxelfox.co.uk
+server {
+    server_name profile.voxelfox.co.uk;
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://localhost:8004;
+    }
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/voxelfox.co.uk/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/voxelfox.co.uk/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+
+# uoesu.voxelfox.co.uk
+server {
+    server_name uoesu.voxelfox.co.uk;
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://localhost:8005;
+    }
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/voxelfox.co.uk/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/voxelfox.co.uk/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+
+# interactions.voxelfox.co.uk
+server {
+    server_name interactions.voxelfox.co.uk;
+    location /wordy/ {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://localhost:8006/;
+    }
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/voxelfox.co.uk-0001/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/voxelfox.co.uk-0001/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+
+# cerberus.voxelfox.co.uk
+server {
+    server_name cerberus.voxelfox.co.uk;
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://localhost:8007/;
+    }
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/voxelfox.co.uk-0003/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/voxelfox.co.uk-0003/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+
+# vfl.gg
+server {
+    server_name
+        *.vfl.gg
+        vfl.gg
+        twitter.vfl.gg
+        twitch.vfl.gg
+        discord.vfl.gg
+        applepy.vfl.gg
+        flower.vfl.gg
+    ;
+
+    set $subdomain "";
+    if ($host ~ "^(.*)\.vfl\.gg$") { set $subdomain $1; }
+
+    if ($subdomain = "") {
+        return 301 https://voxelfox.co.uk;
+    }
+    if ($subdomain = "twitter") {
+        return 301 https://twitter.com/VoxelFoxKae;
+    }
+    if ($subdomain = "discord") {
+        return 301 https://discord.gg/vfl;
+    }
+    if ($subdomain = "twitch") {
+        return 301 https://twitch.tv/VoxelFoxKae;
+    }
+    return 301 https://$subdomain.voxelfox.co.uk;
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/voxelfox.co.uk-0002/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/voxelfox.co.uk-0002/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+
+# HTTPS redirect
+server {
+    server_name
+        *.voxelfox.co.uk
+        voxelfox.co.uk
+        *.vfl.gg
+        vfl.gg
+    ;
+    return 301 https://$host$request_uri;
+    listen 80;
+}
