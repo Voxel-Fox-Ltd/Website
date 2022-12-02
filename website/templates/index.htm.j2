@@ -28,18 +28,23 @@
 {% set index_logo = static(index_logo_url) %}
 {% set logo = static('/images/_voxelfox/white.svg') %}
 
+
+{% macro create_link(href, icon) %}
+<li><a href="{{ href }}" target="_blank"><span class="icon-{{ icon }}" /></a></li>
+{% endmacro %}
+
 <!-- Main -->
 <div id="main" class="content hidable" data-hidden="0">
     <img class="logo" src="{{ index_logo }}" />
     <h1>Voxel Fox</h1>
     <ul class="contact-links">
-        <li><a href="mailto:kae@voxelfox.co.uk" target="_blank"><span class="icon-at" /></a></li>
-        <li><a href="https://discord.gg/vfl" target="_blank"><span class="icon-discord" /></a></li>
-        <li><a href="https://twitter.com/VoxelFoxKae" target="_blank"><span class="icon-twitter" /></a></li>
-        <li><a href="https://twitch.tv/VoxelFoxKae" target="_blank"><span class="icon-twitch" /></a></li>
-        <li><a href="https://www.youtube.com/c/kaevf" target="_blank"><span class="icon-youtube" /></a></li>
-        <li><a href="https://github.com/4Kaylum" target="_blank"><span class="icon-github" /></a></li>
-        <li><a href="https://github.com/Voxel-Fox-Ltd" target="_blank"><span class="icon-github" /></a></li>
+        {{ create_link("mailto:kae@voxelfox.co.uk", "at") }}
+        {{ create_link("https://discord.gg/vfl", "discord") }}
+        {{ create_link("https://twitter.com/VoxelFoxKae", "twitter") }}
+        {{ create_link("https://twitch.tv/VoxelFoxKae", "twitch") }}
+        {{ create_link("https://www.youtube.com/c/kaevf", "youtube") }}
+        {{ create_link("https://github.com/4Kaylum", "github") }}
+        {{ create_link("https://github.com/Voxel-Fox-Ltd", "github") }}
     </ul>
     <p><a href="#projects" onclick="changeContent(this);">Projects</a></p>
     <p><a href="#branding" onclick="changeContent(this);">Branding</a></p>
@@ -55,48 +60,101 @@
     <!-- Voxel Fox -->
     <div class="brand">
         <h2>Voxel Fox</h2>
-        <p>The Voxel Fox logo. The logo may not be deformed, rotated, or flipped. The image <i>may</i> be recoloured, provided the fill and outline are colours that stand out against each other. Use your own discretion.</p>
+        <p>
+            The Voxel Fox logo. The logo may not be deformed, rotated, or
+            flipped. The image <i>may</i> be recoloured, provided the fill and
+            outline are colours that stand out against each other. Use your
+            own discretion.
+        </p>
         <div class="figures">
             <figure>
                 <img src="{{ static('/images/_voxelfox/black.svg') }}" />
                 <ul>
-                    <li><a href="{{ static('/images/_voxelfox/logo.png') }}" download>PNG100px</a></li>
-                    <li><a href="{{ static('/images/_voxelfox/black.svg') }}" download>SVG</a></li>
+                    <li>
+                        <a
+                                href="{{ static('/images/_voxelfox/logo.png') }}"
+                                download>
+                            PNG100px
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                                href="{{ static('/images/_voxelfox/black.svg') }}"
+                                download>
+                            SVG
+                        </a>
+                    </li>
                 </ul>
-                <figcaption>Orange (<code>#f17824</code>) fill, black outline. The normal logo for use on light backgrounds.</figcaption>
+                <figcaption>
+                    Orange (<code>#f17824</code>) fill, black outline. The
+                    normal logo for use on light backgrounds.
+                </figcaption>
             </figure>
             <figure>
                 <img src="{{ static('/images/_voxelfox/white.svg') }}" />
                 <ul>
-                    <li><a href="{{ static('/images/_voxelfox/white.svg') }}" download>SVG</a></li>
+                    <li>
+                        <a
+                                href="{{ static('/images/_voxelfox/white.svg') }}"
+                                download>
+                            SVG
+                        </a>
+                    </li>
                 </ul>
-                <figcaption>Orange (<code>#f17824</code>) fill, white outline. The normal logo for use on dark backgrounds.</figcaption>
+                <figcaption>
+                    Orange (<code>#f17824</code>) fill, white outline. The
+                    normal logo for use on dark backgrounds.
+                </figcaption>
             </figure>
             <figure>
                 <img src="{{ static('/images/_voxelfox/gayBlack.svg') }}" />
                 <ul>
-                    <li><a href="{{ static('/images/_voxelfox/gayBlack.svg') }}" download>SVG</a></li>
+                    <li>
+                        <a
+                                href="{{ static('/images/_voxelfox/gayBlack.svg') }}"
+                                download>
+                            SVG
+                        </a>
+                    </li>
                 </ul>
                 <figcaption>Gay pride fill, black outline.</figcaption>
             </figure>
             <figure>
                 <img src="{{ static('/images/_voxelfox/gay.svg') }}" />
                 <ul>
-                    <li><a href="{{ static('/images/_voxelfox/gay.svg') }}" download>SVG</a></li>
+                    <li>
+                        <a
+                                href="{{ static('/images/_voxelfox/gay.svg') }}"
+                                download>
+                            SVG
+                        </a>
+                    </li>
                 </ul>
                 <figcaption>Gay pride fill, white outline.</figcaption>
             </figure>
             <figure>
                 <img src="{{ static('/images/_voxelfox/transBlack.svg') }}" />
                 <ul>
-                    <li><a href="{{ static('/images/_voxelfox/transBlack.svg') }}" download>SVG</a></li>
+                    <li>
+                        <a
+                                href="{{ static('/images/_voxelfox/transBlack.svg') }}"
+                                download>
+                            SVG
+                        </a>
+                    </li>
                 </ul>
                 <figcaption>Trans pride fill, black outline.</figcaption>
             </figure>
             <figure>
                 <img src="{{ static('/images/_voxelfox/trans.svg') }}" />
                 <ul>
-                    <li><a href="{{ static('/images/_voxelfox/trans.svg') }}" download>SVG</a></li>
+                    <li>
+                        <a
+                                href="{{ static('/images/_voxelfox/trans.svg') }}"
+                                download>
+                            SVG
+                        </a>
+                    </li>
                 </ul>
                 <figcaption>Trans pride fill, white outline.</figcaption>
             </figure>
@@ -106,22 +164,45 @@
     <!-- MarriageBot -->
     <div class="brand">
         <h2>MarriageBot</h2>
-        <p>The MarriageBot logo. The logo may not be deformed, rotated, flipped, or recoloured.</p>
+        <p>
+            The MarriageBot logo. The logo may not be deformed, rotated,
+            flipped, or recoloured.
+        </p>
         <div class="figures">
             <figure>
                 <img src="{{ static('/images/marriagebot/rings.png') }}" />
                 <ul>
-                    <li><a href="{{ static('/images/marriagebot/rings.png') }}" download>PNG1200px</a></li>
+                    <li>
+                        <a
+                                href="{{ static('/images/marriagebot/rings.png') }}"
+                                download>
+                            PNG1200px
+                        </a>
+                    </li>
                 </ul>
                 <figcaption>The MarriageBot logo without a background.</figcaption>
             </figure>
             <figure>
                 <img src="{{ static('/images/marriagebot/MarriageBot.150.png') }}" />
                 <ul>
-                    <li><a href="{{ static('/images/marriagebot/MarriageBot.png') }}" download>PNG1280px</a></li>
-                    <li><a href="{{ static('/images/marriagebot/MarriageBot.150.png') }}" download>PNG150px</a></li>
+                    <li>
+                        <a
+                                href="{{ static('/images/marriagebot/MarriageBot.png') }}"
+                                download>
+                            PNG1280px
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                                href="{{ static('/images/marriagebot/MarriageBot.150.png') }}"
+                                download>
+                            PNG150px
+                        </a>
+                    </li>
                 </ul>
-                <figcaption>The MarriageBot logo with the normal bot background.</figcaption>
+                <figcaption>
+                    The MarriageBot logo with the normal bot background.
+                </figcaption>
             </figure>
         </div>
     </div>
@@ -164,11 +245,11 @@
                 Cerberus <span class="icon icon-discord" />
             </a>
         </p>
-        {# <p>
-            <a href="#project-gforms" onclick="changeContent(this);">
-                Discord Gforms <span class="icon icon-link" />
+        <p>
+            <a href="#project-streamlink" onclick="changeContent(this);">
+                Streamlink <span class="icon icon-computer" />
             </a>
-        </p> #}
+        </p>
     </div>
 </div>
 
@@ -320,6 +401,22 @@
         <li>
             <a href="/md/terms_of_service/Cerberus.md" target="_blank">
                 ToS <span class="icon icon-link" />
+            </a>
+        </li>
+    </ul>
+</div>
+
+<!-- Project - Streamlinkj -->
+<div id="project-streamlink" class="content project hidable" data-hidden="1">
+    <a href="#projects" onclick="changeContent(this);">
+        <img class="logo" src="{{ logo }}" />
+    </a>
+    <h1>Streamlink</h1>
+    <p>A tiny tool for adding TTS to your Twitch chat over Oauth.</p>
+    <ul class="links">
+        <li>
+            <a href="https://github.com/Voxel-Fox-Ltd/Streamlink" target="_blank">
+                Github <span class="icon icon-github" />
             </a>
         </li>
     </ul>
