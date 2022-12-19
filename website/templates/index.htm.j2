@@ -29,8 +29,8 @@
 {% set logo = static('/images/_voxelfox/white.svg') %}
 
 
-{% macro create_link(href, icon, kwargs) %}
-<li><a href="{{ href }}" target="_blank" {% for k, v in kwargs.items() %}{{ k }}="{{ v }}"{% endfor %}><span class="icon-{{ icon }}" /></a></li>
+{% macro create_link(href, icon, kwargs=none) %}
+<li><a href="{{ href }}" target="_blank" {% for k, v in (kwargs or {}).items() %}{{ k }}="{{ v }}"{% endfor %}><span class="icon-{{ icon }}" /></a></li>
 {% endmacro %}
 
 <!-- Main -->
