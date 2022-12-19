@@ -12,7 +12,6 @@
     <meta name="twitter:description" content="I make things on the internet and sometimes they get popular." />
     <meta property="og:image" content="{{ static('/images/_voxelfox/logo.png') }}" />
     <meta name="theme-color" content="#f17824">
-    <link rel="me" href="https://uwu.social/@kae">
     <title>Voxel Fox</title>
 </head>
 
@@ -30,8 +29,8 @@
 {% set logo = static('/images/_voxelfox/white.svg') %}
 
 
-{% macro create_link(href, icon) %}
-<li><a href="{{ href }}" target="_blank"><span class="icon-{{ icon }}" /></a></li>
+{% macro create_link(href, icon, **kwargs) %}
+<li><a href="{{ href }}" target="_blank" {% for k, v in kwargs.items() %}{{ k }}="{{ v }}"{% endfor %}><span class="icon-{{ icon }}" /></a></li>
 {% endmacro %}
 
 <!-- Main -->
@@ -42,7 +41,7 @@
         {{ create_link("mailto:kae@voxelfox.co.uk", "at") }}
         {{ create_link("https://discord.gg/vfl", "discord") }}
         {{ create_link("https://twitter.com/VoxelFoxKae", "twitter") }}
-        {{ create_link("https://uwu.social/@kae", "mastodon") }}
+        {{ create_link("https://uwu.social/@kae", "mastodon", rel="me") }}
         {{ create_link("https://twitch.tv/VoxelFoxKae", "twitch") }}
         {{ create_link("https://www.youtube.com/c/kaevf", "youtube") }}
         {{ create_link("https://github.com/4Kaylum", "github") }}
