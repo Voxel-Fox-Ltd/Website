@@ -47,13 +47,13 @@
         {{ create_link("https://github.com/4Kaylum", "github") }}
         {{ create_link("https://github.com/Voxel-Fox-Ltd", "github") }}
     </ul>
-    <p><a href="#projects" onclick="changeContent(this);">Projects</a></p>
-    <p><a href="#branding" onclick="changeContent(this);">Branding</a></p>
+    <p><a href="#projects" onclick="changeContentNode(this);">Projects</a></p>
+    <p><a href="#branding" onclick="changeContentNode(this);">Branding</a></p>
 </div>
 
 <!-- Branding -->
 <div id="branding" class="content hidable" data-hidden="1">
-    <a href="#main" onclick="changeContent(this);">
+    <a href="#main" onclick="changeContentNode(this);">
         <img class="logo" src="{{ logo }}" />
     </a>
     <h1>Branding</h1>
@@ -212,42 +212,42 @@
 
 <!-- Project list -->
 <div id="projects" class="content hidable" data-hidden="1">
-    <a href="#main" onclick="changeContent(this);">
+    <a href="#main" onclick="changeContentNode(this);">
         <img class="logo" src="{{ logo }}" />
     </a>
     <div class="project-list">
         <p>
-            <a href="#project-marriagebot" onclick="changeContent(this);">
+            <a href="#project-marriagebot" onclick="changeContentNode(this);">
                 MarriageBot <span class="icon icon-discord" />
             </a>
         </p>
         <p>
-            <a href="#project-flower" onclick="changeContent(this);">
+            <a href="#project-flower" onclick="changeContentNode(this);">
                 Flower <span class="icon icon-discord" />
             </a>
         </p>
         <p>
-            <a href="#project-over18" onclick="changeContent(this);">
+            <a href="#project-over18" onclick="changeContentNode(this);">
                 Age Checker <span class="icon icon-link" />
             </a>
         </p>
         <p>
-            <a href="#project-profile" onclick="changeContent(this);">
+            <a href="#project-profile" onclick="changeContentNode(this);">
                 Profile <span class="icon icon-discord" />
             </a>
         </p>
         <p>
-            <a href="#project-titlescraper" onclick="changeContent(this);">
+            <a href="#project-titlescraper" onclick="changeContentNode(this);">
                 TitleScraper <span class="icon icon-computer" />
             </a>
         </p>
         <p>
-            <a href="#project-cerberus" onclick="changeContent(this);">
+            <a href="#project-cerberus" onclick="changeContentNode(this);">
                 Cerberus <span class="icon icon-discord" />
             </a>
         </p>
         <p>
-            <a href="#project-streamlink" onclick="changeContent(this);">
+            <a href="#project-streamlink" onclick="changeContentNode(this);">
                 Streamlink <span class="icon icon-computer" />
             </a>
         </p>
@@ -256,7 +256,7 @@
 
 <!-- Project - MarriageBot -->
 <div id="project-marriagebot" class="content project hidable" data-hidden="1">
-    <a href="#projects" onclick="changeContent(this);">
+    <a href="#projects" onclick="changeContentNode(this);">
         <img class="image" src="{{ static('/images/marriagebot/rings.png') }}" />
     </a>
     <h1>MarriageBot</h1>
@@ -287,7 +287,7 @@
 
 <!-- Project - Flower -->
 <div id="project-flower" class="content project hidable" data-hidden="1">
-    <a href="#projects" onclick="changeContent(this);">
+    <a href="#projects" onclick="changeContentNode(this);">
         <img class="image" src="{{ static('/images/flower/FlowerTransparentCropped.png') }}" />
     </a>
     <h1>Flower</h1>
@@ -318,7 +318,7 @@
 
 <!-- Project - Over 18 -->
 <div id="project-over18" class="content project hidable" data-hidden="1">
-    <a href="#projects" onclick="changeContent(this);">
+    <a href="#projects" onclick="changeContentNode(this);">
         <img class="logo" src="{{ logo }}" />
     </a>
     <h1>Over 18 Age Checker</h1>
@@ -335,7 +335,7 @@
 
 <!-- Project - Profile -->
 <div id="project-profile" class="content project hidable" data-hidden="1">
-    <a href="#projects" onclick="changeContent(this);">
+    <a href="#projects" onclick="changeContentNode(this);">
         <img class="image rounded" src="{{ static('/images/profile/logo.png') }}" />
     </a>
     <h1>Profile</h1>
@@ -366,7 +366,7 @@
 
 <!-- Project - TitleScraper -->
 <div id="project-titlescraper" class="content project hidable" data-hidden="1">
-    <a href="#projects" onclick="changeContent(this);">
+    <a href="#projects" onclick="changeContentNode(this);">
         <img class="logo" src="{{ logo }}" />
     </a>
     <h1>TitleScraper</h1>
@@ -383,7 +383,7 @@
 
 <!-- Project - Cerberus -->
 <div id="project-cerberus" class="content project hidable" data-hidden="1">
-    <a href="#projects" onclick="changeContent(this);">
+    <a href="#projects" onclick="changeContentNode(this);">
         <img class="image rounded" src="{{ static('/images/cerberus/Cerberus.png') }}" />
     </a>
     <h1>Cerberus</h1>
@@ -409,7 +409,7 @@
 
 <!-- Project - Streamlinkj -->
 <div id="project-streamlink" class="content project hidable" data-hidden="1">
-    <a href="#projects" onclick="changeContent(this);">
+    <a href="#projects" onclick="changeContentNode(this);">
         <img class="logo" src="{{ logo }}" />
     </a>
     <h1>Streamlink</h1>
@@ -425,7 +425,8 @@
 
 <!-- Script to change displayed content with anchor click -->
 <script type="text/javascript">
-function changeContent(linkNode) {
+function changeContentNode(linkNode) {
+    return
     let link = linkNode.getAttribute("href").slice(1);
     let hidables = document.querySelectorAll(".hidable");
     let found = false;
@@ -435,6 +436,25 @@ function changeContent(linkNode) {
     }
     if(!found) document.querySelector("#main").dataset.hidden = "0";
 }
+
+
+function changeContentString(hash) {
+    let hidables = document.querySelectorAll(".hidable");
+    let found = false;
+    for(h of hidables) {
+        h.dataset.hidden = hash == h.id ? "0" : "1";
+        found = hash == h.id || found;
+    }
+    if(!found) document.querySelector("#main").dataset.hidden = "0";
+}
+
+
+changeContentString(window.location.hash.slice(1));
+
+
+window.addEventListener('hashchange', function() {
+    changeContentString(window.location.hash.slice(1));
+});
 </script>
 
 </body>
