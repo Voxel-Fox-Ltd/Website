@@ -1,0 +1,8 @@
+[[card]]
+    name = "MarriageBot"
+    [[card.links]]
+        name = "Terms of Service"
+        link = "/md/terms_of_service/MarriageBot.md"
+    [[card.links]]
+        name = "Privacy Policy"
+        link = "/md/privacy_policy/MarriageBot.md"
