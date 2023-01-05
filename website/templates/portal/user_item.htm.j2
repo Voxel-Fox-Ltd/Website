@@ -12,7 +12,7 @@
 
 
 <div class="container">
-    <div id="item">
+    <div class="item">
         <h1 class="title">{{ item.name }}</h1>
         <div class="block">
             {% if item.description %}
@@ -29,20 +29,22 @@
 {# Stripe #}
 <script src="https://js.stripe.com/v3/"></script>
 <script
+        id="stripe-script"
         name="{{ item.name }}"
         user-id="{{ user_id }}"
         guild-id="{{ guild_id }}"
         button="stripe-button">
 var stripe = Stripe("pk_live_0Fx3FqHVF6tDXipvuUxdSDeu00egEyOnyO");
-var button = document.getElementById(document.currentScript.getAttribute("button"));
+var pps = document.getElementById("stripe-script");
+var button = document.getElementById(pps.getAttribute("button"));
 button.innerHTML = "<button class='button'>Checkout with Stripe</button>";
 button.onclick = () => {
     fetch("/webhooks/stripe/create_checkout_session", {
         method: "POST",
         body: JSON.stringify({
-            product_name: document.currentScript.getAttribute("name"),
-            discord_user_id: document.currentScript.getAttribute("user-id"),
-            discord_guild_id: document.currentScript.getAttribute("guild-id"),
+            product_name: pps.getAttribute("name"),
+            discord_user_id: pps.getAttribute("user-id"),
+            discord_guild_id: pps.getAttribute("guild-id"),
         }),
     }).then(function (response) {
         return response.json();
@@ -71,10 +73,12 @@ button.onclick = () => {
 {% if item.subscription %}
 <script src="{{ pp_base }}?client-id={{ client_id }}&vault=true"></script>
 <script
+        id="paypal-script"
         user-id="{{ user_id }}"
         guild-id="{{ guild_id }}"
         plan-id="{{ item.paypal_plan_id }}"
         button="paypal-button">
+var pps = document.getElementById("paypal-script");
 paypal.Buttons({
     style: {
         label: 'subscribe',
@@ -84,17 +88,17 @@ paypal.Buttons({
     },
    createSubscription: function(data, actions) {
         return actions.subscription.create({
-           'plan_id': document.currentScript.getAttribute("plan-id"),
+           'plan_id': pps.getAttribute("plan-id"),
            'custom_id': JSON.stringify({
-                discord_user_id: document.currentScript.getAttribute("user-id"),
-                discord_guild_id: document.currentScript.getAttribute("guild-id"),
+                discord_user_id: pps.getAttribute("user-id"),
+                discord_guild_id: pps.getAttribute("guild-id"),
             }),
         });
     },
     onApprove: function(data, actions) {
         alert(data.subscriptionID);
     }
-}).render("#" + document.currentScript.getAttribute("button"));
+}).render("#" + pps.getAttribute("button"));
 </script>
 
 
@@ -102,10 +106,12 @@ paypal.Buttons({
 {% else %}
 <script src="{{ pp_base }}?client-id={{ client_id }}"></script>
 <script
+        id="paypal-script"
         user-id="{{ user_id }}"
         guild-id="{{ guild_id }}"
         price="{{ item.price_number }}"
         button="paypal-button">
+var pps = document.getElementById("paypal-script");
 paypal.Buttons({
     style: {
         label: 'paypal',
@@ -117,11 +123,11 @@ paypal.Buttons({
         return actions.order.create({
             purchase_units: [{
                 amount: {
-                    value: document.currentScript.getAttribute("price"),
+                    value: pps.getAttribute("price"),
                 },
                 custom_id: JSON.stringify({
-                    discord_user_id: document.currentScript.getAttribute("user-id"),
-                    discord_guild_id: document.currentScript.getAttribute("guild-id"),
+                    discord_user_id: pps.getAttribute("user-id"),
+                    discord_guild_id: pps.getAttribute("guild-id"),
                 }),
             }],
         });
@@ -129,7 +135,7 @@ paypal.Buttons({
     onApprove: function(data, actions) {
         alert(data.subscriptionID);
     }
-}).render("#" + document.currentScript.getAttribute("button"));
+}).render("#" + pps.getAttribute("button"));
 </script>
 {% endif %}
 
