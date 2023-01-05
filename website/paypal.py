@@ -1,61 +1,68 @@
 import json
 from urllib.parse import parse_qs
 from datetime import datetime as dt, timedelta
-import typing
+from typing import Tuple, Generator
+import logging
 
 import aiohttp
 from aiohttp.web import Request, RouteTableDef, Response, json_response
+from discord.ext import vbu
 import pytz
 
+
 from .utils.get_paypal_access_token import get_paypal_access_token
+from .utils.db_util import CheckoutItem, store_transaction
 
 
 routes = RouteTableDef()
+log = logging.getLogger("voxelfox")
 PAYPAL_BASE = "https://api-m.paypal.com"  # "https://api-m.sandbox.paypal.com"
 
 
-
 """
-Just so I can have it written here with the rest of the relevant data, these are the valid IPN transaction types
-(list taken from https://developer.paypal.com/docs/ipn/integration-guide/IPNandPDTVariables/#id08CTB0S055Z)
+Just so I can have it written here with the rest of the relevant data, these
+are the valid IPN transaction types (list taken from the IPN list).
+https://developer.paypal.com/docs/ipn/integration-guide/IPNandPDTVariables/
 
-null - Chargeback
-adjustment - Dispute resolution
+* null - Chargeback
+* adjustment - Dispute resolution
 
-cart - Payment received for multiple items
-express_checkout - Payment for a single item
-masspay - Payment sent using mass pay
-web_accept - Any of the buy now buttons
+* cart - Payment received for multiple items
+* express_checkout - Payment for a single item
+* masspay - Payment sent using mass pay
+* web_accept - Any of the buy now buttons
 
-merch_pmt - Monthly subscription payment via merchant
+* merch_pmt - Monthly subscription payment via merchant
 
-mp_cancel - Billing agreement cancelled
+* mp_cancel - Billing agreement cancelled
 
-new_case - New dispute opened
+* new_case - New dispute opened
 
-payout - Payout related to global shipping transaction
+* payout - Payout related to global shipping transaction
 
-pro_hosted - Payment received via "website payments pro hosted solution" whatever that is
+* pro_hosted - Payment received via "website payments pro hosted solution"
+whatever that is
 
-recurring_payment - Recurring payment received
-recurring_payment_expired
-recurring_payment_failed
-recurring_payment_profile_cancel
-recurring_payment_profile_created
-recurring_payment_skipped
-recurring_payment_suspended
-recurring_payment_suspended_due_to_max_failed_payment
+* recurring_payment - Recurring payment received
+* recurring_payment_expired
+* recurring_payment_failed
+* recurring_payment_profile_cancel
+* recurring_payment_profile_created
+* recurring_payment_skipped
+* recurring_payment_suspended
+* recurring_payment_suspended_due_to_max_failed_payment
 
-send_money - Generic "payment recieved" eg if someone just sends money to your account
+* send_money - Generic "payment recieved" eg if someone just sends money to
+your account
 
-subscr_cancel - Cancelled subscription
-subscr_eot - Expired subscription
-subscr_failed - Failed subscription payment
-subscr_modify
-subscr_payment - Subscription payment received
-subscr_signup - Subscription signup (doesn't mean payment received)
+* subscr_cancel - Cancelled subscription
+* subscr_eot - Expired subscription
+* subscr_failed - Failed subscription payment
+* subscr_modify
+* subscr_payment - Subscription payment received
+* subscr_signup - Subscription signup (doesn't mean payment received)
 
-virtual_terminal - Payment received via virtual terminal
+* virtual_terminal - Payment received via virtual terminal
 """
 
 
@@ -76,74 +83,95 @@ async def create_checkout_session(request: Request):
     metadata = post_data
 
     # Get the item data from the database
-    async with request.app['database']() as db:
-        item_rows = await db(
-            """SELECT * FROM checkout_items WHERE product_name=$1""",
-            product_name,
-        )
-    if not item_rows:
+    async with vbu.Database() as db:
+        item = await CheckoutItem.fetch(db, product_name)
+    if not item:
         raise Exception(f"Missing item {product_name} from database")
-    item_row = item_rows[0]
 
     # Ask Stripe for the information about the item
     async with aiohttp.ClientSession() as session:
-        url = f"https://api.stripe.com/v1/prices/{item_row['stripe_price_id']}"
+        url = f"https://api.stripe.com/v1/prices/{item.stripe_price_id}"
         auth = aiohttp.BasicAuth(request.app['config']['stripe_api_key'])
         async with session.get(url, auth=auth) as r:
             product_data = await r.json()
             if not r.ok:
-                return json_response({}, status=500, headers={"Access-Control-Allow-Origin": "*"})
+                return json_response(
+                    {},
+                    status=500,
+                    headers={"Access-Control-Allow-Origin": "*"},
+                )
 
-    # Ask PayPal for the right data
-    if item_row['subscription']:
-        data = await create_subscription_checkout_session(request, product_name, quantity, item_row, product_data, metadata)
+    # Ask PayPal to create a checkout session
+    args = (
+        request,
+        quantity,
+        item,
+        product_data,
+        metadata,
+    )
+    if item.subscription:
+        data = await create_subscription_checkout_session(*args)
     else:
-        data = await create_single_purchase_checkout_session(request, product_name, quantity, item_row, product_data, metadata)
+        data = await create_single_purchase_checkout_session(*args)
     if data.status == 500:
         return data
-    data = json.loads(data.text)
-    return json_response({"subscription": item_row['subscription'], "id": data['id']}, headers={"Access-Control-Allow-Origin": "*"})
+
+    # Give that back to the user
+    if not data.text:
+        raise Exception
+    parsed: dict = json.loads(data.text)
+    return json_response(
+        {
+            "subscription": item.subscription,
+            "id": parsed['id'],
+        },
+        headers={"Access-Control-Allow-Origin": "*"},
+    )
 
 
 async def create_single_purchase_checkout_session(
         request: Request,
-        product_name: str,
         quantity: int,
-        item_row: dict,
+        checkout_item: CheckoutItem,
         product_data: dict,
-        metadata: dict):
+        metadata: dict) -> Response:
     """
     Create a single checkout session item.
     """
 
-    # Make params to send to PayPal
+    amount = {
+        "currency_code": product_data['currency'],
+        "value": str((product_data['unit_amount'] * quantity) / 100),
+        "breakdown": {
+            "item_total": {
+                "currency_code": product_data['currency'],
+                "value": str((product_data['unit_amount'] * quantity) / 100)
+            },
+            "shipping": {
+                "currency_code": product_data['currency'],
+                "value": "0",
+            },
+            "discount": {
+                "currency_code": product_data['currency'],
+                "value": "0",
+            },
+        }
+    }
+    item = {
+        "name": checkout_item.name,
+        "unit_amount": {
+            "currency_code": product_data['currency'],
+            "value": str(product_data['unit_amount'] / 100),
+        },
+        "quantity": str(quantity),
+        "category": "DIGITAL_GOODS",
+    }
     data = {
         "intent": "CAPTURE",
         "purchase_units": [
             {
-                "amount": {
-                    "currency_code": product_data['currency'],
-                    "value": str((product_data['unit_amount'] * quantity) / 100),
-                    "breakdown": {
-                        "item_total": {
-                            "currency_code": product_data['currency'],
-                            "value": str((product_data['unit_amount'] * quantity) / 100)
-                        },
-                        "shipping": {"currency_code": product_data['currency'], "value": "0"},
-                        "discount": {"currency_code": product_data['currency'], "value": "0"},
-                    }
-                },
-                "items": [
-                    {
-                        "name": item_row['product_name'],
-                        "unit_amount": {
-                            "currency_code": product_data['currency'],
-                            "value": str(product_data['unit_amount'] / 100),
-                        },
-                        "quantity": str(quantity),
-                        "category": "DIGITAL_GOODS",
-                    }
-                ],
+                "amount": amount,
+                "items": [item],
                 "custom_id": json.dumps(metadata),
             }
         ]
@@ -167,9 +195,8 @@ async def create_single_purchase_checkout_session(
 
 async def create_subscription_checkout_session(
         request: Request,
-        product_name: str,
         quantity: int,
-        item_row: dict,
+        checkout_item: CheckoutItem,
         product_data: dict,
         metadata: dict):
     """
@@ -178,7 +205,7 @@ async def create_subscription_checkout_session(
 
     # Make params to send to PayPal
     data = {
-        "plan_id": item_row['paypal_plan_id'],
+        "plan_id": checkout_item.paypal_plan_id,
         "quantity": str(quantity),
         "custom_id": json.dumps(metadata),
     }
@@ -208,50 +235,68 @@ async def paypal_ipn_complete(request: Request):
     # Get the data from the post request
     content_bytes: bytes = await request.content.read()
     paypal_data_string: str = content_bytes.decode()
+    paypal_data: dict
     try:
-        paypal_data = {i.strip(): o[0].strip() for i, o in parse_qs(paypal_data_string).items()}
+        paypal_data = {
+            i.strip(): o[0].strip()
+            for i, o in parse_qs(paypal_data_string).items()
+        }
     except Exception:
         paypal_data = {'receiver_email': '@business.example.com'}
 
     # Let's throw that into a logger
-    request.app['logger'].debug(f"Data from PayPal: {paypal_data_string}")
+    log.info(f"Data from PayPal: {json.dumps(paypal_data_string)}")
 
     # Get the right URL based on whether this is a sandbox payment or not
+    use_sandbox = (
+        paypal_data['receiver_email'].casefold()
+        .endswith('@business.example.com')
+    )
     paypal_url = {
         False: "https://ipnpb.paypal.com/cgi-bin/webscr",
         True: "https://ipnpb.sandbox.paypal.com/cgi-bin/webscr",
-    }[paypal_data['receiver_email'].casefold().endswith('@business.example.com')]
+    }[use_sandbox]
 
     # Send the data back to PayPal to make sure it's valid
     data_send_back = "cmd=_notify-validate&" + paypal_data_string
-    async with aiohttp.ClientSession(loop=request.app.loop) as session:
-
-        # Send the data back to check it
-        async with session.post(paypal_url, data=data_send_back) as site:
-            site_data = await site.read()
-            if site_data.decode() != "VERIFIED":
-                request.app['logger'].info("Invalid data sent to PayPal IPN url")
-                return Response(status=200)  # Oh no it was fake data
-        request.app['logger'].info("Valid data sent to PayPal IPN url :)")
+    async with aiohttp.ClientSession() as session:
+        resp = await session.post(paypal_url, data=data_send_back)
+        site_data = await resp.read()
+        if site_data.decode() != "VERIFIED":
+            # Fake data, but PayPal expects a 200
+            return Response(status=200)
 
     # Process the data
     event = paypal_data.get('txn_type')
+    charge_capture_events = [
+        "cart",
+        "express_checkout",
+        "web_accept",
+        None,
+    ]
+    subscription_create_events = [
+        "recurring_payment_profile_created",
+        "recurring_payment",
+    ]
+    subscription_cancel_events = [
+        "recurring_payment_profile_cancel",
+        "recurring_payment_suspended",
+        "recurring_payment_suspended_due_to_max_failed_payment",
+    ]
     try:
-        if event in ["cart", "express_checkout", "web_accept", None]:
-            request.app['logger'].info("charge captured")
+        if event in charge_capture_events:
             await charge_captured(request, paypal_data)  # Also refunds
-        elif event in ["recurring_payment_profile_created", "recurring_payment"]:
-            request.app['logger'].info("subscritpion created")
+        elif event in subscription_create_events:
             await subscription_created(request, paypal_data)
-        elif event in [
-                "recurring_payment_profile_cancel", "recurring_payment_suspended",
-                "recurring_payment_suspended_due_to_max_failed_payment"]:
-            request.app['logger'].info("subscrpitpin stopped")
+        elif event in subscription_cancel_events:
             await subscription_deleted(request, paypal_data)
         else:
-            request.app['logger'].info(f"unhandled paypal event '{event}'")
+            log.info(f"Unhandled PayPal event '{event}'")
     except Exception as e:
-        request.app['logger'].error("Errored when processing PayPal IPN data", exc_info=e)
+        log.error(
+            "Errored when processing PayPal IPN data",
+            exc_info=e,
+        )
         raise
 
     # And we have no more events to process
@@ -282,28 +327,30 @@ def get_datetime_from_standard_format(string: str) -> dt:
     return dt.strptime(string, "%Y-%m-%dT%H:%M:%SZ")
 
 
-def get_time_around_datetime(datetime: dt) -> typing.Tuple[dt, dt]:
+def get_time_around_datetime(datetime: dt) -> Tuple[dt, dt]:
+    constructor = (datetime.year, datetime.month, datetime.day,)
     return (
-        dt(datetime.year, datetime.month, datetime.day),
-        dt(datetime.year, datetime.month, datetime.day) + timedelta(days=1),
+        dt(*constructor),
+        dt(*constructor) + timedelta(days=1),
     )
 
 
-async def get_subscription_by_subscription_id(request: Request, subscription_id: str) -> dict:
+async def get_subscription_by_subscription_id(
+        request: Request,
+        subscription_id: str) -> dict:
     """
     Get the information for a subscription (not a plan) given its ID.
     """
 
     access_token = await get_paypal_access_token(request)
     async with aiohttp.ClientSession() as session:
-        url = PAYPAL_BASE + "/v1/billing/subscriptions/{0}".format(subscription_id)
+        url = f"{PAYPAL_BASE}/v1/billing/subscriptions/{subscription_id}"
         headers = {"Authorization": f"Bearer {access_token}"}
-        async with session.get(url, headers=headers) as r:
-            response_data = await r.json()
-    return response_data
+        resp = await session.get(url, headers=headers)
+        return await resp.json()
 
 
-def get_products_from_charge(data: dict):
+def get_products_from_charge(data: dict) -> Generator[dict, None, None]:
     """
     Get the products from a given charge object.
     """
@@ -333,9 +380,6 @@ async def charge_captured(request: Request, data: dict):
     Pinged when a user purchases an object via checkout.
     """
 
-    # Get the purchased items
-    products = list(get_products_from_charge(data))
-
     # See if they're refunded
     refunded = data['payment_status'] in ['Denied', 'Refunded', 'Reversed']
 
@@ -345,52 +389,70 @@ async def charge_captured(request: Request, data: dict):
 
     # See if it's a subscription refund
     if data.get('recurring_payment_id'):
-        recurring_payment_info = await get_subscription_by_subscription_id(request, data['recurring_payment_id'])
+        recurring_payment_info = await get_subscription_by_subscription_id(
+            request,
+            data['recurring_payment_id'],
+        )
         metadata.update(json.loads(recurring_payment_info.get("custom_id", "{}")))
         metadata.update(json.loads(recurring_payment_info.get("custom", "{}")))
 
     # Grab the data from the database for each of the items
-    async with request.app['database']() as db:
-        item_rows = await db(
-            """SELECT * FROM checkout_items WHERE product_name=ANY($1::TEXT[])""",
-            [i['name'] for i in products],
-        )
+    products = get_products_from_charge(data)
+    async with vbu.Database() as db:
+        item_list = [
+            await CheckoutItem.fetch(db, i['name'])
+            for i in products
+        ]
+    item_list = [i for i in item_list if i]
 
     # Fix up those dicts to include quantity
-    item_rows = [dict(i) for i in item_rows]
-    for i in item_rows:
+    for i in item_list:
         for p in products:
-            if i['product_name'] == p['name']:
-                i['quantity'] = p['quantity']
-                break
+            if i.name == p['name']:
+                i.quantity = p['quantity']
+                break  # Only break out of the inner loop
 
     # And send a POST request for each of the items
+    db_data = []
     async with aiohttp.ClientSession() as session:
-        async with request.app['database']() as db:
-            for row in item_rows:
-                if not row['transaction_webhook']:
-                    request.app['logger'].info(f"No transaction webhook for {row['product_name']}")
-                    continue
-                headers = {"Authorization": row['transaction_webhook_authorization']}
-                json_data = {
-                    "product_name": row['product_name'],
-                    "quantity": row['quantity'],
-                    "refund": refunded,
-                    "subscription": False,
-                    **metadata,
-                    "subscription_expiry_time": None,
-                    "source": "PayPal",
-                    "subscription_delete_url": None,
-                }
-                await db.call(
-                    """INSERT INTO transactions (timestamp, source, data)
-                    VALUES ($1, 'PayPal', $2)""",
-                    dt.utcnow(), json.dumps(json_data),
-                )
-                request.app['logger'].info(f"Sending POST {row['transaction_webhook']} {json_data}")
-                async with session.post(row['transaction_webhook'], json=json_data, headers=headers) as r:
-                    body = await r.read()
-                    request.app['logger'].info(f"POST {row['transaction_webhook']} returned {r.status} {body}")
+        for item in item_list:
+
+            # Only bother if we have a webhook
+            if not item.webhook:
+                log.info(f"No transaction webhook for {item.name}")
+                continue
+
+            # Build our send data
+            headers = {
+                "Authorization":
+                item.webhook_auth,
+            }
+            json_data = {
+                "product_name": item.name,
+                "quantity": item.quantity,
+                "refund": refunded,
+                "subscription": False,
+                **metadata,
+                "subscription_expiry_time": None,
+                "source": "PayPal",
+                "subscription_delete_url": None,
+            }
+            db_data.append((dt.utcnow(), 'PayPal', json_data,))
+            log.info(f"Sending POST {item.webhook} {json_data}")
+
+            # And request
+            kwargs = {
+                "json": json_data,
+                "headers": headers
+            }
+            resp = await session.post(item.webhook, **kwargs)
+            body = await resp.read()
+            log.info(f"POST {item.webhook} returned {resp.status} {body}")
+
+    # Add these transactions to the database
+    async with vbu.Database() as db:
+        for d in db_data:
+            await store_transaction(db, *d)
 
 
 async def subscription_created(request: Request, data: dict):
@@ -403,27 +465,28 @@ async def subscription_created(request: Request, data: dict):
     recurring_payment_id = data['recurring_payment_id']
 
     # Get the recurring payment info
-    recurring_payment_info = await get_subscription_by_subscription_id(request, recurring_payment_id)
+    recurring_payment_info = await get_subscription_by_subscription_id(
+        request,
+        recurring_payment_id,
+    )
     metadata = json.loads(recurring_payment_info.get('custom_id', "{}"))
     metadata.update(json.loads(recurring_payment_info.get('custom', "{}")))
 
     # Grab the data from the database
-    async with request.app['database']() as db:
-        item_rows = await db(
-            """SELECT * FROM checkout_items WHERE product_name=$1""",
-            product_name
-        )
-    item = item_rows[0]
+    async with vbu.Database() as db:
+        item = await CheckoutItem.fetch(db, product_name)
+    if item is None:
+        raise Exception(f"Unknown product {product_name}")
 
     # And send a POST request for the item
     async with aiohttp.ClientSession() as session:
-        if not item['transaction_webhook']:
-            request.app['logger'].info(f"No transaction webhook for {item['product_name']}")
+        if not item.webhook:
+            log.info(f"No transaction webhook for {item.name}")
             return
-        headers = {"Authorization": item['transaction_webhook_authorization']}
+        headers = {"Authorization": item.webhook_auth}
         json_data = {
-            "product_name": product_name,
-            "quantity": 1,
+            "product_name": item.name,
+            "quantity": item.quantity,
             "refund": False,
             "subscription": True,
             **metadata,
@@ -431,16 +494,12 @@ async def subscription_created(request: Request, data: dict):
             "source": "PayPal",
             "subscription_delete_url": f"{PAYPAL_BASE}/v1/billing/subscriptions/{recurring_payment_id}/cancel",
         }
-        async with request.app['database']() as db:
-            await db.call(
-                """INSERT INTO transactions (timestamp, source, data)
-                VALUES ($1, 'PayPal', $2)""",
-                dt.utcnow(), json.dumps(json_data),
-            )
-        request.app['logger'].info(f"Sending POST {item['transaction_webhook']} {json_data}")
-        async with session.post(item['transaction_webhook'], json=json_data, headers=headers) as r:
-            body = await r.read()
-            request.app['logger'].info(f"POST {item['transaction_webhook']} returned {r.status} {body}")
+        async with vbu.Database() as db:
+            await store_transaction(db, dt.utcnow(), 'PayPal', json_data)
+        log.info(f"Sending POST {item.webhook} {json_data}")
+        resp = await session.post(item.webhook, json=json_data, headers=headers)
+        body = await resp.read()
+        log.info(f"POST {item.webhook} returned {resp.status} {body}")
 
 
 async def subscription_deleted(request: Request, data: dict):
@@ -453,31 +512,33 @@ async def subscription_deleted(request: Request, data: dict):
     recurring_payment_id = data['recurring_payment_id']
 
     # Get the recurring payment info
-    recurring_payment_info = await get_subscription_by_subscription_id(request, recurring_payment_id)
+    recurring_payment_info = await get_subscription_by_subscription_id(
+        request,
+        recurring_payment_id,
+    )
     metadata = json.loads(recurring_payment_info.get('custom_id', "{}"))
     metadata.update(json.loads(recurring_payment_info.get('custom', "{}")))
 
     # Grab the data from the database
-    async with request.app['database']() as db:
-        item_rows = await db(
-            """SELECT * FROM checkout_items WHERE product_name=$1""",
-            product_name
-        )
-    item = item_rows[0]
+    async with vbu.Database() as db:
+        item = await CheckoutItem.fetch(db, product_name)
+    if item is None:
+        raise Exception(f"Unknown product name {product_name}")
 
     # Get the last payment time
-    last_purchase = get_datetime_from_standard_format(recurring_payment_info['billing_info']['last_payment']['time'])
+    payment_time_str = recurring_payment_info['billing_info']['last_payment']['time']
+    last_purchase = get_datetime_from_standard_format(payment_time_str)
     expiry_time = last_purchase + timedelta(days=30)
 
     # And send a POST request for the item
     async with aiohttp.ClientSession() as session:
-        if not item['transaction_webhook']:
-            request.app['logger'].info(f"No transaction webhook for {item['product_name']}")
+        if not item.webhook:
+            log.info(f"No transaction webhook for {item.name}")
             return
-        headers = {"Authorization": item['transaction_webhook_authorization']}
+        headers = {"Authorization": item.webhook_auth}
         json_data = {
-            "product_name": product_name,
-            "quantity": 1,
+            "product_name": item.name,
+            "quantity": item.quantity,
             "refund": False,
             "subscription": True,
             **metadata,
@@ -485,13 +546,9 @@ async def subscription_deleted(request: Request, data: dict):
             "source": "PayPal",
             "subscription_delete_url": None,
         }
-        async with request.app['database']() as db:
-            await db.call(
-                """INSERT INTO transactions (timestamp, source, data)
-                VALUES ($1, 'PayPal', $2)""",
-                dt.utcnow(), json.dumps(json_data),
-            )
-        request.app['logger'].info(f"Sending POST {item['transaction_webhook']} {json_data}")
-        async with session.post(item['transaction_webhook'], json=json_data, headers=headers) as r:
-            body = await r.read()
-            request.app['logger'].info(f"POST {item['transaction_webhook']} returned {r.status} {body}")
+        async with vbu.Database() as db:
+            await store_transaction(db, dt.utcnow(), 'PayPal', json_data)
+        log.info(f"Sending POST {item.webhook} {json_data}")
+        resp = await session.post(item.webhook, json=json_data, headers=headers)
+        body = await resp.read()
+        log.info(f"POST {item.webhook} returned {resp.status} {body}")
