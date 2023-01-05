@@ -1,12 +1,11 @@
 from urllib.parse import urlencode
 import pathlib
 
-import aiohttp
 from aiohttp.web import RouteTableDef, Request, HTTPFound, Response
 from aiohttp_jinja2 import template
 import aiohttp_session
-from voxelbotutils import web as webutils
 import toml
+from discord.ext import vbu
 
 
 routes = RouteTableDef()
@@ -20,7 +19,7 @@ def get_project_file(filename: str) -> list:
 
 @routes.get("/")
 @template("index.htm.j2")
-async def index(request: Request):
+async def index(_: Request):
     """
     Index page for the website.
     """
@@ -32,7 +31,7 @@ async def index(request: Request):
 
 
 @routes.get("/gforms")
-@webutils.requires_login()
+@vbu.web.requires_login()
 async def gforms(request: Request):
     """
     Redirect to Google forms with given items filled in with session data.
@@ -49,32 +48,56 @@ async def gforms(request: Request):
 
     # See if we need to grab it from the database
     if alias:
-        async with request.app['database']() as db:
-            rows = await db("SELECT * FROM google_forms_redirects WHERE alias=$1", alias)
+        async with vbu.Database() as db:
+            rows = await db.call(
+                """
+                SELECT
+                    *
+                FROM
+                    google_forms_redirects
+                WHERE
+                    alias = $1
+                """,
+                alias,
+            )
         if not rows:
-            return Response(text="No relevant form found.", status=404)
+            return Response(
+                text="No relevant form found.",
+                status=404,
+            )
         username = [rows[0].get('username_field_id', 0)]
         user_id = [rows[0].get('user_id_field_id', 0)]
         form_id = rows[0]['form_id']
     elif form_id is None:
-        return Response(text="Missing 'f' param.", status=400)
+        return Response(
+            text="Missing 'f' param.",
+            status=400,
+        )
 
     # Redirect them
+    uif = session['user_info']
     params = {
-        **{f"entry.{u}": session['user_info']['username'] + '#' + str(session['user_info']['discriminator']) for u in username},
-        **{f"entry.{i}": str(session['user_id']) for i in user_id},
+        **{
+            f"entry.{u}": f"{uif['username']}#{uif['discriminator']}"
+            for u in username
+        },
+        **{
+            f"entry.{i}": f"{session['user_id']}"
+            for i in user_id
+        },
     }
-    return HTTPFound(f"https://docs.google.com/forms/d/e/{form_id}/viewform?{urlencode(params)}")
-
-    # https://docs.google.com/forms/d/e/1FAIpQLSc0Aq9H6SOArocMT7QKa4APbTwAFgfbzLb6pryY0u-MWfO1-g/viewform?
-    # usp=pp_url&entry.2031777926=owo&entry.1773918586=uwu
+    return HTTPFound(
+        f"https://docs.google.com/forms/d/e/{form_id}"
+        f"/viewform?{urlencode(params)}"
+    )
 
 
 @routes.get("/18")
 @template("18.html.j2")
-async def over_18(request: Request):
+async def over_18(_: Request):
     """
-    A page that shows when a person must have been born to be 18 on this current day.
+    A page that shows when a person must have been born to be 18 on this
+    current day.
     """
 
     return {}
@@ -98,8 +121,10 @@ async def markdown(request: Request):
     filename = filename.lstrip("/")
     target_file = pathlib.Path(f"./website/static/docs/{filename}")
     try:
-        assert target_file.exists()  # Make sure it exists
-        assert filename.endswith(".md")  # Make sure it's a markdown file
+        if not target_file.exists():
+            raise AssertionError
+        if not filename.endswith(".md"):
+            raise AssertionError
     except AssertionError:
         return Response(status=404)
 
