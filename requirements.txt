@@ -3,3 +3,4 @@ markdown2
 pytz
 pyopenssl
 pillow
+typing_extensions

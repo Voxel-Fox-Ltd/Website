@@ -1,6 +1,7 @@
 import json
 from datetime import datetime as dt
-from typing import Optional, Self, Literal
+from typing import Optional, Literal
+from typing_extensions import Self
 
 from discord.ext import vbu
 
