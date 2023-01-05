@@ -1,3 +1,6 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+
 CREATE TABLE IF NOT EXISTS guild_settings(
     guild_id BIGINT PRIMARY KEY,
     prefix VARCHAR(30)
@@ -18,6 +21,7 @@ CREATE TABLE IF NOT EXISTS google_forms_redirects(
 
 
 CREATE TABLE IF NOT EXISTS checkout_items(
+    id UUID NOT NULL DEFAULT uuid_generate_v4(),
     product_name TEXT PRIMARY KEY,
     success_url TEXT NOT NULL,
     cancel_url TEXT NOT NULL,
@@ -46,7 +50,10 @@ CREATE TABLE IF NOT EXISTS checkout_items(
 
     -- Whether or not the product is per guild (true) or per user (false). Only
     -- applies to purchases done through this site; not to externals.
-    per_guild BOOLEAN NOT NULL DEFAULT FALSE
+    per_guild BOOLEAN NOT NULL DEFAULT FALSE,
+
+    -- Text to be displayed on the portal page.
+    description TEXT
 );
 
 

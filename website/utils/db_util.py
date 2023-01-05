@@ -2,6 +2,7 @@ import json
 from datetime import datetime as dt
 from typing import Optional, Literal
 from typing_extensions import Self
+import uuid
 
 from discord.ext import vbu
 
@@ -16,6 +17,7 @@ class CheckoutItem:
 
     def __init__(
             self,
+            id: uuid.UUID | str,
             product_name: str,
             success_url: str,
             cancel_url: str,
@@ -30,7 +32,9 @@ class CheckoutItem:
             refund_sql: str,
             cancel_sql: str,
             product_group: str,
-            per_guild: bool):
+            per_guild: bool,
+            description: str):
+        self._id = id
         self.product_name: str = product_name
         self.success_url: str = success_url
         self.cancel_url: str = cancel_url
@@ -48,7 +52,13 @@ class CheckoutItem:
         self.product_group: str = product_group
         self.per_guild: bool = per_guild
 
+        self.description: str = description
+
         self.quantity: int = 1
+
+    @property
+    def id(self) -> str:
+        return str(self._id)
 
     @property
     def name(self) -> str:

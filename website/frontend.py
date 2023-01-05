@@ -25,7 +25,6 @@ async def index(_: Request):
     """
 
     return {
-        "include_back_button": False,
         "data": get_project_file("index"),
     }
 
