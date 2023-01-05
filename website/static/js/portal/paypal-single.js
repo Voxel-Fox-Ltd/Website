@@ -9,11 +9,11 @@ paypal.Buttons({
         return actions.order.create({
             purchase_units: [{
                 amount: {
-                    value: document.currentScript.getattribute("price"),
+                    value: document.currentScript.getAttribute("price"),
                 },
                 custom_id: JSON.stringify({
-                    discord_user_id: document.currentScript.getattribute("user-id"),
-                    discord_guild_id: document.currentScript.getattribute("guild-id"),
+                    discord_user_id: document.currentScript.getAttribute("user-id"),
+                    discord_guild_id: document.currentScript.getAttribute("guild-id"),
                 }),
             }],
         });
@@ -21,4 +21,4 @@ paypal.Buttons({
     onApprove: function(data, actions) {
         alert(data.subscriptionID);
     }
-}).render(document.currentScript.getattribute("button"));
+}).render(document.currentScript.getAttribute("button"));
