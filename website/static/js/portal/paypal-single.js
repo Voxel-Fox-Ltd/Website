@@ -21,4 +21,4 @@ paypal.Buttons({
     onApprove: function(data, actions) {
         alert(data.subscriptionID);
     }
-}).render(document.currentScript.getAttribute("button"));
+}).render("#" + document.currentScript.getAttribute("button"));
