@@ -58,6 +58,7 @@ class CheckoutItem:
         self.quantity: int = 1
 
         self.price: str | None = None
+        self.price_number: int = 0
 
     @property
     def id(self) -> str:
@@ -89,6 +90,7 @@ class CheckoutItem:
             product_data = await resp.json()
         if resp.ok:
             self.price = f"£{product_data['unit_amount'] / 100:.2f}"
+            self.price_number = product_data['unit_amount']
         else:
             self.price = "£0.00"
         if self.subscription:
