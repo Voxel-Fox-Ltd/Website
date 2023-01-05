@@ -1,0 +1,30 @@
+html {
+    background-color: #111111;
+}
+
+.title {
+    color: white;
+}
+
+.item {
+    padding: 20px;
+    color: white;
+}
+
+.name {
+    font-weight: bold;
+    font-size: 1.4rem;
+    margin-bottom: 5px;
+}
+
+.description {
+    margin-bottom: 5px;
+}
+
+.price {
+    margin-bottom: 5px;
+}
+
+.price span {
+    font-style: italic;
+}

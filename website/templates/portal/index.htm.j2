@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+    <link rel="stylesheet" type="text/css" href="{{ static('css/portal/index.css') }}" />
     <title>Voxel Fox Payment Portal</title>
 </head>
 <body>
@@ -14,11 +15,13 @@
             <h1 class="title">Per-Guild Items</h1>
         {% endif %}
         {% for item in guild_items %}
-            <div class="block">
-                <h2 class="subtitle">{{ item.name }}</h2>
-                <p>{{ item.description }}</p>
-                <p>Price: {{ item.price }}</p>
-                <a href="/portal/item/{{ item.id }}" class="button is-primary">Purchase</a>
+            <div class="item block">
+                <p class="name">{{ item.name }}</p>
+                {% if item.description %}
+                    <p class="description">{{ item.description }}</p>
+                {% endif %}
+                <p class="price">Price: <span>{{ item.price }}</span></p>
+                <a href="/portal/item/{{ item.id }}" class="button">Purchase</a>
             </div>
         {% endfor %}
     </div>
@@ -27,11 +30,13 @@
             <h1 class="title">Per-User Items</h1>
         {% endif %}
         {% for item in user_items %}
-            <div class="block">
-                <h2 class="subtitle">{{ item.name }}</h2>
-                <p>{{ item.description }}</p>
-                <p>Price: {{ item.price }}</p>
-                <a href="/portal/item/{{ item.id }}" class="button is-primary">Purchase</a>
+            <div class="item block">
+                <p class="name">{{ item.name }}</p>
+                {% if item.description %}
+                    <p class="description">{{ item.description }}</p>
+                {% endif %}
+                <p class="price">Price: {{ item.price }}</p>
+                <a href="/portal/item/{{ item.id }}" class="button">Purchase</a>
             </div>
         {% endfor %}
     </div>
