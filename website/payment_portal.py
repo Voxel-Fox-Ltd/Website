@@ -9,8 +9,8 @@ routes = RouteTableDef()
 
 
 @routes.get("/portal/{group}")
-@template("portal/index.htm.j2")
 @vbu.web.requires_login()
+@template("portal/index.htm.j2")
 async def index(request: Request):
     """
     Portal page for payments. This should show all items in the group.
@@ -25,7 +25,7 @@ async def index(request: Request):
             FROM
                 checkout_items
             WHERE
-                product_group = $1
+                LOWER(product_group) = LOWER($1)
             """,
             request.match_info["group"],
         )

@@ -23,8 +23,8 @@ CREATE TABLE IF NOT EXISTS google_forms_redirects(
 CREATE TABLE IF NOT EXISTS checkout_items(
     id UUID NOT NULL DEFAULT uuid_generate_v4(),
     product_name TEXT PRIMARY KEY,
-    success_url TEXT NOT NULL,
-    cancel_url TEXT NOT NULL,
+    success_url TEXT NOT NULL DEFAULT 'http://localhost',
+    cancel_url TEXT NOT NULL DEFAULT 'http://localhost',
     subscription BOOLEAN NOT NULL DEFAULT FALSE,
 
     stripe_product_id TEXT NOT NULL,
