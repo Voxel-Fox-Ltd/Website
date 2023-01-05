@@ -16,15 +16,21 @@ class CheckoutItem:
 
     def __init__(
             self,
-            product_name,
-            success_url,
-            cancel_url,
-            subscription,
-            stripe_product_id,
-            stripe_price_id,
-            paypal_plan_id,
-            transaction_webhook,
-            transaction_webhook_authorization):
+            product_name: str,
+            success_url: str,
+            cancel_url: str,
+            subscription: bool,
+            stripe_product_id: str,
+            stripe_price_id: str,
+            paypal_plan_id: Optional[str],
+            transaction_webhook: str,
+            transaction_webhook_authorization: str,
+            external_dsn: str,
+            success_sql: str,
+            refund_sql: str,
+            cancel_sql: str,
+            product_group: str,
+            per_guild: bool):
         self.product_name: str = product_name
         self.success_url: str = success_url
         self.cancel_url: str = cancel_url
@@ -34,6 +40,13 @@ class CheckoutItem:
         self.paypal_plan_id: Optional[str] = paypal_plan_id
         self.transaction_webhook: str = transaction_webhook
         self.transaction_webhook_authorization: str = transaction_webhook_authorization
+
+        self.external_dsn: str = external_dsn
+        self.success_sql: str = success_sql
+        self.refund_sql: str = refund_sql
+        self.cancel_sql: str = cancel_sql
+        self.product_group: str = product_group
+        self.per_guild: bool = per_guild
 
         self.quantity: int = 1
 

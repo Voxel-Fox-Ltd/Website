@@ -4,3 +4,4 @@ pytz
 pyopenssl
 pillow
 typing_extensions
+asyncpg

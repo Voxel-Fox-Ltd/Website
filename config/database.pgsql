@@ -33,11 +33,11 @@ CREATE TABLE IF NOT EXISTS checkout_items(
     -- A Postgres connection string to connect to a database for some other BS
     external_dsn TEXT,
     -- SQL to run on successful payment and/or subscription create.
-    success_statement TEXT,
+    success_sql TEXT,
     -- SQL to run on successful refund.
-    refund_statement TEXT,
+    refund_sql TEXT,
     -- SQL to run on cancelled subscription.
-    cancel_statement TEXT,
+    cancel_sql TEXT,
 
     -- When this page is fetched, products from the same group will be shown
     -- together if there is one. If no group, then the product will not appear
