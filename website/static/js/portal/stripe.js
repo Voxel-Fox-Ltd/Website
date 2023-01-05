@@ -1,5 +1,5 @@
 var stripe = Stripe("pk_live_0Fx3FqHVF6tDXipvuUxdSDeu00egEyOnyO");
-var button = document.getElementById(document.currentScript.getAttribute("button"));
+var button = parent.getElementById(document.currentScript.getAttribute("button"));
 button.innerHTML = "<button class='button'>Checkout with Stripe</button>";
 button.onclick = () => {
     fetch("/webhooks/stripe/create_checkout_session", {
