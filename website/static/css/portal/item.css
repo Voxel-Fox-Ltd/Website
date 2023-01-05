@@ -1,0 +1,36 @@
+html {
+    background-color: #111111;
+}
+
+body {
+    max-width: 600px;
+    margin: auto;
+    text-align: center;
+}
+
+.title {
+    color: white;
+    margin-bottom: 0 !important;
+}
+
+.item {
+    padding: 20px;
+    color: white;
+}
+
+.description {
+    margin-bottom: 5px;
+}
+
+.price {
+    margin-bottom: 5px;
+}
+
+.price span {
+    font-style: italic;
+}
+
+#stripe-button,
+#paypal-button {
+    width: 100%;
+}

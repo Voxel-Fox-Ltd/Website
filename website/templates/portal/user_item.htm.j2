@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
-    <link rel="stylesheet" type="text/css" href="{{ static('css/portal/user_item.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ static('css/portal/item.css') }}" />
     <link rel="icon" href="{{ static('/images/_voxelfox/logo.png') }}" />
     <title>Voxel Fox Payment Portal</title>
 </head>
@@ -12,14 +12,16 @@
 
 
 <div class="container">
-    <div id="items">
+    <div id="item">
         <h1 class="title">{{ item.name }}</h1>
-        {% if item.description %}
-            <p class="description">{{ item.description }}</p>
-        {% endif %}
-        <p class="price">Price: <span>{{ item.price }}</span></p>
-        <div id="stripe-button"></div>
-        <div id="paypal-button"></div>
+        <div class="block">
+            {% if item.description %}
+                <p class="description">{{ item.description }}</p>
+            {% endif %}
+            <p class="price">Price: <span>{{ item.price }}</span></p>
+        </div>
+        <div id="stripe-button" class="block"></div>
+        <div id="paypal-button" class="block"></div>
     </div>
 </div>
 
@@ -27,7 +29,6 @@
 {# Stripe #}
 <script src="https://js.stripe.com/v3/"></script>
 <script
-        {# src="{{ static('js/portal/stripe.js') }}" #}
         name="{{ item.name }}"
         user-id="{{ user_id }}"
         guild-id="{{ guild_id }}"
@@ -70,7 +71,6 @@ button.onclick = () => {
 {% if item.subscription %}
 <script src="{{ pp_base }}?client-id={{ client_id }}&vault=true"></script>
 <script
-        {# src="{{ static('js/portal/paypal-subscription.js') }}" #}
         user-id="{{ user_id }}"
         guild-id="{{ guild_id }}"
         plan-id="{{ item.paypal_plan_id }}"
@@ -102,14 +102,13 @@ paypal.Buttons({
 {% else %}
 <script src="{{ pp_base }}?client-id={{ client_id }}"></script>
 <script
-        {# src="{{ static('js/portal/paypal-single.js') }}" #}
         user-id="{{ user_id }}"
         guild-id="{{ guild_id }}"
         price="{{ item.price_number }}"
         button="paypal-button">
 paypal.Buttons({
     style: {
-        label: 'subscribe',
+        label: 'paypal',
         color: 'gold',
         tagline: false,
         layout: 'horizontal',
