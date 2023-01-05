@@ -30,21 +30,21 @@
 <script src="https://js.stripe.com/v3/"></script>
 <script
         id="stripe-script"
-        data-name="{{ item.product_name }}"
+        data-name="{{ item.name }}"
         data-user-id="{{ user_id }}"
         data-guild-id="{{ guild_id }}"
         data-button="stripe-button">
 var stripe = Stripe("pk_live_0Fx3FqHVF6tDXipvuUxdSDeu00egEyOnyO");
-var pps = document.getElementById("stripe-script");
-var button = document.getElementById(pps.dataset.button);
+var ss = document.getElementById("stripe-script");
+var button = document.getElementById(ss.dataset.button);
 button.innerHTML = "<button class='button'>Checkout with Stripe</button>";
 button.onclick = () => {
     fetch("/webhooks/stripe/create_checkout_session", {
         method: "POST",
         body: JSON.stringify({
-            product_name: pps.dataset.name,
-            discord_user_id: pps.dataset.userId,
-            discord_guild_id: pps.dataset.guildId,
+            product_name: ss.dataset.name,
+            discord_user_id: ss.dataset.userId,
+            discord_guild_id: ss.dataset.guildId,
         }),
     }).then(function (response) {
         return response.json();
