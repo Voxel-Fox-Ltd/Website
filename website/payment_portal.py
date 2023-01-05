@@ -33,6 +33,8 @@ async def index(request: Request):
         CheckoutItem.from_row(row)
         for row in item_rows
     ]
+    for i in items:
+        await i.fetch_price(request.app['config']['stripe_api_key'])
 
     # If there aren't any items then let's just redirect back to the index
     if not items:

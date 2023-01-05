@@ -4,6 +4,7 @@ from typing import Optional, Literal
 from typing_extensions import Self
 import uuid
 
+import aiohttp
 from discord.ext import vbu
 
 
@@ -56,6 +57,8 @@ class CheckoutItem:
 
         self.quantity: int = 1
 
+        self.price: str | None = None
+
     @property
     def id(self) -> str:
         return str(self._id)
@@ -71,6 +74,26 @@ class CheckoutItem:
     @property
     def webhook_auth(self) -> str:
         return self.transaction_webhook_authorization
+
+    async def fetch_price(self, stripe_api_key: str) -> str:
+        """
+        Fetches the price of the item from Stripe.
+        """
+
+        if self.price is not None:
+            return self.price
+        async with aiohttp.ClientSession() as session:
+            url = f"https://api.stripe.com/v1/prices/{self.stripe_price_id}"
+            auth = aiohttp.BasicAuth(stripe_api_key)
+            resp = await session.get(url, auth=auth)
+            product_data = await resp.json()
+        if resp.ok:
+            self.price = f"£{product_data['unit_amount'] / 100:.2f}"
+        else:
+            self.price = "£0.00"
+        if self.subscription:
+            self.price = f"{self.price} per month"
+        return self.price
 
     @classmethod
     def from_row(cls, row: dict) -> Self:
