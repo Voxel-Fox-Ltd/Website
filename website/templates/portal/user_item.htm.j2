@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+    <link rel="stylesheet" type="text/css" href="{{ static('css/portal/user_item.css') }}" />
+    <link rel="icon" href="{{ static('/images/_voxelfox/logo.png') }}" />
+    <title>Voxel Fox Payment Portal</title>
+</head>
+<body>
+
+
+<div class="container">
+    <div id="items">
+        <h1 class="title">{{ item.name }}</h1>
+        {% if item.description %}
+            <p class="description">{{ item.description }}</p>
+        {% endif %}
+        <p class="price">Price: <span>{{ item.price }}</span></p>
+        <div id="stripe-button"></div>
+        <div id="paypal-button"></div>
+    </div>
+</div>
+
+
+<script src="https://js.stripe.com/v3/"></script>
+<script
+    src="{{ static('js/portal/stripe.js') }}"
+    name="{{ item.name }}"
+    user-id="{{ user_id }}"
+    guild-id="{{ guild_id }}"
+    button="stripe-button">
+</script>
+{% set pp_base = "https://www.paypal.com/sdk/js" %}
+{% set client_id = (
+    "AZrQypK2Od7C44Y1JgQAStWunNw7puFjVx0ako0rCOl2zJWuRpMNnm"
+    "35uvxMCsPa-vNmJFAiHq-o0q61"
+) %}
+{% if item.subscription %}
+<script src="{{ pp_base }}?client-id={{ client_id }}&vault=true"></script>
+<script
+    src="{{ static('js/portal/paypal-subscription.js') }}"
+    user-id="{{ user_id }}"
+    guild-id="{{ guild_id }}"
+    plan-id="{{ item.paypal_plan_id }}"
+    button="paypal-button">
+</script>
+{% else %}
+<script src="{{ pp_base }}?client-id={{ client_id }}"></script>
+<script
+    src="{{ static('js/portal/paypal-single.js') }}"
+    user-id="{{ user_id }}"
+    guild-id="{{ guild_id }}"
+    price="{{ item.price }}"
+    button="paypal-button">
+</script>
+{% endif %}
+
+
+</body>
+</html>

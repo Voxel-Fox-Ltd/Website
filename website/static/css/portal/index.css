@@ -4,6 +4,7 @@ html {
 
 .title {
     color: white;
+    margin-bottom: 0 !important;
 }
 
 .item {
