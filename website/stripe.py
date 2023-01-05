@@ -281,7 +281,9 @@ async def get_customer_by_id(request: Request, customer_id: str) -> dict:
     return response_json
 
 
-async def get_checkout_session_from_payment_intent(request: Request, payment_intent_id: str) -> dict:
+async def get_checkout_session_from_payment_intent(
+        request: Request,
+        payment_intent_id: str) -> dict:
     """
     Get the checkout session object given its payment intent ID.
     """

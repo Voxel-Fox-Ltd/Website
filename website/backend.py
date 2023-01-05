@@ -151,7 +151,8 @@ async def colour(request: Request):
         /colour?hex=#ff00ff
         /colour?r=255&g=000&b=255
 
-        - If not given enough arguments for R/G/B, it will assume missing tag is 255.
+        - If not given enough arguments for R/G/B, it will assume missing tag
+        is 255.
         - If both tags exist, hex is prioritised.
         - If no tags are given, image will be white.
 
@@ -164,19 +165,23 @@ async def colour(request: Request):
         - If diementions not specified, image is 100px to 100px.
     """
 
-    size_limit: typing.Iterable[int] = [1000, 1000]  # Maximum width and height of PNG
-    image_size: typing.Iterable[int] = [100, 100]  # Base size values
+    size_limit: Tuple[int, int] = (1000, 1000,)  # Maximum width and height of PNG
+    image_size: Tuple[int, int] = (100, 100,)  # Base size values
 
     # Simple clamp function
     def clamp(numb: int, min_num: int, max_num: int) -> int:
-        return max(min_num, min(int(numb), max_num))
+        return max(min_num, min(numb, max_num))
 
     # I wish there was actual switch case ;w;
-    image_colour: typing.Iterable[int] = None
+    image_colour: Tuple[int, int, int]
     if "hex" in request.query:
         value = request.query["hex"].lstrip("#")
-        r, g, b = value[0:2], value[2:4], value[4:6]    # value="ff00ff" -> r="ff, g="00", b="ff"
-        image_colour = (int(r, 16), int(g, 16), int(b, 16))
+        r, g, b = value[0:2], value[2:4], value[4:6]
+        image_colour = (
+            int(r, 16),
+            int(g, 16),
+            int(b, 16),
+        )
     else:
         image_colour = (
             int(request.query.get("r", 255)),
@@ -185,10 +190,18 @@ async def colour(request: Request):
         )
 
     # Work out the size
-    if (value := request.query.get("width", request.query.get("w", image_size[0]))):
-        image_size[0] = clamp(value, 1, size_limit[0])
-    if (value := request.query.get("height", request.query.get("h", image_size[1]))):
-        image_size[1] = clamp(value, 1, size_limit[1])
+    width_req = request.query.get(
+        "width",
+        request.query.get("w", image_size[0]),
+    )
+    height_req = request.query.get(
+        "height",
+        request.query.get("h", image_size[1]),
+    )
+    image_size = (
+        clamp(int(width_req), 1, size_limit[0]),
+        clamp(int(height_req), 1, size_limit[1]),
+    )
 
     # Image processing  m a g i c
     img = Image.new("RGB", image_size, color=image_colour)
