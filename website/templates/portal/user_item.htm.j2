@@ -24,36 +24,113 @@
 </div>
 
 
+{# Stripe #}
 <script src="https://js.stripe.com/v3/"></script>
 <script
-    src="{{ static('js/portal/stripe.js') }}"
-    name="{{ item.name }}"
-    user-id="{{ user_id }}"
-    guild-id="{{ guild_id }}"
-    button="stripe-button">
+        {# src="{{ static('js/portal/stripe.js') }}" #}
+        name="{{ item.name }}"
+        user-id="{{ user_id }}"
+        guild-id="{{ guild_id }}"
+        button="stripe-button">
+var stripe = Stripe("pk_live_0Fx3FqHVF6tDXipvuUxdSDeu00egEyOnyO");
+var button = document.getElementById(document.currentScript.getAttribute("button"));
+button.innerHTML = "<button class='button'>Checkout with Stripe</button>";
+button.onclick = () => {
+    fetch("/webhooks/stripe/create_checkout_session", {
+        method: "POST",
+        body: JSON.stringify({
+            product_name: document.currentScript.getAttribute("name"),
+            discord_user_id: document.currentScript.getAttribute("user-id"),
+            discord_guild_id: document.currentScript.getAttribute("guild-id"),
+        }),
+    }).then(function (response) {
+        return response.json();
+    }).then(function (session) {
+        return stripe.redirectToCheckout({ sessionId: session.id });
+    }).then(function (result) {
+        if (result.error) {
+            alert(result.error.message);
+        }
+    }).catch(function (error) {
+        console.error("Error:", error);
+    });
+};
 </script>
+
+
+{# PayPal global #}
 {% set pp_base = "https://www.paypal.com/sdk/js" %}
 {% set client_id = (
     "AZrQypK2Od7C44Y1JgQAStWunNw7puFjVx0ako0rCOl2zJWuRpMNnm"
     "35uvxMCsPa-vNmJFAiHq-o0q61"
 ) %}
+
+
+{# PayPal subscription #}
 {% if item.subscription %}
 <script src="{{ pp_base }}?client-id={{ client_id }}&vault=true"></script>
 <script
-    src="{{ static('js/portal/paypal-subscription.js') }}"
-    user-id="{{ user_id }}"
-    guild-id="{{ guild_id }}"
-    plan-id="{{ item.paypal_plan_id }}"
-    button="paypal-button">
+        {# src="{{ static('js/portal/paypal-subscription.js') }}" #}
+        user-id="{{ user_id }}"
+        guild-id="{{ guild_id }}"
+        plan-id="{{ item.paypal_plan_id }}"
+        button="paypal-button">
+paypal.Buttons({
+    style: {
+        label: 'subscribe',
+        color: 'gold',
+        tagline: false,
+        layout: 'horizontal',
+    },
+   createSubscription: function(data, actions) {
+        return actions.subscription.create({
+           'plan_id': document.currentScript.getAttribute("plan-id"),
+           'custom_id': JSON.stringify({
+                discord_user_id: document.currentScript.getAttribute("user-id"),
+                discord_guild_id: document.currentScript.getAttribute("guild-id"),
+            }),
+        });
+    },
+    onApprove: function(data, actions) {
+        alert(data.subscriptionID);
+    }
+}).render("#" + document.currentScript.getAttribute("button"));
 </script>
+
+
+{# PayPal single #}
 {% else %}
 <script src="{{ pp_base }}?client-id={{ client_id }}"></script>
 <script
-    src="{{ static('js/portal/paypal-single.js') }}"
-    user-id="{{ user_id }}"
-    guild-id="{{ guild_id }}"
-    price="{{ item.price_number }}"
-    button="paypal-button">
+        {# src="{{ static('js/portal/paypal-single.js') }}" #}
+        user-id="{{ user_id }}"
+        guild-id="{{ guild_id }}"
+        price="{{ item.price_number }}"
+        button="paypal-button">
+paypal.Buttons({
+    style: {
+        label: 'subscribe',
+        color: 'gold',
+        tagline: false,
+        layout: 'horizontal',
+    },
+    createOrder: function(data, actions) {
+        return actions.order.create({
+            purchase_units: [{
+                amount: {
+                    value: document.currentScript.getAttribute("price"),
+                },
+                custom_id: JSON.stringify({
+                    discord_user_id: document.currentScript.getAttribute("user-id"),
+                    discord_guild_id: document.currentScript.getAttribute("guild-id"),
+                }),
+            }],
+        });
+    },
+    onApprove: function(data, actions) {
+        alert(data.subscriptionID);
+    }
+}).render("#" + document.currentScript.getAttribute("button"));
 </script>
 {% endif %}
 
