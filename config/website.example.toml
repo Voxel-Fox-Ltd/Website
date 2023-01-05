@@ -1,41 +1,34 @@
-website_base_url = "https://voxelfox.co.uk"  # This will be used to dynamically make the redirect url internally
-login_url = "/login"  # The url or route used to prompt the user to login
-routes = [ "frontend", "backend", "stripe", "paypal", "checkout_items", "cancel_subscription", ]  # These routes `/website/<filename>` will have their `routes` variable imported which will be loaded into the bot's route table
-oauth_scopes = [ "identify", ]  # The scopes that should be added to the automatic login url
+website_base_url = "http://localhost:8080"
+login_url = "/login"
+routes = [
+    "frontend",
+    "backend",
+    "stripe",
+    "paypal",
+    "checkout_items",
+    "cancel_subscription",
+]
+oauth_scopes = [
+    "identify",
+]
+
 stripe_api_key = ""
 stripe_webhook_signing_secret = ""
 paypal_client_id = ""
 paypal_client_secret = ""
 
-# These are a few different tokens for Discord bots that you can use at once
-# Config files are loaded as `config/<filename>`
-# This is fully welcome to be entirely empty
-[discord_bot_configs]
-    # bot = "config.toml"
-
 # Used for the bot's invite and login links
 [oauth]
-    client_id = "800571899918417950"
+    client_id = ""
     client_secret = ""
-
-# Datadog API
-[datadog]
-    api_key = ""
-    application_key = ""
-
-# TopGG webhook passthrough
-[[topgg_bot_webhooks]]
-    bot_id = 468281173072805889
-    authorization = ""
-    webhook_url = "https://marriagebot.xyz/webhooks/voxel_fox/topgg"
 
 # This data is passed directly over to asyncpg.connect()
 [database]
     enabled = true
-    user = "voxelfox"
+    user = ""
     password = ""
-    database = "voxelfox"
-    host = "127.0.0.1"
+    database = ""
+    host = ""
     port = 5432
 
 # This data is passed directly over to aioredis.connect()

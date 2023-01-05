@@ -1,12 +1,12 @@
 import io
-from typing import Optional, Tuple
+from typing import  Tuple
 
 from aiohttp.web import HTTPFound, Request, RouteTableDef, Response
-from voxelbotutils import web as webutils
 import aiohttp_session
 from aiohttp_jinja2 import render_template
 import htmlmin
 from PIL import Image
+from discord.ext import vbu
 
 
 routes = RouteTableDef()
@@ -15,10 +15,11 @@ routes = RouteTableDef()
 @routes.get('/login_processor')
 async def login_processor(request: Request):
     """
-    Page the discord login redirects the user to when successfully logged in with Discord.
+    Page the discord login redirects the user to when successfully logged in
+    with Discord.
     """
 
-    v = await webutils.process_discord_login(request)
+    v = await vbu.web.process_discord_login(request)
     if isinstance(v, Response):
         return v
     session = await aiohttp_session.get_session(request)
@@ -42,7 +43,8 @@ async def login(request: Request):
     Direct the user to the bot's Oauth login page.
     """
 
-    return HTTPFound(location=webutils.get_discord_login_url(request, "/login_processor"))
+    url = vbu.web.get_discord_login_url(request, "/login_processor")
+    return HTTPFound(location=url)
 
 
 @routes.post('/discord/chatlog')
@@ -55,7 +57,8 @@ async def discord_handler(request: Request):
         core_css = a.read()
     with open('website/static/css/discord/dark.min.css') as a:
         dark_css = a.read()
-    rendered_template: Response = render_template('discord_page.html.j2', request, {
+    rendered_template: Response
+    rendered_template = render_template('discord_page.html.j2', request, {
         'data': (await request.json()),
         'core_css': core_css,
         'dark_css': dark_css,

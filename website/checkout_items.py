@@ -3,6 +3,7 @@ from aiohttp_jinja2 import template
 import aiohttp_session
 from discord.ext import vbu
 
+
 routes = RouteTableDef()
 
 
