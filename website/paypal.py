@@ -15,7 +15,7 @@ from .utils.db_util import CheckoutItem, store_transaction
 
 
 routes = RouteTableDef()
-log = logging.getLogger("voxelfox")
+log = logging.getLogger("voxelfox.paypal")
 PAYPAL_BASE = "https://api-m.paypal.com"  # "https://api-m.sandbox.paypal.com"
 
 
@@ -283,21 +283,14 @@ async def paypal_ipn_complete(request: Request):
         "recurring_payment_suspended",
         "recurring_payment_suspended_due_to_max_failed_payment",
     ]
-    try:
-        if event in charge_capture_events:
-            await charge_captured(request, paypal_data)  # Also refunds
-        elif event in subscription_create_events:
-            await subscription_created(request, paypal_data)
-        elif event in subscription_cancel_events:
-            await subscription_deleted(request, paypal_data)
-        else:
-            log.info(f"Unhandled PayPal event '{event}'")
-    except Exception as e:
-        log.error(
-            "Errored when processing PayPal IPN data",
-            exc_info=e,
-        )
-        raise
+    if event in charge_capture_events:
+        await charge_captured(request, paypal_data)  # Also refunds
+    elif event in subscription_create_events:
+        await subscription_created(request, paypal_data)
+    elif event in subscription_cancel_events:
+        await subscription_deleted(request, paypal_data)
+    else:
+        log.info(f"Unhandled PayPal event '{event}'")
 
     # And we have no more events to process
     return Response(status=200)
