@@ -123,13 +123,13 @@ paypal.Buttons({
             purchase_units: [{
                 amount: {
                     value: {{ item.price_number }} / 100,
-                    currency_code: {{ item.currency_code }},
+                    currency_code: "{{ item.currency_code }}",
                 },
                 items: {
                     name: "{{ item.name }}",
                     unit_amount: {
                         value: {{ item.price_number }} / 100,
-                        currency_code: {{ item.currency_code }},
+                        currency_code: "{{ item.currency_code }}",
                     },
                     quantity: "1",
                 },
