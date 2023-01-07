@@ -8,7 +8,7 @@ import aiohttp
 if TYPE_CHECKING:
     from .db_util import CheckoutItem
 
-log = logging.getLogger("voxelfox.webhook")
+log = logging.getLogger("vbu.voxelfox.webhook")
 
 
 async def send_webhook(

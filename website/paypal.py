@@ -16,7 +16,7 @@ from .utils.webhook_util import send_webhook
 
 
 routes = RouteTableDef()
-log = logging.getLogger("voxelfox.paypal")
+log = logging.getLogger("vbu.voxelfox.paypal")
 PAYPAL_BASE = "https://api-m.paypal.com"  # "https://api-m.sandbox.paypal.com"
 
 

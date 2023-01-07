@@ -12,7 +12,7 @@ from .utils.webhook_util import send_webhook
 
 
 routes = RouteTableDef()
-log = logging.getLogger("voxelfox.stripe")
+log = logging.getLogger("vbu.voxelfox.stripe")
 STRIPE_BASE = "https://api.stripe.com/v1"
 
 
