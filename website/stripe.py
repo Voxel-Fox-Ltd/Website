@@ -205,7 +205,6 @@ async def checkout_processor(
         auth = aiohttp.BasicAuth(request.app['config']['stripe_api_key'])
         resp = await session.get(url, auth=auth)
         line_items_object = await resp.json()
-    log.info(line_items_object)
     line_items = line_items_object['data']
 
     # Grab the item from the database
@@ -215,9 +214,12 @@ async def checkout_processor(
     ]
     async with vbu.Database() as db:
         items = [
-            await CheckoutItem.fetch(db, p)
+            await CheckoutItem.fetch(db, stripe_product_id=p)
             for p in line_item_products
         ]
+        if not items:
+            log.info(f"Missing items {line_item_products} from database")
+            return
     items = [
         i
         for i in items
