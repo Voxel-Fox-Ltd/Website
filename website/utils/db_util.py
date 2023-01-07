@@ -29,6 +29,7 @@ class CheckoutItem:
             transaction_webhook: str,
             transaction_webhook_authorization: str,
             external_dsn: str,
+            check_sql: str,
             success_sql: str,
             refund_sql: str,
             cancel_sql: str,
@@ -47,6 +48,7 @@ class CheckoutItem:
         self.transaction_webhook_authorization: str = transaction_webhook_authorization
 
         self.external_dsn: str = external_dsn
+        self.check_sql: str = check_sql
         self.success_sql: str = success_sql
         self.refund_sql: str = refund_sql
         self.cancel_sql: str = cancel_sql
@@ -99,7 +101,26 @@ class CheckoutItem:
 
     @classmethod
     def from_row(cls, row: dict) -> Self:
-        return cls(**row)
+        return cls(
+            id=row['id'],
+            product_name=row['product_name'],
+            success_url=row['success_url'],
+            cancel_url=row['cancel_url'],
+            subscription=row['subscription'],
+            stripe_product_id=row['stripe_product_id'],
+            stripe_price_id=row['stripe_price_id'],
+            paypal_plan_id=row['paypal_plan_id'],
+            transaction_webhook=row['transaction_webhook'],
+            transaction_webhook_authorization=row['transaction_webhook_authorization'],
+            external_dsn=row['external_dsn'],
+            check_sql=row.get('check_sql', None),
+            success_sql=row.get('success_sql', None),
+            refund_sql=row.get('refund_sql', None),
+            cancel_sql=row.get('cancel_sql', None),
+            product_group=row['product_group'],
+            per_guild=row['per_guild'],
+            description=row['description'],
+        )
 
     @classmethod
     async def fetch(cls, db: vbu.Database, product_name: str) -> Optional[Self]:

@@ -36,6 +36,10 @@ CREATE TABLE IF NOT EXISTS checkout_items(
 
     -- A Postgres connection string to connect to a database for some other BS
     external_dsn TEXT,
+    -- SQL to run to see if a given guild or user has purchased the item already.
+    -- This will be passed with a single argument: the user ID if it's a user item,
+    -- or the guild ID if it's a guild item.
+    check_sql TEXT,
     -- SQL to run on successful payment and/or subscription create.
     success_sql TEXT,
     -- SQL to run on successful refund.

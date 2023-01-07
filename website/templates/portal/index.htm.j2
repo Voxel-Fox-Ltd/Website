@@ -17,13 +17,16 @@
         {% endif %}
         <div class="items">
             {% for item in guild_items %}
-                <div class="item">
+                <div class="item" data-id="{{ item.id }}">
                     <p class="name">{{ item.name }}</p>
                     {% if item.description %}
                         <p class="description">{{ item.description }}</p>
                     {% endif %}
                     <p class="price">Price: <span>{{ item.price }}</span></p>
-                    <a href="/portal/item/{{ item.id }}" class="button">Purchase</a>
+                    <a class="button">Purchase</a>
+                    <select class="guild-select" onchange="javascript:guildSelectChange('{{ item.id }}')">
+                        <option value="">Purchase for Guild</option>
+                    </select>
                 </div>
             {% endfor %}
         </div>
@@ -34,7 +37,7 @@
         {% endif %}
         <div class="items">
             {% for item in user_items %}
-                <div class="item">
+                <div class="item" data-id="{{ item.id }}">
                     <p class="name">{{ item.name }}</p>
                     {% if item.description %}
                         <p class="description">{{ item.description }}</p>
@@ -46,6 +49,33 @@
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+function guildSelectChange(itemId) {
+    var guildSelect = document.querySelector(`.item[data-id="${itemId}"] .guild-select`);
+    var guildId = guildSelect.value;
+    if (!guildId) {
+        return;
+    }
+    window.location.href = `/portal/item/${itemId}?guild=${guildId}`;
+}
+
+
+async function getGuilds() {
+    var guilds = await fetch("/portal/get_guilds");
+    guilds = await guilds.json();
+    for(let select of document.querySelectorAll(".guild-select")) {
+        select.innerHTML = "<option value=''>Purchase for Guild</option>";
+        for(let guild of guilds) {
+            var option = document.createElement("option");
+            option.value = guild.id;
+            option.innerText = guild.name;
+            select.appendChild(option);
+        }
+    }
+}
+getGuilds();
+</script>
 
 </body>
 </html>

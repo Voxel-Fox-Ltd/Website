@@ -11,6 +11,7 @@ routes = [
 ]
 oauth_scopes = [
     "identify",
+    "guilds",
 ]
 
 stripe_api_key = ""

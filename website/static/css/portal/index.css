@@ -5,6 +5,7 @@ html {
 #guild-items,
 #user-items {
     display: block;
+    margin-top: 20px;
 }
 
 .items {
