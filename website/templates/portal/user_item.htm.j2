@@ -18,7 +18,7 @@
             {% if item.description %}
                 <p class="description">{{ item.description }}</p>
             {% endif %}
-            <p class="price">Price: <span>{{ item.price }}</span></p>
+            <p class="price">Price: <span>{{ item.price }}{{ item.currency_code }}</span></p>
         </div>
         <div id="stripe-button" class="button-holder block"></div>
         <div id="paypal-button" class="button-holder block"></div>
@@ -124,6 +124,12 @@ paypal.Buttons({
                 amount: {
                     value: "{{ item.price }}",
                     currency_code: "{{ item.currency_code }}",
+                    breakdown: {
+                        item_total: {
+                            value: "{{ item.price }}",
+                            currency_code: "{{ item.currency_code }}"
+                        },
+                    },
                 },
                 items: [{
                     name: "{{ item.name }}",
