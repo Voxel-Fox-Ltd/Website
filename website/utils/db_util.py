@@ -1,4 +1,5 @@
 from datetime import datetime as dt
+import logging
 from typing import Optional
 from typing_extensions import Self
 import uuid
@@ -6,13 +7,14 @@ import uuid
 import aiohttp
 from discord.ext import vbu
 
-
 __all__ = (
     'CheckoutItem',
     'create_purchase',
     'fetch_purchase',
     'update_purchase',
 )
+
+log = logging.getLogger("vbu.voxelfox.webhook")
 
 
 class CheckoutItem:
@@ -112,22 +114,41 @@ class CheckoutItem:
         )
 
     @classmethod
-    async def fetch(cls, db: vbu.Database, product_name: str) -> Optional[Self]:
+    async def fetch(
+            cls, 
+            db: vbu.Database, 
+            product_name: Optional[str] = None, 
+            **kwargs) -> Optional[Self]:
         """
         Fetch an instance from the database.
         """
 
-        item_rows = await db.call(
-            """
-            SELECT
-                *
-            FROM
-                checkout_items
-            WHERE
-                product_name = $1
-            """,
-            product_name,
-        )
+        if product_name:
+            item_rows = await db.call(
+                """
+                SELECT
+                    *
+                FROM
+                    checkout_items
+                WHERE
+                    product_name = $1
+                """,
+                product_name,
+            )
+        else:
+            if len(kwargs) > 1:
+                raise ValueError("Can only fetch one item at a time.")
+            item_rows = await db.call(
+                """
+                SELECT
+                    *
+                FROM
+                    checkout_items
+                WHERE
+                    {0} = $1
+                """.format(*kwargs.keys()),
+                *kwargs.values(),
+            )
         if not item_rows:
             return None
         return cls.from_row(item_rows[0])
@@ -141,6 +162,7 @@ async def create_purchase(
         expiry_time: Optional[dt] = None,
         cancel_url: Optional[str] = None,
         timestamp: Optional[dt] = None):
+    log.info("Storing purchase in database")
     await db.call(
         """
         INSERT INTO
@@ -214,6 +236,7 @@ async def update_purchase(
         id: uuid.UUID | str,
         **kwargs):
     if kwargs.pop("delete", False) is True:
+        log.info("Deleting purchase with ID %s" % id)
         await db.call(
             """
             DELETE FROM
@@ -224,6 +247,7 @@ async def update_purchase(
             id,
         )
     else:
+        log.info("Updating purchase with ID %s" % id)
         await db.call(
             """
             UPDATE
