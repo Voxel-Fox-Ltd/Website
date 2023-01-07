@@ -122,13 +122,13 @@ paypal.Buttons({
         return actions.order.create({
             purchase_units: [{
                 amount: {
-                    value: "{{ item.price[1:] }}",
+                    value: "{{ item.price }}",
                     currency_code: "{{ item.currency_code }}",
                 },
                 items: [{
                     name: "{{ item.name }}",
                     unit_amount: {
-                        value: "{{ item.price[1:] }}",
+                        value: "{{ item.price }}",
                         currency_code: "{{ item.currency_code }}",
                     },
                     quantity: "1",
