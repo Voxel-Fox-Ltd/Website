@@ -2,14 +2,32 @@ html {
     background-color: #111111;
 }
 
+#guild-items,
+#user-items {
+    display: block;
+}
+
+.items {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
 .title {
     color: white;
-    margin-bottom: 0 !important;
+    text-align: center;
 }
 
 .item {
     padding: 20px;
     color: white;
+    text-align: center;
+    border: 1px solid white;
+    border-radius: 15px;
+    width: 15em;
+    background: #222222;
 }
 
 .name {
@@ -28,4 +46,9 @@ html {
 
 .price span {
     font-style: italic;
+}
+
+.button {
+    margin-top: 5px;
+    width: 100%
 }

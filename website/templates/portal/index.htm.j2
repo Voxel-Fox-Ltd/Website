@@ -17,7 +17,7 @@
         {% endif %}
         <div class="items">
             {% for item in guild_items %}
-                <div class="item block">
+                <div class="item">
                     <p class="name">{{ item.name }}</p>
                     {% if item.description %}
                         <p class="description">{{ item.description }}</p>
@@ -34,7 +34,7 @@
         {% endif %}
         <div class="items">
             {% for item in user_items %}
-                <div class="item block">
+                <div class="item">
                     <p class="name">{{ item.name }}</p>
                     {% if item.description %}
                         <p class="description">{{ item.description }}</p>
