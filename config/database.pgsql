@@ -34,19 +34,6 @@ CREATE TABLE IF NOT EXISTS checkout_items(
     transaction_webhook TEXT,
     transaction_webhook_authorization TEXT NOT NULL DEFAULT '',
 
-    -- A Postgres connection string to connect to a database for some other BS
-    external_dsn TEXT,
-    -- SQL to run to see if a given guild or user has purchased the item already.
-    -- This will be passed with a single argument: the user ID if it's a user item,
-    -- or the guild ID if it's a guild item.
-    check_sql TEXT,
-    -- SQL to run on successful payment and/or subscription create.
-    success_sql TEXT,
-    -- SQL to run on successful refund.
-    refund_sql TEXT,
-    -- SQL to run on cancelled subscription.
-    cancel_sql TEXT,
-
     -- When this page is fetched, products from the same group will be shown
     -- together if there is one. If no group, then the product will not appear
     -- on a page.
@@ -55,6 +42,10 @@ CREATE TABLE IF NOT EXISTS checkout_items(
     -- Whether or not the product is per guild (true) or per user (false). Only
     -- applies to purchases done through this site; not to externals.
     per_guild BOOLEAN NOT NULL DEFAULT FALSE,
+
+    -- Whether or not the product can be purchased multiple times. Ignored if
+    -- the product is a subscription.
+    multiple BOOLEAN NOT NULL DEFAULT FALSE,
 
     -- Text to be displayed on the portal page.
     description TEXT
@@ -65,4 +56,16 @@ CREATE TABLE IF NOT EXISTS transactions(
     timestamp TIMESTAMP,
     source TEXT NOT NULL,
     data JSON
+);
+-- This table is just a transaction log
+
+
+CREATE TABLE IF NOT EXISTS purchases(
+    id UUID NOT NULL DEFAULT uuid_generate_v4(),  -- ID of the purchase; internal reference only
+    user_id BIGINT NOT NULL,  -- user who purchased the item
+    product_name TEXT NOT NULL,  -- the item the purchased
+    guild_id BIGINT,  -- the guild the item was purchased for, if any
+    expiry_time TIMESTAMP,  -- if the item is a subscription, when it expires (if expiring)
+    cancel_url TEXT,  -- if the item is a subscription, the URL to cancel it
+    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

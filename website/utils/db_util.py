@@ -1,6 +1,5 @@
-import json
 from datetime import datetime as dt
-from typing import Optional, Literal
+from typing import Optional
 from typing_extensions import Self
 import uuid
 
@@ -10,7 +9,9 @@ from discord.ext import vbu
 
 __all__ = (
     'CheckoutItem',
-    'store_transaction',
+    'create_purchase',
+    'fetch_purchase',
+    'update_purchase',
 )
 
 
@@ -28,12 +29,8 @@ class CheckoutItem:
             paypal_plan_id: Optional[str],
             transaction_webhook: str,
             transaction_webhook_authorization: str,
-            external_dsn: str,
-            check_sql: str,
-            success_sql: str,
-            refund_sql: str,
-            cancel_sql: str,
             product_group: str,
+            multiple: bool,
             per_guild: bool,
             description: str):
         self._id = id
@@ -47,13 +44,9 @@ class CheckoutItem:
         self.transaction_webhook: str = transaction_webhook
         self.transaction_webhook_authorization: str = transaction_webhook_authorization
 
-        self.external_dsn: str = external_dsn
-        self.check_sql: str = check_sql
-        self.success_sql: str = success_sql
-        self.refund_sql: str = refund_sql
-        self.cancel_sql: str = cancel_sql
         self.product_group: str = product_group
         self.per_guild: bool = per_guild
+        self.multiple = multiple
 
         self.description: str = description
 
@@ -112,13 +105,9 @@ class CheckoutItem:
             paypal_plan_id=row['paypal_plan_id'],
             transaction_webhook=row['transaction_webhook'],
             transaction_webhook_authorization=row['transaction_webhook_authorization'],
-            external_dsn=row['external_dsn'],
-            check_sql=row.get('check_sql', None),
-            success_sql=row.get('success_sql', None),
-            refund_sql=row.get('refund_sql', None),
-            cancel_sql=row.get('cancel_sql', None),
             product_group=row['product_group'],
             per_guild=row['per_guild'],
+            multiple=row.get('multiple', False),
             description=row['description'],
         )
 
@@ -144,20 +133,106 @@ class CheckoutItem:
         return cls.from_row(item_rows[0])
 
 
-async def store_transaction(
+async def create_purchase(
         db: vbu.Database,
-        timestamp: dt,
-        source: Literal['Stripe', 'PayPal'],
-        data: dict):
+        user_id: int,
+        product_name: str,
+        guild_id: Optional[int] = None,
+        expiry_time: Optional[dt] = None,
+        cancel_url: Optional[str] = None,
+        timestamp: Optional[dt] = None):
     await db.call(
         """
         INSERT INTO
-            transactions
-            (timestamp, source, data)
+            purchases
+            (
+                user_id,
+                product_name,
+                guild_id,
+                expiry_time,
+                cancel_url,
+                timestamp
+            )
         VALUES
-            ($1, $2, $3)
+            ($1, $2, $3, $4, $5, $6)
         """,
-        timestamp,
-        source,
-        json.dumps(data),
+        user_id,
+        product_name,
+        guild_id,
+        expiry_time,
+        cancel_url,
+        timestamp or dt.utcnow(),
     )
+
+
+async def fetch_purchase(
+        db: vbu.Database,
+        user_id: int,
+        product_name: str,
+        guild_id: Optional[int] = None) -> Optional[dict]:
+    if guild_id:
+        rows = await db.call(
+            """
+            SELECT
+                *
+            FROM
+                purchases
+            WHERE
+                user_id = $1
+                AND product_name = $2
+                AND guild_id = $3
+            """,
+            user_id,
+            product_name,
+            guild_id,
+        )
+    else:
+        rows = await db.call(
+            """
+            SELECT
+                *
+            FROM
+                purchases
+            WHERE
+                user_id = $1
+                AND product_name = $2
+                AND guild_id IS NULL
+            ORDER BY 
+                timestamp DESC 
+            LIMIT 1
+            """,
+            user_id,
+            product_name,
+        )
+    if rows:
+        return rows[0]
+    return None
+
+
+async def update_purchase(
+        db: vbu.Database, 
+        id: uuid.UUID | str,
+        **kwargs):
+    if kwargs.pop("delete", False) is True:
+        await db.call(
+            """
+            DELETE FROM
+                purchases
+            WHERE
+                id = $1
+            """,
+            id,
+        )
+    else:
+        await db.call(
+            """
+            UPDATE
+                purchases
+            SET
+                {kwargs}
+            WHERE
+                id = $1
+            """.format(kwargs=", ".join(f"{key} = ${i + 2}" for i, key in enumerate(kwargs))),
+            id,
+            *kwargs.values(),
+        )
