@@ -63,6 +63,15 @@ function guildSelectChange(itemId) {
 async function getGuilds() {
     var guilds = await fetch("/api/portal/get_guilds");
     guilds = await guilds.json();
+    guilds.sort(
+        (a, b) => {
+            a.name.localeCompare(
+                b.name, 
+                undefined, 
+                { sensitivity: 'base' }
+            )
+        }
+    );
     for(let select of document.querySelectorAll(".guild-select")) {
         select.innerHTML = "<option value=''>Purchase for Guild</option>";
         for(let guild of guilds) {
