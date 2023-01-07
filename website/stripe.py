@@ -138,7 +138,7 @@ async def stripe_purchase_complete(request: Request):
     stripe_data = json.loads(stripe_data_string.decode())
 
     # Let's throw that into a logger
-    log.info(f"Data from Stripe: {json.dumps(stripe_data_string)}")
+    log.info(f"Data from Stripe: {json.dumps(stripe_data)}")
 
     # Check the signature to make sure it's valid
     signature = dict([

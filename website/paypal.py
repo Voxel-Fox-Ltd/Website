@@ -246,7 +246,7 @@ async def paypal_ipn_complete(request: Request):
         paypal_data = {'receiver_email': '@business.example.com'}
 
     # Let's throw that into a logger
-    log.info(f"Data from PayPal: {json.dumps(paypal_data_string)}")
+    log.info(f"Data from PayPal: {json.dumps(paypal_data)}")
 
     # Get the right URL based on whether this is a sandbox payment or not
     use_sandbox = (
