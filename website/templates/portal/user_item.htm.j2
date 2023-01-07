@@ -104,7 +104,7 @@ paypal.Buttons({
 
 {# PayPal single #}
 {% else %}
-<script src="{{ pp_base }}?client-id={{ client_id }}"></script>
+<script src="{{ pp_base }}?client-id={{ client_id }}&currency={{ item.currency_code }}"></script>
 <script
         id="paypal-script"
         data-user-id="{{ user_id }}"
