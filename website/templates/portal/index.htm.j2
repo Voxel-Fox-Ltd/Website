@@ -21,7 +21,7 @@
                         {% if item.description %}
                             <p class="description">{{ item.description }}</p>
                         {% endif %}
-                        <p class="price">Price: <span>{{ item.price }}</span></p>
+                        <p class="price">Price: <span>{{ item.price }}{{ item.currency_code }}</span></p>
                         <select class="select guild-select" onchange="javascript:guildSelectChange('{{ item.id }}')">
                             <option value="">Purchase for Guild</option>
                         </select>
@@ -40,7 +40,7 @@
                         {% if item.description %}
                             <p class="description">{{ item.description }}</p>
                         {% endif %}
-                        <p class="price">Price: {{ item.price }}</p>
+                        <p class="price">Price: {{ item.price }}{{ item.currency_code }}</p>
                         <a href="/portal/item/{{ item.id }}" class="button">Purchase</a>
                     </div>
                 {% endfor %}

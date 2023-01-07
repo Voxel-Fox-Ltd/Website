@@ -81,7 +81,7 @@ class CheckoutItem:
 
         if self.price is not None:
             return self.price
-            
+
         async with aiohttp.ClientSession() as session:
             url = f"https://api.stripe.com/v1/prices/{self.stripe_price_id}"
             auth = aiohttp.BasicAuth(stripe_api_key)
@@ -89,11 +89,11 @@ class CheckoutItem:
             product_data = await resp.json()
 
         if resp.ok:
-            self.price = f"£{product_data['unit_amount'] / 100:.2f}"
+            self.price = f"{product_data['unit_amount'] / 100:.2f}"
             self.price_number = product_data['unit_amount']
             self.currency_code = product_data['currency'].upper()
         else:
-            self.price = "£0.00"
+            self.price = "0.00"
             self.price_number = 0
             self.currency_code = "GBP"
 
