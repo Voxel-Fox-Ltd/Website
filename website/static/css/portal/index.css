@@ -49,7 +49,7 @@ html {
     font-style: italic;
 }
 
-.button {
+.button, .select {
     margin-top: 5px;
     width: 100%
 }

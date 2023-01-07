@@ -23,8 +23,7 @@
                         <p class="description">{{ item.description }}</p>
                     {% endif %}
                     <p class="price">Price: <span>{{ item.price }}</span></p>
-                    <a class="button">Purchase</a>
-                    <select class="guild-select" onchange="javascript:guildSelectChange('{{ item.id }}')">
+                    <select class="select guild-select" onchange="javascript:guildSelectChange('{{ item.id }}')">
                         <option value="">Purchase for Guild</option>
                     </select>
                 </div>

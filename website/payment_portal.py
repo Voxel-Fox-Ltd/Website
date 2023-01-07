@@ -11,6 +11,44 @@ from .utils.db_util import CheckoutItem
 routes = RouteTableDef()
 
 
+@routes.get("/portal/get_guilds")
+async def portal_get_guilds(request: Request):
+    """
+    Return a collection of guild IDs and names for the currently logged
+    in user.
+    """
+
+    # Get session
+    user_session = await aiohttp_session.get_session(request)
+    access_token = user_session.get("token_info", dict()).get("access_token")
+    if not access_token:
+        return json_response([])
+
+    # Get the guilds
+    async with aiohttp.ClientSession() as session:
+        resp = await session.get(
+            "https://discord.com/api/users/@me/guilds",
+            headers={
+                "Authorization": f"Bearer {access_token}",
+            },
+        )
+        if not resp.ok:
+            return json_response([])
+        guilds = await resp.json()
+
+
+    # Return the guilds
+    return json_response(
+        [
+            {
+                "id": g.id,
+                "name": g.name,
+            }
+            for g in guilds
+        ],
+    )
+
+
 @routes.get("/portal/{group}")
 @vbu.web.requires_login()
 @template("portal/index.htm.j2")
@@ -155,50 +193,4 @@ async def portal_item_id_check(request: Request):
         {
             "purchased": False,
         }
-    )
-
-
-@routes.get("/portal/get_guilds")
-async def portal_get_guilds(request: Request):
-    """
-    Return a collection of guild IDs and names for the currently logged
-    in user.
-    """
-
-    # Get session
-    user_session = await aiohttp_session.get_session(request)
-    access_token = user_session.get("token_info", dict()).get("access_token")
-    if not access_token:
-        return json_response(
-            {
-                "guilds": [],
-            },
-        )
-
-    # Get the guilds
-    async with aiohttp.ClientSession() as session:
-        resp = await session.get(
-            "https://discord.com/api/users/@me/guilds",
-            headers={
-                "Authorization": f"Bearer {access_token}",
-            },
-        )
-        if not resp.ok:
-            return json_response(
-                {
-                    "guilds": [],
-                },
-            )
-        guilds = await resp.json()
-
-
-    # Return the guilds
-    return json_response(
-        [
-            {
-                "id": g.id,
-                "name": g.name,
-            }
-            for g in guilds
-        ],
     )
