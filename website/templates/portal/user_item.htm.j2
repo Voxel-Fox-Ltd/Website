@@ -12,7 +12,7 @@
 
 
 <div class="container">
-    <div class="item">
+    <div class="item" data-id="{{ item.id }}">
         <h1 class="title">{{ item.name }}</h1>
         <div class="block">
             {% if item.description %}
@@ -20,8 +20,8 @@
             {% endif %}
             <p class="price">Price: <span>{{ item.price }}</span></p>
         </div>
-        <div id="stripe-button" class="block"></div>
-        <div id="paypal-button" class="block"></div>
+        <div id="stripe-button" class="button-holder block"></div>
+        <div id="paypal-button" class="button-holder block"></div>
     </div>
 </div>
 
@@ -123,6 +123,15 @@ paypal.Buttons({
             purchase_units: [{
                 amount: {
                     value: {{ item.price_number }} / 100,
+                    currency_code: {{ item.currency_code }},
+                },
+                items: {
+                    name: "{{ item.name }}",
+                    unit_amount: {
+                        value: {{ item.price_number }} / 100,
+                        currency_code: {{ item.currency_code }},
+                    },
+                    quantity: "1",
                 },
                 custom_id: JSON.stringify({
                     discord_user_id: pps.dataset.userId,
