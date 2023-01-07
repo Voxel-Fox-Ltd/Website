@@ -159,7 +159,6 @@ async def portal_item_id_check(request: Request):
 
 
 @routes.get("/portal/get_guilds")
-@vbu.web.requires_login()
 async def portal_get_guilds(request: Request):
     """
     Return a collection of guild IDs and names for the currently logged
@@ -167,14 +166,21 @@ async def portal_get_guilds(request: Request):
     """
 
     # Get session
-    session = await aiohttp_session.get_session(request)
+    user_session = await aiohttp_session.get_session(request)
+    access_token = user_session.get("token_info", dict()).get("access_token")
+    if not access_token:
+        return json_response(
+            {
+                "guilds": [],
+            },
+        )
 
     # Get the guilds
     async with aiohttp.ClientSession() as session:
         resp = await session.get(
-            "https://discordapp.com/api/users/@me/guilds",
+            "https://discord.com/api/users/@me/guilds",
             headers={
-                "Authorization": f"Bearer {request.query['access_token']}",
+                "Authorization": f"Bearer {access_token}",
             },
         )
         if not resp.ok:
