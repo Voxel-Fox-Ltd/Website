@@ -178,9 +178,9 @@ async def create_purchase(
         VALUES
             ($1, $2, $3, $4, $5, $6)
         """,
-        user_id,
+        int(user_id),
         product_name,
-        guild_id,
+        int(guild_id) if guild_id else None,
         expiry_time,
         cancel_url,
         timestamp or dt.utcnow(),
@@ -204,9 +204,9 @@ async def fetch_purchase(
                 AND product_name = $2
                 AND guild_id = $3
             """,
-            user_id,
+            int(user_id),
             product_name,
-            guild_id,
+            int(guild_id),
         )
     else:
         rows = await db.call(
@@ -223,7 +223,7 @@ async def fetch_purchase(
                 timestamp DESC 
             LIMIT 1
             """,
-            user_id,
+            int(user_id),
             product_name,
         )
     if rows:
