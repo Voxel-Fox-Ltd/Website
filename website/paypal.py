@@ -444,9 +444,9 @@ async def charge_captured(request: Request, data: dict):
             else:
                 await create_purchase(
                     db,
-                    data['metadata']['discord_user_id'],
+                    metadata['discord_user_id'],
                     i.name,
-                    data['metadata'].get('discord_guild_id'),
+                    metadata.get('discord_guild_id'),
                 )
 
 
