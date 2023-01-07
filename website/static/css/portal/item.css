@@ -1,5 +1,5 @@
 html {
-    background-color: #111111;
+    background-color: #111;
 }
 
 body {
@@ -9,13 +9,13 @@ body {
 }
 
 .title {
-    color: white;
-    margin-bottom: 0 !important;
+    color: #fff;
+    margin-bottom: 0!important;
 }
 
 .item {
     padding: 20px;
-    color: white;
+    color: #fff;
 }
 
 .description {
@@ -33,4 +33,12 @@ body {
 #stripe-button,
 #paypal-button {
     width: 100%;
+}
+
+#stripe-button .button {
+    width: 100%;
+    background: #4379FF;
+    border-color: #4379FF;
+    color: white;
+    font-weight: bold;
 }
