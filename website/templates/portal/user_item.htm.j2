@@ -32,7 +32,7 @@
         id="stripe-script"
         data-name="{{ item.name }}"
         data-user-id="{{ user_id }}"
-        data-guild-id="{{ guild_id }}"
+        data-guild-id="{{ guild_id or '' }}"
         data-button="stripe-button">
 var stripe = Stripe("pk_live_0Fx3FqHVF6tDXipvuUxdSDeu00egEyOnyO");
 var ss = document.getElementById("stripe-script");
@@ -75,7 +75,7 @@ button.onclick = () => {
 <script
         id="paypal-script"
         data-user-id="{{ user_id }}"
-        data-guild-id="{{ guild_id }}"
+        data-guild-id="{{ guild_id or '' }}"
         data-plan-id="{{ item.paypal_plan_id }}"
         data-button="paypal-button">
 var pps = document.getElementById("paypal-script");
@@ -108,8 +108,8 @@ paypal.Buttons({
 <script
         id="paypal-script"
         data-user-id="{{ user_id }}"
-        data-guild-id="{{ guild_id }}"
         data-price="{{ item.price_number }}"
+        data-guild-id="{{ guild_id or '' }}"
         data-button="paypal-button">
 var pps = document.getElementById("paypal-script");
 paypal.Buttons({
