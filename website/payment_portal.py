@@ -11,7 +11,7 @@ from .utils.db_util import CheckoutItem
 routes = RouteTableDef()
 
 
-@routes.get("/portal/get_guilds")
+@routes.get("/api/portal/get_guilds")
 async def portal_get_guilds(request: Request):
     """
     Return a collection of guild IDs and names for the currently logged

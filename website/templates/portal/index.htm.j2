@@ -61,7 +61,7 @@ function guildSelectChange(itemId) {
 
 
 async function getGuilds() {
-    var guilds = await fetch("/portal/get_guilds");
+    var guilds = await fetch("/api/portal/get_guilds");
     guilds = await guilds.json();
     for(let select of document.querySelectorAll(".guild-select")) {
         select.innerHTML = "<option value=''>Purchase for Guild</option>";
