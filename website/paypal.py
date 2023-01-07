@@ -434,9 +434,9 @@ async def charge_captured(request: Request, data: dict):
             if refunded:
                 current = await fetch_purchase(
                     db,
-                    data['metadata']['discord_user_id'],
+                    metadata['discord_user_id'],
                     i.name,
-                    data['metadata'].get('discord_guild_id'),
+                    metadata.get('discord_guild_id'),
                 )
                 if current is None:
                     continue
@@ -490,9 +490,9 @@ async def subscription_created(request: Request, data: dict):
     async with vbu.Database() as db:
         await create_purchase(
             db,
-            data['metadata']['discord_user_id'],
+            metadata['discord_user_id'],
             item.name,
-            data['metadata'].get('discord_guild_id'),
+            metadata.get('discord_guild_id'),
             None,
             f"{PAYPAL_BASE}/v1/billing/subscriptions/{recurring_payment_id}/cancel",
         )
@@ -543,9 +543,9 @@ async def subscription_deleted(request: Request, data: dict):
     async with vbu.Database() as db:
         current = await fetch_purchase(
             db,
-            data['metadata']['discord_user_id'],
+            metadata['discord_user_id'],
             item.name,
-            data['metadata'].get('discord_guild_id'),
+            metadata.get('discord_guild_id'),
         )
         if current is None:
             return
