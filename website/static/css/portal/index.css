@@ -8,6 +8,11 @@ html {
     margin-top: 20px;
 }
 
+#guild-items:empty,
+#user-items:empty {
+    display: none;
+}
+
 .items {
     display: flex;
     width: 100%;

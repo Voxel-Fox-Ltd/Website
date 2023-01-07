@@ -14,38 +14,38 @@
     <div id="guild-items" class="block">
         {% if guild_items %}
             <h1 class="title">Per-Guild Items</h1>
+            <div class="items">
+                {% for item in guild_items %}
+                    <div class="item" data-id="{{ item.id }}">
+                        <p class="name">{{ item.name }}</p>
+                        {% if item.description %}
+                            <p class="description">{{ item.description }}</p>
+                        {% endif %}
+                        <p class="price">Price: <span>{{ item.price }}</span></p>
+                        <select class="select guild-select" onchange="javascript:guildSelectChange('{{ item.id }}')">
+                            <option value="">Purchase for Guild</option>
+                        </select>
+                    </div>
+                {% endfor %}
+            </div>
         {% endif %}
-        <div class="items">
-            {% for item in guild_items %}
-                <div class="item" data-id="{{ item.id }}">
-                    <p class="name">{{ item.name }}</p>
-                    {% if item.description %}
-                        <p class="description">{{ item.description }}</p>
-                    {% endif %}
-                    <p class="price">Price: <span>{{ item.price }}</span></p>
-                    <select class="select guild-select" onchange="javascript:guildSelectChange('{{ item.id }}')">
-                        <option value="">Purchase for Guild</option>
-                    </select>
-                </div>
-            {% endfor %}
-        </div>
     </div>
     <div id="user-items" class="block">
         {% if user_items %}
             <h1 class="title">Per-User Items</h1>
+            <div class="items">
+                {% for item in user_items %}
+                    <div class="item" data-id="{{ item.id }}">
+                        <p class="name">{{ item.name }}</p>
+                        {% if item.description %}
+                            <p class="description">{{ item.description }}</p>
+                        {% endif %}
+                        <p class="price">Price: {{ item.price }}</p>
+                        <a href="/portal/item/{{ item.id }}" class="button">Purchase</a>
+                    </div>
+                {% endfor %}
+            </div>
         {% endif %}
-        <div class="items">
-            {% for item in user_items %}
-                <div class="item" data-id="{{ item.id }}">
-                    <p class="name">{{ item.name }}</p>
-                    {% if item.description %}
-                        <p class="description">{{ item.description }}</p>
-                    {% endif %}
-                    <p class="price">Price: {{ item.price }}</p>
-                    <a href="/portal/item/{{ item.id }}" class="button">Purchase</a>
-                </div>
-            {% endfor %}
-        </div>
     </div>
 </div>
 
