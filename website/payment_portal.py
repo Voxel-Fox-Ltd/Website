@@ -41,8 +41,8 @@ async def portal_get_guilds(request: Request):
     return json_response(
         [
             {
-                "id": g.id,
-                "name": g.name,
+                "id": g['id'],
+                "name": g['name'],
             }
             for g in guilds
         ],
