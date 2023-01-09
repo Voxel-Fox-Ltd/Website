@@ -1,5 +1,6 @@
+from typing import Optional
 from aiohttp.web import HTTPFound, Request, RouteTableDef, json_response
-from aiohttp_jinja2 import template
+from aiohttp_jinja2 import render_template, template
 import aiohttp_session
 from discord.ext import vbu
 import aiohttp
@@ -46,6 +47,103 @@ async def portal_get_guilds(request: Request):
             for g in guilds
         ],
     )
+
+
+@routes.post("/api/portal/unsubscribe")
+async def portal_unsubscribe(request: Request):
+    """
+    Unsubscribe a currently subscribed user from an active subscription.
+    """
+
+    # Get session
+    user_session = await aiohttp_session.get_session(request)
+
+    # See what the user is unsubscribing from
+    try:
+        data = await request.json()
+    except Exception:
+        return json_response(
+            {"error": "Invalid data.", "success": False},
+            status=400,
+        )
+    purchase_id = data.get("id", "")
+
+    # Get their current subscription
+    async with vbu.Database() as db:
+        purchase_rows = await db.call(
+            """
+            SELECT
+                *
+            FROM
+                purchases
+            WHERE
+                id = $1
+            AND
+                user_id = $2
+            AND
+                expiry_time IS NULL
+            AND
+                cancel_url IS NOT NULL
+            """,
+            purchase_id,
+            user_session.get("user_id"),
+            type=dict,
+        )
+        if purchase_rows:
+            purchased = purchase_rows[0]
+        else:
+            return json_response(
+                {"error": "No active subscription found.", "success": False},
+                status=400,
+            )
+
+    # Get the right auth and url
+    auth: Optional[aiohttp.BasicAuth] = None
+    method: str = ""
+    if "paypal.com" in purchased['cancel_url'].casefold():
+        auth = aiohttp.BasicAuth(
+            request.app['config']['paypal_client_id'],
+            request.app['config']['paypal_client_secret'],
+        )
+        method = "POST"
+    elif "stripe.com" in purchased['cancel_url'].casefold():
+        auth = aiohttp.BasicAuth(
+            request.app['config']['stripe_api_key'],
+        )
+        method = "DELETE"
+
+    # Make the request
+    if method:
+        async with aiohttp.ClientSession() as session:
+            resp = await session.request(
+                method,
+                purchased['cancel_url'],
+                auth=auth,
+            )
+        if not resp.ok:
+            return json_response(
+                {"error": "Failed to cancel subscription.", "success": False},
+                status=400,
+            )
+
+    # If it was a fake purchase, update the expiry time in the database.
+    # If it WASNT a fake purchase, then we'll get a webhook about it later.
+    if not method:
+        async with vbu.Database() as db:
+            await db.call(
+                """
+                UPDATE
+                    purchases
+                SET
+                    expiry_time = NOW() + INTERVAL '30 days'
+                WHERE
+                    id = $1
+                """,
+                purchased['id'],
+            )
+
+    # And done
+    return json_response({"success": True})
 
 
 @routes.get("/portal/{group}")
