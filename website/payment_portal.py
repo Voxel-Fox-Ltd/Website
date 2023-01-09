@@ -191,6 +191,17 @@ async def portal_check(request: Request):
             status=400,
         )
 
+    # Make sure the given item is an int
+    if not (user_id or guild_id).isdigit():
+        return json_response(
+            {
+                "error": "Invalid user or guild ID provided.",
+                "success": False,
+                "result": False,
+            },
+            status=400,
+        )
+
     # Check what they got
     result = None
     async with vbu.Database() as db:
@@ -210,7 +221,7 @@ async def portal_check(request: Request):
                 AND
                     expiry_time IS NULL
                 """,
-                user_id,
+                int(user_id),
                 product_name,
                 type=dict,
             )
@@ -230,7 +241,7 @@ async def portal_check(request: Request):
                 AND
                     expiry_time IS NULL
                 """,
-                guild_id,
+                int(guild_id),
                 product_name,
                 type=dict,
             )
