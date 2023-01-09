@@ -1,5 +1,15 @@
-from typing import Optional
-from aiohttp.web import HTTPFound, Request, RouteTableDef, json_response
+from typing import Awaitable, Callable, Optional, Self
+from datetime import datetime as dt, timedelta
+from functools import wraps
+
+from aiohttp.web import (
+    HTTPFound,
+    Request,
+    Response,
+    RouteTableDef,
+    StreamResponse,
+    json_response,
+)
 from aiohttp_jinja2 import render_template, template
 import aiohttp_session
 from discord.ext import vbu
@@ -9,6 +19,197 @@ from .utils.db_util import CheckoutItem
 
 
 routes = RouteTableDef()
+
+
+CR = Callable[
+    [Request],
+    Awaitable[
+        StreamResponse
+        | tuple[StreamResponse, bool]
+        | tuple[StreamResponse, timedelta]
+    ]
+]
+
+
+class CacheItem:
+
+    all_items: dict[str, Self] = dict()
+    max_lifetime = timedelta(days=1)
+
+    def __init__(
+            self,
+            request: Request,
+            response: StreamResponse,
+            cached_at: Optional[dt] = None,
+            lifetime: Optional[timedelta] = None)
+        self.response = response
+        self.cached_at = cached_at or dt.utcnow()
+        self.lifetime = lifetime or self.max_lifetime
+        self.all_items[self.get_key(request)] = self
+
+    @staticmethod
+    def get_key(request: Request) -> str:
+        keys = sorted(request.query.keys())
+        return (
+            request.url.path
+            + "&".join(f"{key}={request.query[key]}" for key in keys)
+        )
+
+    @classmethod
+    def get(cls, request: Request) -> Optional[Self]:
+        key = cls.get_key(request)
+        v = cls.all_items.get(key)
+        if v:
+            if v.cached_at + v.lifetime < dt.utcnow():
+                del cls.all_items[key]
+                return None
+            return v
+        return None
+
+
+def cache_by_query():
+    """
+    Cache a given request to a URL by its query string.
+    """
+
+    def decorator(func: CR) -> Callable[[Request], Awaitable[StreamResponse]]:
+        @wraps(func)
+        async def wrapper(request: Request) -> StreamResponse:
+            cached = CacheItem.get(request)
+            if cached:
+                return cached.response
+            response = await func(request)
+            keep = False
+            if isinstance(response, tuple):
+                response, keep = response
+            if keep is True:
+                CacheItem(request, response)
+            elif isinstance(keep, timedelta):
+                CacheItem(request, response, lifetime=keep)
+            return response
+        return wrapper
+    return decorator
+
+
+@routes.get("/api/portal/check")
+@cache_by_query()
+async def portal_check(request: Request):
+    """
+    Check if a user has purchased a certain product.
+    """
+
+    # Check the get params
+    product_name = request.query.get("product_name", "")
+    if not product_name:
+        return json_response(
+            {
+                "error": "No product name provided.",
+                "success": False,
+                "result": False,
+            },
+            status=400,
+        ), timedelta(days=7)
+    user_id = request.query.get("user_id", "")
+    guild_id = request.query.get("guild_id", "")
+    if user_id or guild_id:
+        pass
+    elif user_id and guild_id:
+        return json_response(
+            {
+                "error": "Both user_id and guild_id provided.",
+                "success": False,
+                "result": False,
+            },
+            status=400,
+        ), timedelta(days=7)
+    else:
+        return json_response(
+            {
+                "error": "No user or guild ID provided.",
+                "success": False,
+                "result": False,
+            },
+            status=400,
+        ), timedelta(days=7)
+
+    # Make sure the given item is an int
+    if not (user_id or guild_id).isdigit():
+        return json_response(
+            {
+                "error": "Invalid user or guild ID provided.",
+                "success": False,
+                "result": False,
+            },
+            status=400,
+        )
+
+    # Check what they got
+    result = None
+    async with vbu.Database() as db:
+
+        # Check by user ID
+        if user_id:
+            result = await db.call(
+                """
+                SELECT
+                    purchases.*, checkout_items.subscription
+                FROM
+                    purchases
+                LEFT JOIN
+                    checkout_items
+                ON
+                    purchases.product_name = checkout_items.product_name
+                WHERE
+                    user_id = $1
+                AND
+                    purchases.product_name = $2
+                AND
+                    expiry_time IS NULL
+                """,
+                int(user_id),
+                product_name,
+                type=dict,
+            )
+
+        # Check by guild ID
+        elif guild_id:
+            result = await db.call(
+                """
+                SELECT
+                    purchases.*, checkout_items.subscription
+                FROM
+                    purchases
+                LEFT JOIN
+                    checkout_items
+                ON
+                    purchases.product_name = checkout_items.product_name
+                WHERE
+                    guild_id = $1
+                AND
+                    purchases.product_name = $2
+                AND
+                    expiry_time IS NULL
+                """,
+                int(guild_id),
+                product_name,
+                type=dict,
+            )
+
+    # Return the result
+    if result:
+        return json_response(
+            {
+                "success": True,
+                "result": True,
+                "generated": dt.utcnow().isoformat(),
+            },
+        ), True
+    return json_response(
+        {
+            "success": True,
+            "result": False,
+        },
+    ), timedelta(hours=1)
 
 
 @routes.get("/api/portal/get_guilds")
@@ -149,117 +350,6 @@ async def portal_unsubscribe(request: Request):
 
     # And done
     return json_response({"success": True})
-
-
-@routes.get("/api/portal/check")
-async def portal_check(request: Request):
-    """
-    Check if a user has purchased a certain product.
-    """
-
-    # Check the get params
-    product_name = request.query.get("product_name", "")
-    if not product_name:
-        return json_response(
-            {
-                "error": "No product name provided.",
-                "success": False,
-                "result": False,
-            },
-            status=400,
-        )
-    user_id = request.query.get("user_id", "")
-    guild_id = request.query.get("guild_id", "")
-    if user_id or guild_id:
-        pass
-    elif user_id and guild_id:
-        return json_response(
-            {
-                "error": "Both user_id and guild_id provided.",
-                "success": False,
-                "result": False,
-            },
-            status=400,
-        )
-    else:
-        return json_response(
-            {
-                "error": "No user or guild ID provided.",
-                "success": False,
-                "result": False,
-            },
-            status=400,
-        )
-
-    # Make sure the given item is an int
-    if not (user_id or guild_id).isdigit():
-        return json_response(
-            {
-                "error": "Invalid user or guild ID provided.",
-                "success": False,
-                "result": False,
-            },
-            status=400,
-        )
-
-    # Check what they got
-    result = None
-    async with vbu.Database() as db:
-
-        # Check by user ID
-        if user_id:
-            result = await db.call(
-                """
-                SELECT
-                    *
-                FROM
-                    purchases
-                WHERE
-                    user_id = $1
-                AND
-                    product_name = $2
-                AND
-                    expiry_time IS NULL
-                """,
-                int(user_id),
-                product_name,
-                type=dict,
-            )
-
-        # Check by guild ID
-        elif guild_id:
-            result = await db.call(
-                """
-                SELECT
-                    *
-                FROM
-                    purchases
-                WHERE
-                    guild_id = $1
-                AND
-                    product_name = $2
-                AND
-                    expiry_time IS NULL
-                """,
-                int(guild_id),
-                product_name,
-                type=dict,
-            )
-
-    # Return the result
-    if result:
-        return json_response(
-            {
-                "success": True,
-                "result": True,
-            },
-        )
-    return json_response(
-        {
-            "success": True,
-            "result": False,
-        },
-    )
 
 
 @routes.get("/portal/{group}")
