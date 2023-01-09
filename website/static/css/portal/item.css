@@ -35,10 +35,16 @@ body {
     width: 100%;
 }
 
-#stripe-button .button {
+#stripe-button .button,
+.unsubscribe-button {
+    --col: #4379FF;
     width: 100%;
-    background: #4379FF;
-    border-color: #4379FF;
+    background: var(--col);
+    border-color: var(--col);
     color: white;
     font-weight: bold;
+}
+
+.unsubscribe-button {
+    --col: red;
 }
