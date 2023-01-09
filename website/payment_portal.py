@@ -227,12 +227,19 @@ async def purchase(request: Request):
             return HTTPFound("/")
         item = items[0]
 
+        # Make sure we have a guild ID if we need one
+        guild_id_str = request.query.get("guild", "")
+        if guild_id_str.isdigit():
+            guild_id = int(guild_id_str)
+        else:
+            return HTTPFound(f"/portal/{item.product_group}")
+
         # See if the user has purchased this item already - we'll use this to
         # redirect (if they can't buy multiple) or show an unsubscribe screen
         # (if it's a subscription)
         purchase: Optional[dict] = None
         if item.subscription or not item.multiple:
-            if request.query.get("guild"):
+            if item.per_guild:
                 purchase_rows = await db.call(
                     """
                     SELECT
@@ -249,7 +256,7 @@ async def purchase(request: Request):
                         expiry_time IS NULL
                     """,
                     session['user_id'],
-                    request.query.get("guild"),
+                    guild_id,
                     items[0].name,
                     type=dict,
                 )
