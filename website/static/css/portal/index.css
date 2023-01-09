@@ -2,6 +2,14 @@ html {
     background-color: #111111;
 }
 
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 10em;
+}
+
 #guild-items,
 #user-items {
     display: block;
@@ -32,7 +40,7 @@ html {
     text-align: center;
     border: 1px solid white;
     border-radius: 15px;
-    width: 15em;
+    width: 25em;
     background: #222222;
 }
 
