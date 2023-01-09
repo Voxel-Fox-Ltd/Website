@@ -1,11 +1,11 @@
-from typing import Awaitable, Callable, Optional, Self
+from typing import Awaitable, Callable, Optional
+from typing_extensions import Self
 from datetime import datetime as dt, timedelta
 from functools import wraps
 
 from aiohttp.web import (
     HTTPFound,
     Request,
-    Response,
     RouteTableDef,
     StreamResponse,
     json_response,
