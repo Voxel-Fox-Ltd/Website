@@ -60,9 +60,6 @@ class CacheItem:
             body=self._response._body,
             status=self._response.status,
             headers=self._response.headers,
-            reason=self._response.reason,
-            content_type=self._response.content_type,
-            charset=self._response.charset,
         )
 
 
