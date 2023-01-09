@@ -49,7 +49,8 @@ body {
     background: var(--col);
     border-color: var(--col);
     color: white;
-    font-weight: bold;
+    height: 55px;
+    font-size: 1.4em;
 }
 
 .unsubscribe-button {

@@ -67,4 +67,7 @@ body {
 .button, .select {
     margin-top: 5px;
     width: 100%
+    height: 55px;
+    font-size: 1.2em;
+    text-align: center;
 }
