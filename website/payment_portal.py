@@ -151,6 +151,106 @@ async def portal_unsubscribe(request: Request):
     return json_response({"success": True})
 
 
+@routes.get("/api/portal/check")
+async def portal_check(request: Request):
+    """
+    Check if a user has purchased a certain product.
+    """
+
+    # Check the get params
+    product_name = request.query.get("product_name", "")
+    if not product_name:
+        return json_response(
+            {
+                "error": "No product name provided.",
+                "success": False,
+                "result": False,
+            },
+            status=400,
+        )
+    user_id = request.query.get("user_id", "")
+    guild_id = request.query.get("guild_id", "")
+    if user_id or guild_id:
+        pass
+    elif user_id and guild_id:
+        return json_response(
+            {
+                "error": "Both user_id and guild_id provided.",
+                "success": False,
+                "result": False,
+            },
+            status=400,
+        )
+    else:
+        return json_response(
+            {
+                "error": "No user or guild ID provided.",
+                "success": False,
+                "result": False,
+            },
+            status=400,
+        )
+
+    # Check what they got
+    result = None
+    async with vbu.Database() as db:
+
+        # Check by user ID
+        if user_id:
+            result = await db.call(
+                """
+                SELECT
+                    *
+                FROM
+                    purchases
+                WHERE
+                    user_id = $1
+                AND
+                    product_name = $2
+                AND
+                    expiry_time IS NULL
+                """,
+                user_id,
+                product_name,
+                type=dict,
+            )
+
+        # Check by guild ID
+        elif guild_id:
+            result = await db.call(
+                """
+                SELECT
+                    *
+                FROM
+                    purchases
+                WHERE
+                    guild_id = $1
+                AND
+                    product_name = $2
+                AND
+                    expiry_time IS NULL
+                """,
+                guild_id,
+                product_name,
+                type=dict,
+            )
+
+    # Return the result
+    if result:
+        return json_response(
+            {
+                "success": True,
+                "result": True,
+            },
+        )
+    return json_response(
+        {
+            "success": True,
+            "result": False,
+        },
+    )
+
+
 @routes.get("/portal/{group}")
 @vbu.web.requires_login()
 @template("portal/index.htm.j2")
