@@ -67,164 +67,164 @@ your account
 """
 
 
-@routes.post('/webhooks/paypal/create_checkout_session')
-async def create_checkout_session(request: Request):
-    """
-    Create a checkout session for the user.
-    """
+# @routes.post('/webhooks/paypal/create_checkout_session')
+# async def create_checkout_session(request: Request):
+#     """
+#     Create a checkout session for the user.
+#     """
 
-    # Get their post data for the item name
-    post_data: dict = await request.json()
-    product_name = post_data.pop('product_name')
-    quantity = post_data.pop('quantity', 1)
+#     # Get their post data for the item name
+#     post_data: dict = await request.json()
+#     product_name = post_data.pop('product_name')
+#     quantity = post_data.pop('quantity', 1)
 
-    # Get the user's login details for metadata
-    if 'discord_user_id' not in post_data:
-        raise Exception("Missing user ID from POST request")
-    metadata = post_data
+#     # Get the user's login details for metadata
+#     if 'discord_user_id' not in post_data:
+#         raise Exception("Missing user ID from POST request")
+#     metadata = post_data
 
-    # Get the item data from the database
-    async with vbu.Database() as db:
-        item = await CheckoutItem.fetch(db, product_name)
-    if not item:
-        raise Exception(f"Missing item {product_name} from database")
+#     # Get the item data from the database
+#     async with vbu.Database() as db:
+#         item = await CheckoutItem.fetch(db, product_name)
+#     if not item:
+#         raise Exception(f"Missing item {product_name} from database")
 
-    # Ask Stripe for the information about the item
-    url = f"https://api.stripe.com/v1/prices/{item.stripe_price_id}"
-    auth = aiohttp.BasicAuth(request.app['config']['stripe_api_key'])
-    async with aiohttp.ClientSession() as session:
-        resp = await session.get(url, auth=auth)
-        product_data = await resp.json()
-        if not resp.ok:
-            return json_response(
-                {},
-                status=500,
-                headers={"Access-Control-Allow-Origin": "*"},
-            )
+#     # Ask Stripe for the information about the item
+#     url = f"https://api.stripe.com/v1/prices/{item.stripe_price_id}"
+#     auth = aiohttp.BasicAuth(request.app['config']['stripe_api_key'])
+#     async with aiohttp.ClientSession() as session:
+#         resp = await session.get(url, auth=auth)
+#         product_data = await resp.json()
+#         if not resp.ok:
+#             return json_response(
+#                 {},
+#                 status=500,
+#                 headers={"Access-Control-Allow-Origin": "*"},
+#             )
 
-    # Ask PayPal to create a checkout session
-    args = (
-        request,
-        quantity,
-        item,
-        product_data,
-        metadata,
-    )
-    if item.subscription:
-        data = await create_subscription_checkout_session(*args)
-    else:
-        data = await create_single_purchase_checkout_session(*args)
-    if data.status == 500:
-        return data
+#     # Ask PayPal to create a checkout session
+#     args = (
+#         request,
+#         quantity,
+#         item,
+#         product_data,
+#         metadata,
+#     )
+#     if item.subscription:
+#         data = await create_subscription_checkout_session(*args)
+#     else:
+#         data = await create_single_purchase_checkout_session(*args)
+#     if data.status == 500:
+#         return data
 
-    # Give that back to the user
-    if not data.text:
-        raise Exception
-    parsed: dict = json.loads(data.text)
-    return json_response(
-        {
-            "subscription": item.subscription,
-            "id": parsed['id'],
-        },
-        headers={"Access-Control-Allow-Origin": "*"},
-    )
-
-
-async def create_single_purchase_checkout_session(
-        request: Request,
-        quantity: int,
-        checkout_item: CheckoutItem,
-        product_data: dict,
-        metadata: dict) -> Response:
-    """
-    Create a single checkout session item.
-    """
-
-    amount = {
-        "currency_code": product_data['currency'],
-        "value": str((product_data['unit_amount'] * quantity) / 100),
-        "breakdown": {
-            "item_total": {
-                "currency_code": product_data['currency'],
-                "value": str((product_data['unit_amount'] * quantity) / 100)
-            },
-            "shipping": {
-                "currency_code": product_data['currency'],
-                "value": "0",
-            },
-            "discount": {
-                "currency_code": product_data['currency'],
-                "value": "0",
-            },
-        }
-    }
-    item = {
-        "name": checkout_item.name,
-        "unit_amount": {
-            "currency_code": product_data['currency'],
-            "value": str(product_data['unit_amount'] / 100),
-        },
-        "quantity": str(quantity),
-        "category": "DIGITAL_GOODS",
-    }
-    data = {
-        "intent": "CAPTURE",
-        "purchase_units": [
-            {
-                "amount": amount,
-                "items": [item],
-                "custom_id": json.dumps(metadata),
-            }
-        ]
-    }
-
-    # Ask PayPal for a session object
-    url = PAYPAL_BASE + "/v2/checkout/orders"
-    auth = aiohttp.BasicAuth(
-        request.app['config']['paypal_client_id'],
-        request.app['config']['paypal_client_secret'],
-    )
-    async with aiohttp.ClientSession() as session:
-        resp = await session.post(url, json=data, auth=auth)
-        response = await resp.json()
-        if not resp.ok:
-            return json_response(response, status=500)
-
-    # And return the session ID
-    return json_response(response)
+#     # Give that back to the user
+#     if not data.text:
+#         raise Exception
+#     parsed: dict = json.loads(data.text)
+#     return json_response(
+#         {
+#             "subscription": item.subscription,
+#             "id": parsed['id'],
+#         },
+#         headers={"Access-Control-Allow-Origin": "*"},
+#     )
 
 
-async def create_subscription_checkout_session(
-        request: Request,
-        quantity: int,
-        checkout_item: CheckoutItem,
-        product_data: dict,
-        metadata: dict):
-    """
-    Create a single checkout session item.
-    """
+# async def create_single_purchase_checkout_session(
+#         request: Request,
+#         quantity: int,
+#         checkout_item: CheckoutItem,
+#         product_data: dict,
+#         metadata: dict) -> Response:
+#     """
+#     Create a single checkout session item.
+#     """
 
-    # Make params to send to PayPal
-    data = {
-        "plan_id": checkout_item.paypal_plan_id,
-        "quantity": str(quantity),
-        "custom_id": json.dumps(metadata),
-    }
+#     amount = {
+#         "currency_code": product_data['currency'],
+#         "value": str((product_data['unit_amount'] * quantity) / 100),
+#         "breakdown": {
+#             "item_total": {
+#                 "currency_code": product_data['currency'],
+#                 "value": str((product_data['unit_amount'] * quantity) / 100)
+#             },
+#             "shipping": {
+#                 "currency_code": product_data['currency'],
+#                 "value": "0",
+#             },
+#             "discount": {
+#                 "currency_code": product_data['currency'],
+#                 "value": "0",
+#             },
+#         }
+#     }
+#     item = {
+#         "name": checkout_item.name,
+#         "unit_amount": {
+#             "currency_code": product_data['currency'],
+#             "value": str(product_data['unit_amount'] / 100),
+#         },
+#         "quantity": str(quantity),
+#         "category": "DIGITAL_GOODS",
+#     }
+#     data = {
+#         "intent": "CAPTURE",
+#         "purchase_units": [
+#             {
+#                 "amount": amount,
+#                 "items": [item],
+#                 "custom_id": json.dumps(metadata),
+#             }
+#         ]
+#     }
 
-    # Ask PayPal for a session object
-    url = PAYPAL_BASE + "/v1/billing/subscriptions"
-    auth = aiohttp.BasicAuth(
-        request.app['config']['paypal_client_id'],
-        request.app['config']['paypal_client_secret'],
-    )
-    async with aiohttp.ClientSession() as session:
-        async with session.post(url, json=data, auth=auth) as r:
-            response = await r.json()
-            if not r.ok:
-                return json_response(response, status=500)
+#     # Ask PayPal for a session object
+#     url = PAYPAL_BASE + "/v2/checkout/orders"
+#     auth = aiohttp.BasicAuth(
+#         request.app['config']['paypal_client_id'],
+#         request.app['config']['paypal_client_secret'],
+#     )
+#     async with aiohttp.ClientSession() as session:
+#         resp = await session.post(url, json=data, auth=auth)
+#         response = await resp.json()
+#         if not resp.ok:
+#             return json_response(response, status=500)
 
-    # And return the session ID
-    return json_response(response)
+#     # And return the session ID
+#     return json_response(response)
+
+
+# async def create_subscription_checkout_session(
+#         request: Request,
+#         quantity: int,
+#         checkout_item: CheckoutItem,
+#         product_data: dict,
+#         metadata: dict):
+#     """
+#     Create a single checkout session item.
+#     """
+
+#     # Make params to send to PayPal
+#     data = {
+#         "plan_id": checkout_item.paypal_plan_id,
+#         "quantity": str(quantity),
+#         "custom_id": json.dumps(metadata),
+#     }
+
+#     # Ask PayPal for a session object
+#     url = PAYPAL_BASE + "/v1/billing/subscriptions"
+#     auth = aiohttp.BasicAuth(
+#         request.app['config']['paypal_client_id'],
+#         request.app['config']['paypal_client_secret'],
+#     )
+#     async with aiohttp.ClientSession() as session:
+#         async with session.post(url, json=data, auth=auth) as r:
+#             response = await r.json()
+#             if not r.ok:
+#                 return json_response(response, status=500)
+
+#     # And return the session ID
+#     return json_response(response)
 
 
 @routes.post('/webhooks/paypal/purchase_ipn_new')
