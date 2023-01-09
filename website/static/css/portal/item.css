@@ -6,6 +6,7 @@ body {
     max-width: 600px;
     margin: auto;
     text-align: center;
+    font-family: "Century Gothic", "Helvetica", sans-serif;
 
     min-height: 100vh;
     display: flex;
