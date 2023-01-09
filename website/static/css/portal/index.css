@@ -41,6 +41,7 @@ body {
     border: 1px solid white;
     border-radius: 15px;
     width: 25em;
+    max-width: calc(100vw - 40px);
     background: #222222;
 }
 

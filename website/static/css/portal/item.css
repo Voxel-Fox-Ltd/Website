@@ -53,4 +53,5 @@ body {
 
 .unsubscribe-button {
     --col: red;
+    margin-top: 20px;
 }
