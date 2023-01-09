@@ -75,13 +75,16 @@ async function getGuilds() {
         return parseInt(a.id) - parseInt(b.id);
     });
     for(let select of document.querySelectorAll(".guild-select")) {
-        select.innerHTML = "<option value=''>Purchase for Guild</option>";
+        select.innerHTML = "<optgroup label='owo'><option value='' selected>&lt; Purchase for Guild &gt;</option></optgroup>";
+        let group = document.createElement("optgroup");
+        group.label = "Guilds";
         for(let guild of guilds) {
-            var option = document.createElement("option");
+            let option = document.createElement("option");
             option.value = guild.id;
             option.innerText = guild.name;
-            select.appendChild(option);
+            group.appendChild(option);
         }
+        select.appendChild(group);
     }
 }
 getGuilds();
