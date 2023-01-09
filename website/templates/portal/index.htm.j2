@@ -76,15 +76,32 @@ async function getGuilds() {
     });
     for(let select of document.querySelectorAll(".guild-select")) {
         select.innerHTML = "<option value='' selected>Purchase for Guild</option>";
-        let group = document.createElement("optgroup");
-        group.label = "Guilds";
+        let owned = document.createElement("optgroup");
+        owned.label = "Guilds you own";
+        let administrate = document.createElement("optgroup");
+        administrate.label = "Guilds you administrate";
+        let manage = document.createElement("optgroup");
+        manage.label = "Guilds you manage";
+        let contained = document.createElement("optgroup");
+        contained.label = "Guilds you're in";
         for(let guild of guilds) {
             let option = document.createElement("option");
             option.value = guild.id;
             option.innerText = guild.name;
-            group.appendChild(option);
+            if(guild.owner) {
+                owned.appendChild(option);
+            } else if(guild.administrator) {
+                administrate.appendChild(option);
+            } else if(guild.manage_guild) {
+                manage.appendChild(option);
+            } else {
+                contained.appendChild(option);
+            }
         }
-        select.appendChild(group);
+        select.appendChild(owned);
+        select.appendChild(administrate);
+        select.appendChild(manage);
+        select.appendChild(contained);
     }
 }
 getGuilds();

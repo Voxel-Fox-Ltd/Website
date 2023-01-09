@@ -43,6 +43,11 @@ async def portal_get_guilds(request: Request):
             {
                 "id": g['id'],
                 "name": g['name'],
+                "permissions": {
+                    "manage_guild": bool(int(g['permissions']) & 0x20),
+                    "administrator": bool(int(g['permissions']) & 0x8),
+                    "owner": g['owner'],
+                }
             }
             for g in guilds
         ],
