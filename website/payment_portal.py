@@ -244,7 +244,7 @@ async def purchase(request: Request):
                     AND 
                         guild_id = $2
                     AND 
-                        item_name = $3
+                        product_name = $3
                     AND
                         expiry_time IS NULL
                     """,
@@ -265,7 +265,7 @@ async def purchase(request: Request):
                     AND 
                         guild_id = $2
                     AND 
-                        item_name = $3
+                        product_name = $3
                     AND
                         expiry_time IS NULL
                     """,
