@@ -63,15 +63,17 @@ function guildSelectChange(itemId) {
 async function getGuilds() {
     var guilds = await fetch("/api/portal/get_guilds");
     guilds = await guilds.json();
-    guilds.sort(
-        (a, b) => {
-            a.name.localeCompare(
-                b.name, 
-                undefined, 
-                { sensitivity: 'base' }
-            )
+    guilds.sort((a, b) => {
+        var nameA = a.name.toUpperCase();
+        var nameB = b.name.toUpperCase();
+        if (nameA < nameB) {
+            return -1;
         }
-    );
+        if (nameA > nameB) {
+            return 1;
+        }
+        return parseInt(a.id) - parseInt(b.id);
+    });
     for(let select of document.querySelectorAll(".guild-select")) {
         select.innerHTML = "<option value=''>Purchase for Guild</option>";
         for(let guild of guilds) {
