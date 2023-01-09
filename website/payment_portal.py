@@ -41,7 +41,7 @@ class CacheItem:
             request: Request,
             response: StreamResponse,
             cached_at: Optional[dt] = None,
-            lifetime: Optional[timedelta] = None)
+            lifetime: Optional[timedelta] = None):
         self.response = response
         self.cached_at = cached_at or dt.utcnow()
         self.lifetime = lifetime or self.max_lifetime
