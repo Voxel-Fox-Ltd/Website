@@ -488,6 +488,15 @@ async def subscription_created(request: Request, data: dict):
 
     # And store in the database
     async with vbu.Database() as db:
+        if data['txn_type'] == "recurring_payment":
+            current = await fetch_purchase(
+                db,
+                metadata['discord_user_id'],
+                item.name,
+                metadata.get('discord_guild_id'),
+            )
+            if current:
+                return  # We only want to store the original subscription create
         await create_purchase(
             db,
             metadata['discord_user_id'],

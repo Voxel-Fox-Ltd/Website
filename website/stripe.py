@@ -267,19 +267,50 @@ async def checkout_processor(
             None,
             f"{STRIPE_BASE}/subscriptions/{data['subscription']}",
         )
+
+    # This gets a little whacky and wild so let's strap in
     async with vbu.Database() as db:
+
+        # For each item
         for i in items:
+
+            # If the item is refunded
             if refunded:
+
+                # See if we've already stored it
                 current = await fetch_purchase(
                     db,
                     data['metadata']['discord_user_id'],
                     i.name,
                     data['metadata'].get('discord_guild_id'),
                 )
+
+                # If not, we're done
                 if current is None:
                     continue
+
+                # If so, delete
                 await update_purchase(db, current['id'], delete=True)
+
+            # Item isn't refunded
             else:
+
+                # Is it a subscription?
+                if subscription_args:
+
+                    # Do we have it stored already?
+                    current = await fetch_purchase(
+                        db,
+                        data['metadata']['discord_user_id'],
+                        i.name,
+                        data['metadata'].get('discord_guild_id'),
+                    )
+
+                    # Yes? Fantastic. Let's move on
+                    if current:
+                        continue
+
+                # Not a subscription OR a subscription not stored already
                 await create_purchase(
                     db,
                     data['metadata']['discord_user_id'],
