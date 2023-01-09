@@ -67,5 +67,8 @@ CREATE TABLE IF NOT EXISTS purchases(
     guild_id BIGINT,  -- the guild the item was purchased for, if any
     expiry_time TIMESTAMP,  -- if the item is a subscription, when it expires (if expiring)
     cancel_url TEXT,  -- if the item is a subscription, the URL to cancel it
-    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    INDEX (user_id, product_name, expiry_time),
+    INDEX (guild_id, product_name, expiry_time)
 );
