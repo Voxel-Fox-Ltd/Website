@@ -62,7 +62,6 @@ class CacheItem:
             headers=self._response.headers,
         )
 
-
     @staticmethod
     def get_key(request: Request) -> str:
         keys = sorted(request.query.keys())
@@ -92,7 +91,7 @@ def cache_by_query():
         @wraps(func)
         async def wrapper(request: Request) -> StreamResponse:
             cached = CacheItem.get(request)
-            if cached:
+            if cached and request.headers.get("Cache-Control") != "no-cache":
                 return cached.response
             response = await func(request)
             keep = False
