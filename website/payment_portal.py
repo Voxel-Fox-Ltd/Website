@@ -232,7 +232,7 @@ async def purchase(request: Request):
         # (if it's a subscription)
         purchase: Optional[dict] = None
         if item.subscription or not item.multiple:
-            if item.per_guild:
+            if request.query.get("guild"):
                 purchase_rows = await db.call(
                     """
                     SELECT
@@ -241,9 +241,9 @@ async def purchase(request: Request):
                         purchases
                     WHERE
                         user_id = $1
-                    AND 
+                    AND
                         guild_id = $2
-                    AND 
+                    AND
                         product_name = $3
                     AND
                         expiry_time IS NULL
@@ -262,15 +262,14 @@ async def purchase(request: Request):
                         purchases
                     WHERE
                         user_id = $1
-                    AND 
-                        guild_id = $2
-                    AND 
-                        product_name = $3
+                    AND
+                        guild_id IS NULL
+                    AND
+                        product_name = $2
                     AND
                         expiry_time IS NULL
                     """,
                     session['user_id'],
-                    request.query.get("guild"),
                     items[0].name,
                     type=dict,
                 )
@@ -290,11 +289,11 @@ async def purchase(request: Request):
     }
     template_name = "portal/purchase.htm.j2"
     if purchase:
-        if not item.multiple:
+        if item.subscription:
+            template_name = "portal/unsubscribe.htm.j2"
+        elif not item.multiple:
             # template_name = "portal/owned.htm.j2"
             return HTTPFound(f"/portal/{item.product_group}")
-        elif item.subscription:
-            template_name = "portal/unsubscribe.htm.j2"
         else:
             raise Exception("This shouldn't happen")
     return render_template(template_name, request, context)
