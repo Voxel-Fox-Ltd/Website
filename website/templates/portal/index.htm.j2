@@ -88,11 +88,11 @@ async function getGuilds() {
             let option = document.createElement("option");
             option.value = guild.id;
             option.innerText = guild.name;
-            if(guild.owner) {
+            if(guild.permissions.owner) {
                 owned.appendChild(option);
-            } else if(guild.administrator) {
+            } else if(guild.permissions.administrator) {
                 administrate.appendChild(option);
-            } else if(guild.manage_guild) {
+            } else if(guild.permissions.manage_guild) {
                 manage.appendChild(option);
             } else {
                 contained.appendChild(option);
