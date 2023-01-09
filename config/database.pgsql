@@ -68,7 +68,13 @@ CREATE TABLE IF NOT EXISTS purchases(
     expiry_time TIMESTAMP,  -- if the item is a subscription, when it expires (if expiring)
     cancel_url TEXT,  -- if the item is a subscription, the URL to cancel it
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    INDEX (user_id, product_name, expiry_time),
-    INDEX (guild_id, product_name, expiry_time)
+    PRIMARY KEY (id)
 );
+CREATE INDEX IF NOT EXISTS
+    purchases_user_id_product_name_expiry_time_idx
+    ON purchases
+    (user_id, product_name, expiry_time);
+CREATE INDEX IF NOT EXISTS
+    purchases_guild_id_product_name_expiry_time_idx
+    ON purchases
+    (guild_id, product_name, expiry_time);
