@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
     <link rel="stylesheet" type="text/css" href="{{ static('css/portal/item.css') }}" />
     <link rel="icon" href="{{ static('/images/_voxelfox/logo.png') }}" />
-    <title>Voxel Fox Payment Portal</title>
+    <title>Voxel Fox Payment Portal - {{ item.name }}</title>
 </head>
 <body>
 
@@ -18,7 +18,7 @@
             {% if item.description %}
                 <p class="description">{{ item.description }}</p>
             {% endif %}
-            <p class="price">Price: <span>{{ item.price }}{{ item.currency_code }}</span></p>
+            <p class="price">Price: <span>{{ item.currency_symbol }}{{ item.price }}</span></p>
         </div>
         <div id="stripe-button" class="button-holder block"></div>
         <div id="paypal-button" class="button-holder block"></div>
@@ -122,11 +122,11 @@ paypal.Buttons({
         return actions.order.create({
             purchase_units: [{
                 amount: {
-                    value: "{{ item.price }}",
+                    value: "{{ item.price_number / 100 }}",
                     currency_code: "{{ item.currency_code }}",
                     breakdown: {
                         item_total: {
-                            value: "{{ item.price }}",
+                            value: "{{ item.price_number / 100 }}",
                             currency_code: "{{ item.currency_code }}"
                         },
                     },
@@ -134,7 +134,7 @@ paypal.Buttons({
                 items: [{
                     name: "{{ item.name }}",
                     unit_amount: {
-                        value: "{{ item.price }}",
+                        value: "{{ item.price_number / 100 }}",
                         currency_code: "{{ item.currency_code }}",
                     },
                     quantity: "1",

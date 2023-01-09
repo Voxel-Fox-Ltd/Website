@@ -19,6 +19,28 @@ log = logging.getLogger("vbu.voxelfox.webhook")
 
 class CheckoutItem:
 
+    __slots__ = (
+        '_id',
+        'product_name',
+        'success_url',
+        'cancel_url',
+        'subscription',
+        'stripe_product_id',
+        'stripe_price_id',
+        'paypal_plan_id',
+        'transaction_webhook',
+        'transaction_webhook_authorization',
+        'product_group',
+        'per_guild',
+        'multiple',
+        'description',
+        'quantity',
+        'price',
+        'price_number',
+        'currency_code',
+        '_currency_symbol',
+    )
+
     def __init__(
             self,
             id: uuid.UUID | str,
@@ -57,6 +79,7 @@ class CheckoutItem:
         self.price: str | None = None
         self.price_number: int = 0
         self.currency_code: str | None = None
+        self._currency_symbol: str | None = None
 
     @property
     def id(self) -> str:
@@ -73,6 +96,22 @@ class CheckoutItem:
     @property
     def webhook_auth(self) -> str:
         return self.transaction_webhook_authorization
+
+    @property
+    def currency_symbol(self) -> str:
+        if self._currency_symbol is not None:
+            return self._currency_symbol
+        if self.currency_code is None:
+            return ""
+        if self.currency_code.casefold() == "gbp":
+            self._currency_symbol = "£"
+        elif self.currency_code.casefold() == "usd":
+            self._currency_symbol = "$"
+        elif self.currency_code.casefold() == "eur":
+            self._currency_symbol = "€"
+        else:
+            self._currency_symbol = self.currency_code
+        return self._currency_symbol
 
     async def fetch_price(self, stripe_api_key: str) -> str:
         """
@@ -92,10 +131,12 @@ class CheckoutItem:
             self.price = f"{product_data['unit_amount'] / 100:.2f}"
             self.price_number = product_data['unit_amount']
             self.currency_code = product_data['currency'].upper()
+            self._currency_symbol = None
         else:
             self.price = "0.00"
             self.price_number = 0
             self.currency_code = "GBP"
+            self._currency_symbol = None
 
         if self.subscription:
             self.price = f"{self.price} per month"

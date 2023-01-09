@@ -97,8 +97,7 @@ async def index(request: Request):
 
 @routes.get("/portal/item/{id}")
 @vbu.web.requires_login()
-@template("portal/user_item.htm.j2")
-async def user_item(request: Request):
+async def purchase(request: Request):
     """
     Portal page for payments. This should show all items in the group.
     """
@@ -130,14 +129,16 @@ async def user_item(request: Request):
             return HTTPFound("/")
         item = items[0]
 
-        # See if the user has purchased this item already
-        purchased = False
-        if item.multiple and item.subscription is False:
+        # See if the user has purchased this item already - we'll use this to
+        # redirect (if they can't buy multiple) or show an unsubscribe screen
+        # (if it's a subscription)
+        purchase: Optional[dict] = None
+        if item.subscription or not item.multiple:
             if item.per_guild:
-                purchased = await db.call(
+                purchase_rows = await db.call(
                     """
                     SELECT
-                        1
+                        *
                     FROM
                         purchases
                     WHERE
@@ -146,16 +147,19 @@ async def user_item(request: Request):
                         guild_id = $2
                     AND 
                         item_name = $3
+                    AND
+                        expiry_time IS NULL
                     """,
                     session['user_id'],
                     request.query.get("guild"),
                     items[0].name,
+                    type=dict,
                 )
             else:
-                purchased = await db.call(
+                purchase_rows = await db.call(
                     """
                     SELECT
-                        1
+                        *
                     FROM
                         purchases
                     WHERE
@@ -164,19 +168,35 @@ async def user_item(request: Request):
                         guild_id = $2
                     AND 
                         item_name = $3
+                    AND
+                        expiry_time IS NULL
                     """,
                     session['user_id'],
                     request.query.get("guild"),
                     items[0].name,
+                    type=dict,
                 )
+            if purchase_rows:
+                purchase = purchase_rows[0]
 
-    # Get the item price
-    await item.fetch_price(request.app['config']['stripe_api_key'])
+    # Get the item price if they're able to buy it more
+    if not purchase:
+        await item.fetch_price(request.app['config']['stripe_api_key'])
 
     # Render the template
-    return {
+    context = {
         "item": item,
         "user_id": session['user_id'],
         "guild_id": request.query.get("guild"),
-        "purchased": bool(purchased),
+        "purchase": purchase,
     }
+    template_name = "portal/purchase.htm.j2"
+    if purchase:
+        if not item.multiple:
+            # template_name = "portal/owned.htm.j2"
+            return HTTPFound(f"/portal/{item.product_group}")
+        elif item.subscription:
+            template_name = "portal/unsubscribe.htm.j2"
+        else:
+            raise Exception("This shouldn't happen")
+    return render_template(template_name, request, context)
