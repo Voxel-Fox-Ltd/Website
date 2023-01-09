@@ -6,6 +6,7 @@ from functools import wraps
 from aiohttp.web import (
     HTTPFound,
     Request,
+    Response,
     RouteTableDef,
     StreamResponse,
     json_response,
@@ -36,16 +37,34 @@ class CacheItem:
     all_items: dict[str, Self] = dict()
     max_lifetime = timedelta(days=1)
 
+    __slots__ = (
+        '_response',
+        'cached_at',
+        'lifetime',
+    )
+
     def __init__(
             self,
             request: Request,
             response: StreamResponse,
             cached_at: Optional[dt] = None,
             lifetime: Optional[timedelta] = None):
-        self.response = response
+        self._response = response
         self.cached_at = cached_at or dt.utcnow()
         self.lifetime = lifetime or self.max_lifetime
         self.all_items[self.get_key(request)] = self
+
+    @property
+    def response(self):
+        return Response(
+            body=self._response._body,
+            status=self._response.status,
+            headers=self._response.headers,
+            reason=self._response.reason,
+            content_type=self._response.content_type,
+            charset=self._response.charset,
+        )
+
 
     @staticmethod
     def get_key(request: Request) -> str:
