@@ -121,6 +121,7 @@ async def portal_check(request: Request):
                 "error": "No product name provided.",
                 "success": False,
                 "result": False,
+                "generated": dt.utcnow().isoformat(),
             },
             status=400,
         ), timedelta(days=7)
@@ -134,6 +135,7 @@ async def portal_check(request: Request):
                 "error": "Both user_id and guild_id provided.",
                 "success": False,
                 "result": False,
+                "generated": dt.utcnow().isoformat(),
             },
             status=400,
         ), timedelta(days=7)
@@ -143,6 +145,7 @@ async def portal_check(request: Request):
                 "error": "No user or guild ID provided.",
                 "success": False,
                 "result": False,
+                "generated": dt.utcnow().isoformat(),
             },
             status=400,
         ), timedelta(days=7)
@@ -154,6 +157,7 @@ async def portal_check(request: Request):
                 "error": "Invalid user or guild ID provided.",
                 "success": False,
                 "result": False,
+                "generated": dt.utcnow().isoformat(),
             },
             status=400,
         )
@@ -223,6 +227,7 @@ async def portal_check(request: Request):
         {
             "success": True,
             "result": False,
+            "generated": dt.utcnow().isoformat(),
         },
     ), timedelta(hours=1)
 
