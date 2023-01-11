@@ -457,8 +457,10 @@ async def purchase(request: Request):
         guild_id_str = request.query.get("guild", "")
         if guild_id_str.isdigit():
             guild_id = int(guild_id_str)
-        else:
+        elif item.per_guild:
             return HTTPFound(f"/portal/{item.product_group}")
+        else:
+            guild_id = None
 
         # See if the user has purchased this item already - we'll use this to
         # redirect (if they can't buy multiple) or show an unsubscribe screen
