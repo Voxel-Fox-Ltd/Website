@@ -70,7 +70,7 @@ button.onclick = () => {
 
 
 {# PayPal subscription #}
-{% if item.subscription %}
+{% if item.subscription and item.paypal_plan_id %}
 <script src="{{ pp_base }}?client-id={{ client_id }}&vault=true&currency={{ item.currency_code }}"></script>
 <script
         id="paypal-script"
