@@ -320,9 +320,12 @@ async def fetch_purchase(
                 checkout_items.creator_id = users.id
             WHERE
                 discord_user_id = $1
-                AND product_name = $2
+                AND checkout_items.product_name = $2
                 AND discord_guild_id = $3
                 AND users.{processor}_id = $4
+            ORDER BY
+                timestamp DESC
+            LIMIT 1
             """.format(processor="paypal" if paypal_id else "stripe"),
             int(user_id),
             product_name,
@@ -336,16 +339,26 @@ async def fetch_purchase(
                 *
             FROM
                 purchases
+            LEFT JOIN
+                checkout_items
+            ON
+                purchases.product_id = checkout_items.id
+            LEFT JOIN
+                users
+            ON
+                checkout_items.creator_id = users.id
             WHERE
                 discord_user_id = $1
-                AND product_name = $2
+                AND checkout_items.product_name = $2
                 AND discord_guild_id IS NULL
+                AND users.{processor}_id = $3
             ORDER BY
                 timestamp DESC
             LIMIT 1
-            """,
+            """.format(processor="paypal" if paypal_id else "stripe"),
             int(user_id),
             product_name,
+            paypal_id or stripe_id,
         )
     if rows:
         return rows[0]
