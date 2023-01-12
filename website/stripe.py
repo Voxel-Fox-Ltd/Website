@@ -226,12 +226,13 @@ async def checkout_processor(
             )
 
     # Ask Stripe for the items that the user checked out with
-    log.info(f"Getting items from a checkout session {data['id']}")
+    log.info(f"Getting items from an invoice {data['invoice']}")
     async with aiohttp.ClientSession() as session:
-        url = f"{STRIPE_BASE}/checkout/sessions/{data['id']}/line_items"
+        url = f"{STRIPE_BASE}/invoices/{data['invoice']}"
         auth = aiohttp.BasicAuth(request.app['config']['stripe_api_key'])
         resp = await session.get(url, auth=auth)
-        line_items_object = await resp.json()
+        invoice_object = await resp.json()
+        line_items_object = invoice_object['lines']
     line_items = line_items_object['data']
 
     # Grab the item from the database
