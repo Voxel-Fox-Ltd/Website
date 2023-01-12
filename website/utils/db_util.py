@@ -191,7 +191,10 @@ class CheckoutItem:
         async with aiohttp.ClientSession() as session:
             url = f"https://api.stripe.com/v1/prices/{self.stripe_price_id}"
             auth = aiohttp.BasicAuth(stripe_api_key)
-            resp = await session.get(url, auth=auth)
+            headers = {}
+            if self.user and self.user.stripe_id:
+                headers['Stripe-Account'] = self.user.stripe_id
+            resp = await session.get(url, auth=auth, headers=headers)
             product_data = await resp.json()
 
         if resp.ok:
