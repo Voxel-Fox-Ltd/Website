@@ -181,7 +181,7 @@ async def portal_check(request: Request):
                 WHERE
                     discord_user_id = $1
                 AND
-                    purchases.product_name = $2
+                    checkout_items.product_name = $2
                 AND
                     expiry_time IS NULL
                 """,
@@ -205,7 +205,7 @@ async def portal_check(request: Request):
                 WHERE
                     discord_guild_id = $1
                 AND
-                    purchases.product_name = $2
+                    checkout_items.product_name = $2
                 AND
                     expiry_time IS NULL
                 """,
