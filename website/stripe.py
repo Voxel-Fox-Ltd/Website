@@ -327,16 +327,16 @@ async def checkout_processor(
                     db,
                     product_id=i.id,
                     amount_gross=(
-                        -data['amount_refunded']
-                        if data.get('refunded', False)
-                        else data['amount_captured']
+                        -data.get('_refund', data)['amount_refunded']
+                        if data.get('_refund', data).get('refunded', False)
+                        else data.get('_refund', data)['amount_captured']
                     ),
                     amount_net=(
-                        data['amount_captured']
-                        - data['amount_captured']
-                        - (data.get('amount_refunded', 0) or 0)
+                        data.get('_refund', data)['amount_captured']
+                        - data.get('_refund', data)['amount_captured']
+                        - (data.get('_refund', data).get('amount_refunded', 0) or 0)
                     ),
-                    currency=data['currency'],
+                    currency=data.get('_refund', data)['currency'],
                     settle_amount=None,
                     settle_currency=None,
                     identifier=data['id'],
@@ -468,6 +468,7 @@ async def charge_refunded(
         data['payment_intent'],
         stripe_account_id,
     )
+    checkout_data['_refund'] = data
     await checkout_processor(
         request,
         checkout_data,
