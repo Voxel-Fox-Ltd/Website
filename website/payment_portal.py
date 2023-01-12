@@ -453,6 +453,7 @@ async def purchase(request: Request):
         if not items:
             return HTTPFound("/")
         item = items[0]
+        await item.fetch_user(db)
 
         # Make sure we have a guild ID if we need one
         guild_id_str = request.query.get("guild", "")

@@ -56,6 +56,7 @@ button.onclick = () => {
 
 
 {# PayPal global #}
+{% if item.user.paypal_client_id %}
 {% set pp_base = "https://www.paypal.com/sdk/js" %}
 {% set client_id = (
     "AZrQypK2Od7C44Y1JgQAStWunNw7puFjVx0ako0rCOl2zJWuRpMNnm"
@@ -145,6 +146,7 @@ paypal.Buttons({
     }
 }).render("#" + pps.dataset.button);
 </script>
+{% endif %}
 {% endif %}
 
 
