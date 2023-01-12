@@ -358,9 +358,9 @@ async def checkout_processor(
                     # Do we have it stored already?
                     current = await fetch_purchase(
                         db,
-                        data['metadata']['discord_user_id'],
+                        all_metadata['discord_user_id'],
                         i.name,
-                        guild_id=data['metadata'].get('discord_guild_id'),
+                        guild_id=all_metadata.get('discord_guild_id'),
                         stripe_id=stripe_account_id,
                     )
 
@@ -371,9 +371,9 @@ async def checkout_processor(
                 # Not a subscription OR a subscription not stored already
                 await create_purchase(
                     db,
-                    data['metadata']['discord_user_id'],
+                    all_metadata['discord_user_id'],
                     i.name,
-                    guild_id=data['metadata'].get('discord_guild_id'),
+                    guild_id=all_metadata.get('discord_guild_id'),
                     expiry_time=None,
                     cancel_url=subscription_cancel_url,
                     stripe_id=stripe_account_id,
@@ -475,6 +475,10 @@ async def subscription_deleted(
 
     # Get the customer item so that we can get the user's Discord ID
     customer_data = await get_customer_by_id(request, data['customer'])
+    all_metadata = {
+        **customer_data['metadata'],
+        **subscription_item['metadata'],
+    }
 
     # Throw our relevant data at the webhook
     json_data = {
@@ -482,8 +486,7 @@ async def subscription_deleted(
         "quantity": item.quantity,
         "refund": False,
         "subscription": True,
-        **subscription_item['metadata'],
-        **customer_data['metadata'],
+        **all_metadata,
         "subscription_expiry_time": subscription_expiry_time,
         "source": "Stripe",
         "subscription_delete_url": None,
@@ -494,9 +497,9 @@ async def subscription_deleted(
     async with vbu.Database() as db:
         current = await fetch_purchase(
             db,
-            data['metadata']['discord_user_id'],
+            all_metadata['discord_user_id'],
             item.name,
-            guild_id=data['metadata'].get('discord_guild_id'),
+            guild_id=all_metadata.get('discord_guild_id'),
             stripe_id=stripe_account_id,
         )
         if current is None:
