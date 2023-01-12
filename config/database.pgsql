@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS google_forms_redirects(
 );
 
 
-CREATE TABLE users(
+CREATE TABLE IF NOT EXISTS users(
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 
     -- The user who the account belongs to
