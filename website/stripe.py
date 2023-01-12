@@ -198,7 +198,7 @@ async def checkout_processor(
         data: dict,
         stripe_account_id: str,
         *,
-        event_type: Optional[str] = None,
+        event_type: str,
         refunded: bool = False) -> None:
     """
     Pinged when a charge is successfully recieved, _including_ subscriptions and
@@ -266,7 +266,8 @@ async def checkout_processor(
                 i.quantity = o['quantity']
                 break
 
-    # Throw all the relevant data to the specified webhook
+    # Throw all the relevant data to the specified webhook if this is the
+    # first checkout
     if event_type == "checkout.session.completed":
         for item in items:
             json_data = {
@@ -301,30 +302,31 @@ async def checkout_processor(
         for i in items:
 
             # (unrelated, but log the transaction)
-            await log_transaction(
-                db,
-                product_id=i.id,
-                amount_gross=(
-                    -data['amount_refunded']
-                    if data['refunded']
-                    else data['amount_captured']
-                ),
-                amount_net=(
-                    data['amount_captured']
-                    - data['amount_captured']
-                    - (data.get('amount_refunded', 0) or 0)
-                ),
-                currency=data['currency'],
-                settle_amount=None,
-                settle_currency=None,
-                identifier=data['id'],
-                payment_processor="Stripe",
-                customer_email=data['billing_details']['email'],
-                metadata={
-                    **data['metadata'],
-                    **customer_data['metadata'],
-                },
-            )
+            if event_type.startswith("charge."):
+                await log_transaction(
+                    db,
+                    product_id=i.id,
+                    amount_gross=(
+                        -data['amount_refunded']
+                        if data.get('refunded', False)
+                        else data['amount_captured']
+                    ),
+                    amount_net=(
+                        data['amount_captured']
+                        - data['amount_captured']
+                        - (data.get('amount_refunded', 0) or 0)
+                    ),
+                    currency=data['currency'],
+                    settle_amount=None,
+                    settle_currency=None,
+                    identifier=data['id'],
+                    payment_processor="Stripe",
+                    customer_email=data['billing_details']['email'],
+                    metadata={
+                        **data['metadata'],
+                        **customer_data['metadata'],
+                    },
+                )
 
             # If the item is refunded
             if refunded:
