@@ -172,6 +172,7 @@ async def stripe_purchase_complete(request: Request):
             request,
             stripe_data['data']['object'],
             stripe_data.get('account', 'Voxel Fox'),
+            event_type=event
         )
     elif event == "customer.subscription.deleted":
         await subscription_deleted(
@@ -197,6 +198,7 @@ async def checkout_processor(
         data: dict,
         stripe_account_id: str,
         *,
+        event_type: Optional[str] = None,
         refunded: bool = False) -> None:
     """
     Pinged when a charge is successfully recieved, _including_ subscriptions and
@@ -265,7 +267,7 @@ async def checkout_processor(
                 break
 
     # Throw all the relevant data to the specified webhook
-    if data['type'] == "checkout.session.completed":
+    if event_type == "checkout.session.completed":
         for item in items:
             json_data = {
                 "product_name": item.name,
@@ -439,6 +441,7 @@ async def charge_refunded(
         checkout_data,
         stripe_account_id,
         refunded=True,
+        event_type="charge.refunded",
     )
 
 
