@@ -319,9 +319,9 @@ async def fetch_purchase(
             ON
                 checkout_items.creator_id = users.id
             WHERE
-                user_id = $1
+                discord_user_id = $1
                 AND product_name = $2
-                AND guild_id = $3
+                AND discord_guild_id = $3
                 AND users.{processor}_id = $4
             """.format(processor="paypal" if paypal_id else "stripe"),
             int(user_id),
@@ -337,9 +337,9 @@ async def fetch_purchase(
             FROM
                 purchases
             WHERE
-                user_id = $1
+                discord_user_id = $1
                 AND product_name = $2
-                AND guild_id IS NULL
+                AND discord_guild_id IS NULL
             ORDER BY
                 timestamp DESC
             LIMIT 1
