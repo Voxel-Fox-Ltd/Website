@@ -103,7 +103,7 @@ paypal.Buttons({
 
 
 {# PayPal single #}
-{% else %}
+{% elif not item.subscription %}
 <script src="{{ pp_base }}?client-id={{ client_id }}&currency={{ item.currency_code }}"></script>
 <script
         id="paypal-script"
