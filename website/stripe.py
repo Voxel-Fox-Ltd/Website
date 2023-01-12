@@ -217,12 +217,13 @@ async def checkout_processor(
     # First we want to update the customer metadata - apparently when you
     # create a subscription it doesn't update them, so we'll just do that here
     # if that's necessary
-    if data['mode'] == "subscription":
-        await set_customer_metadata(
-            request,
-            data['customer'],
-            data['metadata'],
-        )
+    if event_type == "checkout.session.completed":
+        if data['mode'] == "subscription":
+            await set_customer_metadata(
+                request,
+                data['customer'],
+                data['metadata'],
+            )
 
     # Ask Stripe for the items that the user checked out with
     log.info(f"Getting items from a checkout session {data['id']}")
