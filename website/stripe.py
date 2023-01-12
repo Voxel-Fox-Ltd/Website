@@ -259,6 +259,10 @@ async def checkout_processor(
         request,
         data['customer'],
     )
+    all_metadata = {
+        **customer_data['metadata'],
+        **data['metadata'],
+    }
 
     # Update our item as necessary based on the Stripe data
     for i in items:
@@ -277,8 +281,7 @@ async def checkout_processor(
                 "quantity": item.quantity,
                 "refund": refunded,
                 "subscription": item.subscription,
-                **data['metadata'],
-                **customer_data['metadata'],
+                **all_metadata,
                 "subscription_expiry_time": None,
                 "source": "Stripe",
                 "subscription_delete_url": None,
@@ -324,10 +327,7 @@ async def checkout_processor(
                     identifier=data['id'],
                     payment_processor="Stripe",
                     customer_email=data['billing_details']['email'],
-                    metadata={
-                        **data['metadata'],
-                        **customer_data['metadata'],
-                    },
+                    metadata=all_metadata,
                 )
 
             # If the item is refunded
@@ -336,9 +336,9 @@ async def checkout_processor(
                 # See if we've already stored it
                 current = await fetch_purchase(
                     db,
-                    data['metadata']['discord_user_id'],
+                    all_metadata['discord_user_id'],
                     i.name,
-                    guild_id=data['metadata'].get('discord_guild_id'),
+                    guild_id=all_metadata.get('discord_guild_id'),
                     stripe_id=stripe_account_id,
                 )
 
