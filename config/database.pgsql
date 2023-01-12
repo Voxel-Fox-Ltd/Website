@@ -35,8 +35,8 @@ CREATE TABLE IF NOT EXISTS checkout_items(
     -- Product information
     product_name CITEXT NOT NULL,
     subscription BOOLEAN NOT NULL DEFAULT FALSE,
-    success_url TEXT NOT NULL DEFAULT 'http://localhost',
-    cancel_url TEXT NOT NULL DEFAULT 'http://localhost',
+    success_url TEXT NOT NULL DEFAULT 'https://voxelfox.co.uk',
+    cancel_url TEXT NOT NULL DEFAULT 'https://voxelfox.co.uk',
 
     -- Information on the product IDs
     stripe_product_id TEXT NOT NULL,
