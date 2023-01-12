@@ -63,10 +63,10 @@ CREATE TABLE IF NOT EXISTS checkout_items(
     multiple BOOLEAN NOT NULL DEFAULT FALSE,
 
     -- Text to be displayed on the portal page.
-    description TEXT
+    description TEXT,
 
     -- Add our constraints
-    UNIQUE (creator_id, product_name);
+    UNIQUE (creator_id, product_name)
 );
 
 
