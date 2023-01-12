@@ -165,7 +165,7 @@ async def stripe_purchase_complete(request: Request):
 
     # Handle each checkout event
     event = stripe_data['type']
-    if event in ["checkout.session.completed", "charge.captured"]:
+    if event in ["checkout.session.completed", "charge.captured", "charge.succeeded"]:
         # Checkout session complete happens for all checkout types
         # Charge captured can happen without a checkout session
         await checkout_processor(
