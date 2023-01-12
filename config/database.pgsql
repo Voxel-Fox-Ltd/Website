@@ -1,15 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
-
-CREATE TABLE IF NOT EXISTS guild_settings(
-    guild_id BIGINT PRIMARY KEY,
-    prefix VARCHAR(30)
-);
-
-
-CREATE TABLE IF NOT EXISTS user_settings(
-    user_id BIGINT PRIMARY KEY
-);
+CREATE EXTENSION IF NOT EXISTS "citext";
 
 
 CREATE TABLE IF NOT EXISTS google_forms_redirects(
@@ -20,17 +10,42 @@ CREATE TABLE IF NOT EXISTS google_forms_redirects(
 );
 
 
+CREATE TABLE users(
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
+    -- The user who the account belongs to
+    discord_user_id BIGINT UNIQUE NOT NULL,
+
+    -- IDs for other services
+    stripe_id TEXT,
+    paypal_id TEXT,
+
+    -- API keys for payments
+    stripe_api_key TEXT,
+    stripe_webhook_signing_secret TEXT,
+    paypal_client_id TEXT,
+    paypal_client_secret TEXT
+);
+
+
 CREATE TABLE IF NOT EXISTS checkout_items(
     id UUID NOT NULL DEFAULT uuid_generate_v4(),
-    product_name TEXT PRIMARY KEY,
+
+    -- The person who created this item
+    creator_id UUID NOT NULL REFERENCES users(id),
+
+    -- Product information
+    product_name CITEXT NOT NULL,
+    subscription BOOLEAN NOT NULL DEFAULT FALSE,
     success_url TEXT NOT NULL DEFAULT 'http://localhost',
     cancel_url TEXT NOT NULL DEFAULT 'http://localhost',
-    subscription BOOLEAN NOT NULL DEFAULT FALSE,
 
+    -- Information on the product IDs
     stripe_product_id TEXT NOT NULL,
     stripe_price_id TEXT NOT NULL,
     paypal_plan_id TEXT,
 
+    -- Webhooks to send to when there's a purchase been made
     transaction_webhook TEXT,
     transaction_webhook_authorization TEXT NOT NULL DEFAULT '',
 
@@ -52,29 +67,67 @@ CREATE TABLE IF NOT EXISTS checkout_items(
 );
 
 
+-- A transaction log for purchases made through the website. Doesn't check
+-- validity, but rather just a log of income.
 CREATE TABLE IF NOT EXISTS transactions(
-    timestamp TIMESTAMP,
-    source TEXT NOT NULL,
-    data JSON
-);
--- This table is just a transaction log
+    id UUID NOT NULL DEFAULT uuid_generate_v4(),
 
+    -- The item that was purchased
+    product_id UUID NOT NULL REFERENCES checkout_items(id),
 
-CREATE TABLE IF NOT EXISTS purchases(
-    id UUID NOT NULL DEFAULT uuid_generate_v4(),  -- ID of the purchase; internal reference only
-    user_id BIGINT NOT NULL,  -- user who purchased the item
-    product_name TEXT NOT NULL,  -- the item the purchased
-    guild_id BIGINT,  -- the guild the item was purchased for, if any
-    expiry_time TIMESTAMP,  -- if the item is a subscription, when it expires (if expiring)
-    cancel_url TEXT,  -- if the item is a subscription, the URL to cancel it
+    -- The amount of the purchase
+    amount_gross INTEGER NOT NULL,
+    amount_net INTEGER,
+    currency VARCHAR(3) NOT NULL,
+
+    -- The amount that actually goes into the user's account
+    settle_amount INTEGER NOT NULL,
+    settle_currency VARCHAR(3) NOT NULL,
+
+    -- The transaction ID from the payment processor
+    identifier TEXT NOT NULL,
+
+    -- The payment processor that was used
+    payment_processor TEXT NOT NULL,
+
+    -- Timestamp of purchase
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
+
+    -- Information about the purchase and the purchaser
+    customer_email CITEXT,
+    metadata TEXT
 );
+
+
+-- A table holding references to the products that a user has purchased.
+-- Only contains ACTIVE purchases - non-refunded purchases, active
+-- subscriptions, etc. This table should not be used as a reference for
+-- income.
+CREATE TABLE IF NOT EXISTS purchases(
+    id UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
+
+    -- The product that was purchased
+    product_id UUID NOT NULL REFERENCES checkout_items(id),
+
+    -- The user who purchased the item
+    discord_user_id BIGINT NOT NULL,
+    discord_guild_id BIGINT,
+
+    -- If the item is a subscription, cancel metadata
+    cancel_url TEXT,
+    expiry_time TIMESTAMP,  -- If cancelled, when the subscription expires
+
+    -- Timestamp of purchase
+    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- Create some indexes for easier searching
 CREATE INDEX IF NOT EXISTS
     purchases_user_id_product_name_expiry_time_idx
     ON purchases
-    (user_id, product_name, expiry_time);
+    (user_id, product_id, expiry_time);
 CREATE INDEX IF NOT EXISTS
     purchases_guild_id_product_name_expiry_time_idx
     ON purchases
-    (guild_id, product_name, expiry_time);
+    (guild_id, product_id, expiry_time);

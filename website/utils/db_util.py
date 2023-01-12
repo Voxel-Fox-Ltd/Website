@@ -1,8 +1,9 @@
 from datetime import datetime as dt
 import logging
-from typing import Optional
+from typing import Literal, Optional
 from typing_extensions import Self
 import uuid
+import json
 
 import aiohttp
 from discord.ext import vbu
@@ -12,6 +13,7 @@ __all__ = (
     'create_purchase',
     'fetch_purchase',
     'update_purchase',
+    'log_transaction',
 )
 
 log = logging.getLogger("vbu.voxelfox.webhook")
@@ -21,6 +23,7 @@ class CheckoutItem:
 
     __slots__ = (
         '_id',
+        '_creator_id',
         'product_name',
         'success_url',
         'cancel_url',
@@ -44,6 +47,7 @@ class CheckoutItem:
     def __init__(
             self,
             id: uuid.UUID | str,
+            creator_id: uuid.UUID | str,
             product_name: str,
             success_url: str,
             cancel_url: str,
@@ -58,6 +62,7 @@ class CheckoutItem:
             per_guild: bool,
             description: str):
         self._id = id
+        self._creator_id = creator_id
         self.product_name: str = product_name
         self.success_url: str = success_url
         self.cancel_url: str = cancel_url
@@ -84,6 +89,10 @@ class CheckoutItem:
     @property
     def id(self) -> str:
         return str(self._id)
+
+    @property
+    def creator_id(self) -> str:
+        return str(self._creator_id)
 
     @property
     def name(self) -> str:
@@ -146,6 +155,7 @@ class CheckoutItem:
     def from_row(cls, row: dict) -> Self:
         return cls(
             id=row['id'],
+            creator_id=row['creator_id'],
             product_name=row['product_name'],
             success_url=row['success_url'],
             cancel_url=row['cancel_url'],
@@ -166,39 +176,66 @@ class CheckoutItem:
             cls, 
             db: vbu.Database, 
             product_name: Optional[str] = None, 
+            *,
+            paypal_id: Optional[str] = None,
+            stripe_id: Optional[str] = None,
             **kwargs) -> Optional[Self]:
         """
         Fetch an instance from the database.
         """
 
+        # Add product name to kwargs
         if product_name:
+            kwargs['product_name'] = product_name
+
+        # Fetch from db
+        if [paypal_id, stripe_id] == [None, None]:
             item_rows = await db.call(
                 """
                 SELECT
-                    *
+                    checkout_items.*
                 FROM
                     checkout_items
                 WHERE
-                    product_name = $1
-                """,
-                product_name,
+                    {args}
+                """.format(
+                    args=" AND ".join(
+                        f"checkout_items.{key} = ${index + 2}"
+                        for index, key in enumerate(kwargs.keys())
+                    )
+                ),
+                *kwargs.values()
             )
         else:
-            if len(kwargs) > 1:
-                raise ValueError("Can only fetch one item at a time.")
             item_rows = await db.call(
                 """
                 SELECT
-                    *
+                    checkout_items.*
                 FROM
                     checkout_items
+                LEFT JOIN
+                    users
+                ON
+                    checkout_items.creator_id = users.id
                 WHERE
-                    {0} = $1
-                """.format(*kwargs.keys()),
-                *kwargs.values(),
+                    {args}
+                    AND users.{processor}_id = $1
+                """.format(
+                    processor="paypal" if paypal_id else "stripe",
+                    args=" AND ".join(
+                        f"checkout_items.{key} = ${index + 2}"
+                        for index, key in enumerate(kwargs.keys())
+                    )
+                ),
+                paypal_id or stripe_id,
+                *kwargs.values()
             )
+
+        # Return what we got
         if not item_rows:
             return None
+        if len(item_rows) > 1:
+            raise ValueError("Multiple items found")
         return cls.from_row(item_rows[0])
 
 
@@ -206,10 +243,13 @@ async def create_purchase(
         db: vbu.Database,
         user_id: int,
         product_name: str,
+        *,
         guild_id: Optional[int] = None,
         expiry_time: Optional[dt] = None,
         cancel_url: Optional[str] = None,
-        timestamp: Optional[dt] = None):
+        timestamp: Optional[dt] = None,
+        paypal_id: Optional[str] = None,
+        stripe_id: Optional[str] = None):
     log.info("Storing purchase in database")
     await db.call(
         """
@@ -217,17 +257,37 @@ async def create_purchase(
             purchases
             (
                 user_id,
-                product_name,
+                product_id,
                 guild_id,
                 expiry_time,
                 cancel_url,
                 timestamp
             )
         VALUES
-            ($1, $2, $3, $4, $5, $6)
-        """,
+            (
+                $1,
+                (
+                    SELECT
+                        checkout_items.id
+                    FROM
+                        checkout_items
+                    LEFT JOIN
+                        users
+                    ON
+                        checkout_items.creator_id = users.id
+                    WHERE
+                        checkout_items.product_name = $2
+                        AND users.{processor}_id = $3
+                ),
+                $4,
+                $5,
+                $6,
+                $7
+            )
+        """.format(processor="paypal" if paypal_id else "stripe"),
         int(user_id),
         product_name,
+        paypal_id or stripe_id,
         int(guild_id) if guild_id else None,
         expiry_time,
         cancel_url,
@@ -239,22 +299,35 @@ async def fetch_purchase(
         db: vbu.Database,
         user_id: int,
         product_name: str,
+        *,
+        paypal_id: Optional[str] = None,
+        stripe_id: Optional[str] = None,
         guild_id: Optional[int] = None) -> Optional[dict]:
     if guild_id:
         rows = await db.call(
             """
             SELECT
-                *
+                purchases.*
             FROM
                 purchases
+            LEFT JOIN
+                checkout_items
+            ON
+                purchases.product_id = checkout_items.id
+            LEFT JOIN
+                users
+            ON
+                checkout_items.creator_id = users.id
             WHERE
                 user_id = $1
                 AND product_name = $2
                 AND guild_id = $3
-            """,
+                AND users.{processor}_id = $4
+            """.format(processor="paypal" if paypal_id else "stripe"),
             int(user_id),
             product_name,
             int(guild_id),
+            paypal_id or stripe_id,
         )
     else:
         rows = await db.call(
@@ -308,3 +381,61 @@ async def update_purchase(
             id,
             *kwargs.values(),
         )
+
+
+async def log_transaction(
+        db: vbu.Database,
+        product_id: str | uuid.UUID,
+        amount_gross: int | float,
+        amount_net: Optional[int | float],
+        currency: str,
+        settle_amount: Optional[int | float],
+        settle_currency: Optional[str],
+        identifier: str,
+        payment_processor: Literal["Stripe", "PayPal"],
+        customer_email: Optional[str] = None,
+        metadata: Optional[dict] = None):
+    """
+    Store a transaction in the database log.
+    """
+
+    if type(amount_gross) is float:
+        amount_gross = int(amount_gross * 100)
+    if type(amount_net) is float:
+        amount_net = int(amount_net * 100)
+    if type(settle_amount) is float:
+        settle_amount = int(settle_amount * 100)
+    if settle_amount is None:
+        settle_amount = amount_gross
+    if settle_currency is None:
+        settle_currency = currency
+    await db.call(
+        """
+        INSERT INTO
+            transactions
+            (
+                product_id,
+                amount_gross,
+                amount_net,
+                currency,
+                settle_amount,
+                settle_currency,
+                identifier,
+                payment_processor,
+                customer_email,
+                metadata
+            )
+        VALUES
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        """,
+        product_id,
+        amount_gross,
+        amount_net,
+        currency.lower(),
+        settle_amount,
+        settle_currency.lower(),
+        identifier,
+        payment_processor,
+        customer_email,
+        json.dumps(metadata) if metadata else None,
+    )

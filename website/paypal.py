@@ -5,13 +5,19 @@ from typing import Tuple, Generator
 import logging
 
 import aiohttp
-from aiohttp.web import Request, RouteTableDef, Response, json_response
+from aiohttp.web import Request, RouteTableDef, Response
 from discord.ext import vbu
 import pytz
 
 
 from .utils.get_paypal_access_token import get_paypal_access_token
-from .utils.db_util import CheckoutItem, create_purchase, fetch_purchase, update_purchase
+from .utils.db_util import (
+    CheckoutItem,
+    create_purchase,
+    fetch_purchase,
+    log_transaction,
+    update_purchase,
+)
 from .utils.webhook_util import send_webhook
 
 
@@ -67,166 +73,6 @@ your account
 """
 
 
-# @routes.post('/webhooks/paypal/create_checkout_session')
-# async def create_checkout_session(request: Request):
-#     """
-#     Create a checkout session for the user.
-#     """
-
-#     # Get their post data for the item name
-#     post_data: dict = await request.json()
-#     product_name = post_data.pop('product_name')
-#     quantity = post_data.pop('quantity', 1)
-
-#     # Get the user's login details for metadata
-#     if 'discord_user_id' not in post_data:
-#         raise Exception("Missing user ID from POST request")
-#     metadata = post_data
-
-#     # Get the item data from the database
-#     async with vbu.Database() as db:
-#         item = await CheckoutItem.fetch(db, product_name)
-#     if not item:
-#         raise Exception(f"Missing item {product_name} from database")
-
-#     # Ask Stripe for the information about the item
-#     url = f"https://api.stripe.com/v1/prices/{item.stripe_price_id}"
-#     auth = aiohttp.BasicAuth(request.app['config']['stripe_api_key'])
-#     async with aiohttp.ClientSession() as session:
-#         resp = await session.get(url, auth=auth)
-#         product_data = await resp.json()
-#         if not resp.ok:
-#             return json_response(
-#                 {},
-#                 status=500,
-#                 headers={"Access-Control-Allow-Origin": "*"},
-#             )
-
-#     # Ask PayPal to create a checkout session
-#     args = (
-#         request,
-#         quantity,
-#         item,
-#         product_data,
-#         metadata,
-#     )
-#     if item.subscription:
-#         data = await create_subscription_checkout_session(*args)
-#     else:
-#         data = await create_single_purchase_checkout_session(*args)
-#     if data.status == 500:
-#         return data
-
-#     # Give that back to the user
-#     if not data.text:
-#         raise Exception
-#     parsed: dict = json.loads(data.text)
-#     return json_response(
-#         {
-#             "subscription": item.subscription,
-#             "id": parsed['id'],
-#         },
-#         headers={"Access-Control-Allow-Origin": "*"},
-#     )
-
-
-# async def create_single_purchase_checkout_session(
-#         request: Request,
-#         quantity: int,
-#         checkout_item: CheckoutItem,
-#         product_data: dict,
-#         metadata: dict) -> Response:
-#     """
-#     Create a single checkout session item.
-#     """
-
-#     amount = {
-#         "currency_code": product_data['currency'],
-#         "value": str((product_data['unit_amount'] * quantity) / 100),
-#         "breakdown": {
-#             "item_total": {
-#                 "currency_code": product_data['currency'],
-#                 "value": str((product_data['unit_amount'] * quantity) / 100)
-#             },
-#             "shipping": {
-#                 "currency_code": product_data['currency'],
-#                 "value": "0",
-#             },
-#             "discount": {
-#                 "currency_code": product_data['currency'],
-#                 "value": "0",
-#             },
-#         }
-#     }
-#     item = {
-#         "name": checkout_item.name,
-#         "unit_amount": {
-#             "currency_code": product_data['currency'],
-#             "value": str(product_data['unit_amount'] / 100),
-#         },
-#         "quantity": str(quantity),
-#         "category": "DIGITAL_GOODS",
-#     }
-#     data = {
-#         "intent": "CAPTURE",
-#         "purchase_units": [
-#             {
-#                 "amount": amount,
-#                 "items": [item],
-#                 "custom_id": json.dumps(metadata),
-#             }
-#         ]
-#     }
-
-#     # Ask PayPal for a session object
-#     url = PAYPAL_BASE + "/v2/checkout/orders"
-#     auth = aiohttp.BasicAuth(
-#         request.app['config']['paypal_client_id'],
-#         request.app['config']['paypal_client_secret'],
-#     )
-#     async with aiohttp.ClientSession() as session:
-#         resp = await session.post(url, json=data, auth=auth)
-#         response = await resp.json()
-#         if not resp.ok:
-#             return json_response(response, status=500)
-
-#     # And return the session ID
-#     return json_response(response)
-
-
-# async def create_subscription_checkout_session(
-#         request: Request,
-#         quantity: int,
-#         checkout_item: CheckoutItem,
-#         product_data: dict,
-#         metadata: dict):
-#     """
-#     Create a single checkout session item.
-#     """
-
-#     # Make params to send to PayPal
-#     data = {
-#         "plan_id": checkout_item.paypal_plan_id,
-#         "quantity": str(quantity),
-#         "custom_id": json.dumps(metadata),
-#     }
-
-#     # Ask PayPal for a session object
-#     url = PAYPAL_BASE + "/v1/billing/subscriptions"
-#     auth = aiohttp.BasicAuth(
-#         request.app['config']['paypal_client_id'],
-#         request.app['config']['paypal_client_secret'],
-#     )
-#     async with aiohttp.ClientSession() as session:
-#         async with session.post(url, json=data, auth=auth) as r:
-#             response = await r.json()
-#             if not r.ok:
-#                 return json_response(response, status=500)
-
-#     # And return the session ID
-#     return json_response(response)
-
-
 @routes.post('/webhooks/paypal/purchase_ipn_new')
 async def paypal_ipn_complete(request: Request):
     """
@@ -274,7 +120,7 @@ async def paypal_ipn_complete(request: Request):
         "express_checkout",
         "web_accept",
         None,
-    ]
+    ]  # This includes refunds
     subscription_create_events = [
         "recurring_payment_profile_created",
         "recurring_payment",
@@ -285,7 +131,7 @@ async def paypal_ipn_complete(request: Request):
         "recurring_payment_suspended_due_to_max_failed_payment",
     ]
     if event in charge_capture_events:
-        await charge_captured(request, paypal_data)  # Also refunds
+        await charge_captured(request, paypal_data)
     elif event in subscription_create_events:
         await subscription_created(request, paypal_data)
     elif event in subscription_cancel_events:
@@ -327,8 +173,8 @@ def get_datetime_from_standard_format(string: str) -> dt:
 
 def get_time_around_datetime(datetime: dt) -> Tuple[dt, dt]:
     constructor = (
-        datetime.year, 
-        datetime.month, 
+        datetime.year,
+        datetime.month,
         datetime.day,
     )
     return (
@@ -346,7 +192,9 @@ async def get_subscription_by_subscription_id(
 
     access_token = await get_paypal_access_token(request)
     url = f"{PAYPAL_BASE}/v1/billing/subscriptions/{subscription_id}"
-    headers = {"Authorization": f"Bearer {access_token}"}
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+    }
     async with aiohttp.ClientSession() as session:
         resp = await session.get(url, headers=headers)
         return await resp.json()
@@ -402,7 +250,11 @@ async def charge_captured(request: Request, data: dict):
     products = get_products_from_charge(data)
     async with vbu.Database() as db:
         items = [
-            await CheckoutItem.fetch(db, i['name'])
+            await CheckoutItem.fetch(
+                db,
+                product_name=i['name'],
+                paypal_id=data['receiver_id'],
+            )
             for i in products
         ]
     items = [i for i in items if i]
@@ -431,12 +283,28 @@ async def charge_captured(request: Request, data: dict):
     # Add these transactions to the database
     async with vbu.Database() as db:
         for i in items:
+            await log_transaction(
+                db,
+                product_id=i.id,
+                amount_gross=float(data['mc_gross']) * 100,
+                amount_net=float(data['mc_gross']) - float(data.get('mc_fee', 0)),
+                currency=data['mc_currency'],
+                settle_amount=float(data['settle_amount']),
+                settle_currency=data['settle_currency'],
+                identifier=data['txn_id'],
+                payment_processor="PayPal",
+                customer_email=data['payer_email'],
+                metadata={
+                    **metadata,
+                },
+            )
             if refunded:
                 current = await fetch_purchase(
                     db,
                     metadata['discord_user_id'],
                     i.name,
-                    metadata.get('discord_guild_id'),
+                    guild_id=metadata.get('discord_guild_id'),
+                    paypal_id=data['receiver_id'],
                 )
                 if current is None:
                     continue
@@ -446,7 +314,8 @@ async def charge_captured(request: Request, data: dict):
                     db,
                     metadata['discord_user_id'],
                     i.name,
-                    metadata.get('discord_guild_id'),
+                    guild_id=metadata.get('discord_guild_id'),
+                    paypal_id=data['receiver_id'],
                 )
 
 
@@ -469,7 +338,11 @@ async def subscription_created(request: Request, data: dict):
 
     # Grab the data from the database
     async with vbu.Database() as db:
-        item = await CheckoutItem.fetch(db, product_name)
+        item = await CheckoutItem.fetch(
+            db,
+            product_name=product_name,
+            paypal_id=data['receiver_id'],
+        )
     if item is None:
         log.info(f"Missing item {product_name} from database.")
         return
@@ -483,18 +356,37 @@ async def subscription_created(request: Request, data: dict):
         **metadata,
         "subscription_expiry_time": None,
         "source": "PayPal",
-        "subscription_delete_url": f"{PAYPAL_BASE}/v1/billing/subscriptions/{recurring_payment_id}/cancel",
+        "subscription_delete_url": (
+            f"{PAYPAL_BASE}/v1/billing/subscriptions/"
+            f"{recurring_payment_id}/cancel"
+        ),
     }
     await send_webhook(item, json_data)
 
     # And store in the database
     async with vbu.Database() as db:
         if data['txn_type'] == "recurring_payment":
+            await log_transaction(
+                db,
+                product_id=item.id,
+                amount_gross=float(data['mc_gross']) * 100,
+                amount_net=float(data['mc_gross']) - float(data.get('mc_fee', 0)),
+                currency=data['mc_currency'],
+                settle_amount=float(data['settle_amount']),
+                settle_currency=data['settle_currency'],
+                identifier=data['txn_id'],
+                payment_processor="PayPal",
+                customer_email=data['payer_email'],
+                metadata={
+                    **metadata,
+                },
+            )
             current = await fetch_purchase(
                 db,
                 metadata['discord_user_id'],
                 item.name,
-                metadata.get('discord_guild_id'),
+                guild_id=metadata.get('discord_guild_id'),
+                paypal_id=data['receiver_id'],
             )
             if current:
                 return  # We only want to store the original subscription create
@@ -502,9 +394,13 @@ async def subscription_created(request: Request, data: dict):
             db,
             metadata['discord_user_id'],
             item.name,
-            metadata.get('discord_guild_id'),
-            None,
-            f"{PAYPAL_BASE}/v1/billing/subscriptions/{recurring_payment_id}/cancel",
+            guild_id=metadata.get('discord_guild_id'),
+            expiry_time=None,
+            cancel_url=(
+                f"{PAYPAL_BASE}/v1/billing/subscriptions/"
+                f"{recurring_payment_id}/cancel"
+            ),
+            paypal_id=data['receiver_id'],
         )
 
 
@@ -527,7 +423,11 @@ async def subscription_deleted(request: Request, data: dict):
 
     # Grab the data from the database
     async with vbu.Database() as db:
-        item = await CheckoutItem.fetch(db, product_name)
+        item = await CheckoutItem.fetch(
+            db,
+            product_name=product_name,
+            paypal_id=data['receiver_id'],
+        )
     if item is None:
         log.info(f"Missing item {product_name} from database")
         return
@@ -556,12 +456,13 @@ async def subscription_deleted(request: Request, data: dict):
             db,
             metadata['discord_user_id'],
             item.name,
-            metadata.get('discord_guild_id'),
+            guild_id=metadata.get('discord_guild_id'),
+            paypal_id=data['receiver_id'],
         )
         if current is None:
             return
         await update_purchase(
-            db, 
-            current['id'], 
+            db,
+            current['id'],
             expiry_time=expiry_time,
         )

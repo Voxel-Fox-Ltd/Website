@@ -2,12 +2,19 @@ import json
 import hmac
 from hashlib import sha256
 import logging
+from typing import Optional
 
 import aiohttp
 from aiohttp.web import Request, RouteTableDef, Response, json_response
 from discord.ext import vbu
 
-from .utils.db_util import CheckoutItem, fetch_purchase, create_purchase, update_purchase
+from .utils.db_util import (
+    CheckoutItem,
+    fetch_purchase,
+    create_purchase,
+    log_transaction,
+    update_purchase,
+)
 from .utils.webhook_util import send_webhook
 
 
@@ -57,7 +64,7 @@ async def create_checkout_session(request: Request):
 
     # Get their post data for the item name
     post_data: dict = await request.json()
-    product_name = post_data.pop('product_name')
+    product_id = post_data.pop('product_id')
     quantity = post_data.pop('quantity', 1)
 
     # Get the user's login details for metadata
@@ -67,9 +74,12 @@ async def create_checkout_session(request: Request):
 
     # Get the item data from the database
     async with vbu.Database() as db:
-        item = await CheckoutItem.fetch(db, product_name)
+        item = await CheckoutItem.fetch(
+            db,
+            id=product_id
+        )
     if item is None:
-        raise Exception(f"Missing item {product_name} from database")
+        raise Exception(f"Missing item {product_id} from database")
 
     # Make params to send to Stripe
     json_data = {
@@ -153,15 +163,28 @@ async def stripe_purchase_complete(request: Request):
         log.info("Invalid data sent to Stripe webhook url")
         return Response(status=400)  # Oh no it was fake data
 
-    # Process the data
+    # Handle each checkout event
     event = stripe_data['type']
-    if event == "checkout.session.completed":
-        # This happens for subscriptions as well as single purchases
-        await checkout_processor(request, stripe_data['data']['object'])
+    if event in ["checkout.session.completed", "charge.captured"]:
+        # Checkout session complete happens for all checkout types
+        # Charge captured can happen without a checkout session
+        await checkout_processor(
+            request,
+            stripe_data['data']['object'],
+            stripe_data['account'],
+        )
     elif event == "customer.subscription.deleted":
-        await subscription_deleted(request, stripe_data['data']['object'])
+        await subscription_deleted(
+            request,
+            stripe_data['data']['object'],
+            stripe_data['account'],
+        )
     elif event == "charge.refunded":
-        await charge_refunded(request, stripe_data['data']['object'])
+        await charge_refunded(
+            request,
+            stripe_data['data']['object'],
+            stripe_data['account'],
+        )
     else:
         log.info(f"Unhandled Stripe event '{event}'")
 
@@ -172,6 +195,7 @@ async def stripe_purchase_complete(request: Request):
 async def checkout_processor(
         request: Request,
         data: dict,
+        stripe_account_id: str,
         *,
         refunded: bool = False) -> None:
     """
@@ -241,31 +265,31 @@ async def checkout_processor(
                 break
 
     # Throw all the relevant data to the specified webhook
-    for item in items:
-        json_data = {
-            "product_name": item.name,
-            "quantity": item.quantity,
-            "refund": refunded,
-            "subscription": item.subscription,
-            **data['metadata'],
-            **customer_data['metadata'],
-            "subscription_expiry_time": None,
-            "source": "Stripe",
-            "subscription_delete_url": None,
-        }
-        if data.get('subscription'):
-            json_data["subscription_delete_url"] = (
-                f"{STRIPE_BASE}/subscriptions/{data['subscription']}"
-            )
-        await send_webhook(item, json_data)
+    if data['type'] == "checkout.session.completed":
+        for item in items:
+            json_data = {
+                "product_name": item.name,
+                "quantity": item.quantity,
+                "refund": refunded,
+                "subscription": item.subscription,
+                **data['metadata'],
+                **customer_data['metadata'],
+                "subscription_expiry_time": None,
+                "source": "Stripe",
+                "subscription_delete_url": None,
+            }
+            if data.get('subscription'):
+                json_data["subscription_delete_url"] = (
+                    f"{STRIPE_BASE}/subscriptions/{data['subscription']}"
+                )
+            await send_webhook(item, json_data)
 
     # And log the transaction
-    subscription_args: tuple[None, str] | tuple
-    subscription_args = tuple()
+    subscription_cancel_url: Optional[str] = None
     if data.get('subscription'):
-        subscription_args = (
-            None,
-            f"{STRIPE_BASE}/subscriptions/{data['subscription']}",
+        subscription_cancel_url = (
+            f"{STRIPE_BASE}/subscriptions/"
+            f"{data['subscription']}"
         )
 
     # This gets a little whacky and wild so let's strap in
@@ -273,6 +297,32 @@ async def checkout_processor(
 
         # For each item
         for i in items:
+
+            # (unrelated, but log the transaction)
+            await log_transaction(
+                db,
+                product_id=i.id,
+                amount_gross=(
+                    -data['amount_refunded']
+                    if data['refunded']
+                    else data['amount_captured']
+                ),
+                amount_net=(
+                    data['amount_captured']
+                    - data['amount_captured']
+                    - (data.get('amount_refunded', 0) or 0)
+                ),
+                currency=data['currency'],
+                settle_amount=None,
+                settle_currency=None,
+                identifier=data['id'],
+                payment_processor="Stripe",
+                customer_email=data['billing_details']['email'],
+                metadata={
+                    **data['metadata'],
+                    **customer_data['metadata'],
+                },
+            )
 
             # If the item is refunded
             if refunded:
@@ -282,7 +332,8 @@ async def checkout_processor(
                     db,
                     data['metadata']['discord_user_id'],
                     i.name,
-                    data['metadata'].get('discord_guild_id'),
+                    guild_id=data['metadata'].get('discord_guild_id'),
+                    stripe_id=stripe_account_id,
                 )
 
                 # If not, we're done
@@ -296,14 +347,15 @@ async def checkout_processor(
             else:
 
                 # Is it a subscription?
-                if subscription_args:
+                if subscription_cancel_url:
 
                     # Do we have it stored already?
                     current = await fetch_purchase(
                         db,
                         data['metadata']['discord_user_id'],
                         i.name,
-                        data['metadata'].get('discord_guild_id'),
+                        guild_id=data['metadata'].get('discord_guild_id'),
+                        stripe_id=stripe_account_id,
                     )
 
                     # Yes? Fantastic. Let's move on
@@ -315,8 +367,10 @@ async def checkout_processor(
                     db,
                     data['metadata']['discord_user_id'],
                     i.name,
-                    data['metadata'].get('discord_guild_id'),
-                    *subscription_args,
+                    guild_id=data['metadata'].get('discord_guild_id'),
+                    expiry_time=None,
+                    cancel_url=subscription_cancel_url,
+                    stripe_id=stripe_account_id,
                 )
 
 
@@ -370,7 +424,8 @@ async def get_checkout_session_from_payment_intent(
 
 async def charge_refunded(
         request: Request,
-        data: dict) -> None:
+        data: dict,
+        stripe_account_id: str) -> None:
     """
     Pinged when a charge is refunded.
     """
@@ -379,10 +434,18 @@ async def charge_refunded(
         request,
         data['payment_intent'],
     )
-    await checkout_processor(request, checkout_data, refunded=True)
+    await checkout_processor(
+        request,
+        checkout_data,
+        stripe_account_id,
+        refunded=True,
+    )
 
 
-async def subscription_deleted(request: Request, data: dict) -> None:
+async def subscription_deleted(
+        request: Request,
+        data: dict,
+        stripe_account_id: str) -> None:
     """
     Pinged when a subscription is deleted.
     """
@@ -396,6 +459,7 @@ async def subscription_deleted(request: Request, data: dict) -> None:
         item = await CheckoutItem.fetch(
             db,
             (product_name := subscription_item['price']['product']),
+            stripe_id=stripe_account_id,
         )
     if item is None:
         log.info(f"Missing item {product_name} from database")
@@ -425,7 +489,8 @@ async def subscription_deleted(request: Request, data: dict) -> None:
             db,
             data['metadata']['discord_user_id'],
             item.name,
-            data['metadata'].get('discord_guild_id'),
+            guild_id=data['metadata'].get('discord_guild_id'),
+            stripe_id=stripe_account_id,
         )
         if current is None:
             return
