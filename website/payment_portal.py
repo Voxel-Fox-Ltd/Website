@@ -115,10 +115,11 @@ async def portal_check(request: Request):
 
     # Check the get params
     product_name = request.query.get("product_name", "")
-    if not product_name:
+    product_id = request.query.get("product_id", "")
+    if not product_name and not product_id:
         return json_response(
             {
-                "error": "No product name provided.",
+                "error": "No product ID provided.",
                 "success": False,
                 "result": False,
                 "generated": dt.utcnow().isoformat(),
@@ -164,6 +165,11 @@ async def portal_check(request: Request):
 
     # Check what they got
     result = None
+    identify_column = (
+        "checkout_items.id"
+        if product_id
+        else "checkout_items.product_name"
+    )
     async with vbu.Database() as db:
 
         # Check by user ID
@@ -181,12 +187,12 @@ async def portal_check(request: Request):
                 WHERE
                     discord_user_id = $1
                 AND
-                    checkout_items.product_name = $2
+                    {identify_column} = $2
                 AND
                     expiry_time IS NULL
-                """,
+                """.format(identify_column=identify_column),
                 int(user_id),
-                product_name,
+                product_id or product_name,
                 type=dict,
             )
 
@@ -205,12 +211,12 @@ async def portal_check(request: Request):
                 WHERE
                     discord_guild_id = $1
                 AND
-                    checkout_items.product_name = $2
+                    {identify_column} = $2
                 AND
                     expiry_time IS NULL
-                """,
+                """.format(identify_column=identify_column),
                 int(guild_id),
-                product_name,
+                product_id or product_name,
                 type=dict,
             )
 
