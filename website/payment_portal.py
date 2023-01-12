@@ -179,7 +179,7 @@ async def portal_check(request: Request):
                 ON
                     purchases.product_id = checkout_items.id
                 WHERE
-                    user_id = $1
+                    discord_user_id = $1
                 AND
                     purchases.product_name = $2
                 AND
@@ -203,7 +203,7 @@ async def portal_check(request: Request):
                 ON
                     purchases.product_id = checkout_items.id
                 WHERE
-                    guild_id = $1
+                    discord_guild_id = $1
                 AND
                     purchases.product_name = $2
                 AND
@@ -256,7 +256,6 @@ async def portal_get_guilds(request: Request):
         if not resp.ok:
             return json_response([])
         guilds = await resp.json()
-
 
     # Return the guilds
     return json_response(
@@ -447,7 +446,7 @@ async def purchase(request: Request):
             for row in item_rows
         ]
 
-        # If there aren't any items then let's just redirect back to 
+        # If there aren't any items then let's just redirect back to
         # the index
         if not items:
             return HTTPFound("/")
