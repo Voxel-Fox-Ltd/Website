@@ -392,10 +392,12 @@ async def index(request: Request):
             """,
             request.match_info["group"],
         )
-    items = [
-        CheckoutItem.from_row(row)
-        for row in item_rows
-    ]
+        items = [
+            CheckoutItem.from_row(row)
+            for row in item_rows
+        ]
+        for i in items:
+            await i.fetch_user(db)
     for i in items:
         await i.fetch_price(request.app['config']['stripe_api_key'])
 

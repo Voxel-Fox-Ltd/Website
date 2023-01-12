@@ -298,8 +298,11 @@ class CheckoutItem:
         if len(item_rows) > 1:
             raise ValueError("Multiple items found")
         v = cls.from_row(item_rows[0])
-        v.user = await User.fetch(db, v.creator_id)
+        await v.fetch_user(db)
         return v
+
+    async def fetch_user(self, db):
+        self.user = await User.fetch(db, self.creator_id)
 
 
 async def create_purchase(
