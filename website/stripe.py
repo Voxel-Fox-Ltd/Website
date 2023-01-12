@@ -321,8 +321,8 @@ async def checkout_processor(
 
 
 async def set_customer_metadata(
-        request: Request, 
-        customer_id: str, 
+        request: Request,
+        customer_id: str,
         metadata: dict) -> dict:
     """
     Get the checkout session object given its payment intent ID.
@@ -338,7 +338,7 @@ async def set_customer_metadata(
 
 
 async def get_customer_by_id(
-        request: Request, 
+        request: Request,
         customer_id: str) -> dict:
     """
     Get the checkout session object given its payment intent ID.
@@ -369,7 +369,7 @@ async def get_checkout_session_from_payment_intent(
 
 
 async def charge_refunded(
-        request: Request, 
+        request: Request,
         data: dict) -> None:
     """
     Pinged when a charge is refunded.
@@ -395,10 +395,11 @@ async def subscription_deleted(request: Request, data: dict) -> None:
     async with vbu.Database() as db:
         item = await CheckoutItem.fetch(
             db,
-            subscription_item['price']['product'],
+            (product_name := subscription_item['price']['product']),
         )
     if item is None:
-        raise Exception("No item found for subscription")
+        log.info(f"Missing item {product_name} from database")
+        return
     item.quantity = subscription_item['quantity']
 
     # Get the customer item so that we can get the user's Discord ID
@@ -429,7 +430,7 @@ async def subscription_deleted(request: Request, data: dict) -> None:
         if current is None:
             return
         await update_purchase(
-            db, 
-            current['id'], 
+            db,
+            current['id'],
             expiry_time=subscription_expiry_time,
         )

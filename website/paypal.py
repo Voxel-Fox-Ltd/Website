@@ -471,7 +471,8 @@ async def subscription_created(request: Request, data: dict):
     async with vbu.Database() as db:
         item = await CheckoutItem.fetch(db, product_name)
     if item is None:
-        raise Exception(f"Unknown product {product_name}")
+        log.info(f"Missing item {product_name} from database.")
+        return
 
     # Send a POST request for the item
     json_data = {
@@ -528,7 +529,8 @@ async def subscription_deleted(request: Request, data: dict):
     async with vbu.Database() as db:
         item = await CheckoutItem.fetch(db, product_name)
     if item is None:
-        raise Exception(f"Unknown product name {product_name}")
+        log.info(f"Missing item {product_name} from database")
+        return
 
     # Get the last payment time
     payment_time_str = recurring_payment_info['billing_info']['last_payment']['time']
