@@ -80,6 +80,11 @@ async def create_checkout_session(request: Request):
         )
     if item is None:
         raise Exception(f"Missing item {product_id} from database")
+    stripe_id = (
+        item.user.stripe_id
+        if item.user and item.user.stripe_id
+        else None
+    )
 
     # Make params to send to Stripe
     json_data = {
@@ -104,7 +109,11 @@ async def create_checkout_session(request: Request):
         # Ask Stripe for a session object
         url = f"{STRIPE_BASE}/checkout/sessions"
         form_data = form_encode(json_data)
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+        }
+        if stripe_id:
+            headers["Stripe-Account"] = stripe_id
         auth = aiohttp.BasicAuth(request.app['config']['stripe_api_key'])
         resp = await session.post(url, data=form_data, headers=headers, auth=auth)
         response = await resp.json()
@@ -123,6 +132,7 @@ async def create_checkout_session(request: Request):
             {
                 "discord_user_id": metadata['discord_user_id'],
             },
+            stripe_id,
         )
 
     # And return the session ID
@@ -171,20 +181,20 @@ async def stripe_purchase_complete(request: Request):
         await checkout_processor(
             request,
             stripe_data['data']['object'],
-            stripe_data.get('account', 'Voxel Fox'),
+            stripe_data.get('account'),
             event_type=event
         )
     elif event == "customer.subscription.deleted":
         await subscription_deleted(
             request,
             stripe_data['data']['object'],
-            stripe_data.get('account', 'Voxel Fox'),
+            stripe_data.get('account'),
         )
     elif event == "charge.refunded":
         await charge_refunded(
             request,
             stripe_data['data']['object'],
-            stripe_data.get('account', 'Voxel Fox'),
+            stripe_data.get('account'),
         )
     else:
         log.info(f"Unhandled Stripe event '{event}'")
@@ -196,7 +206,7 @@ async def stripe_purchase_complete(request: Request):
 async def checkout_processor(
         request: Request,
         data: dict,
-        stripe_account_id: str,
+        stripe_account_id: Optional[str],
         *,
         event_type: str,
         refunded: bool = False) -> None:
@@ -223,6 +233,7 @@ async def checkout_processor(
                 request,
                 data['customer'],
                 data['metadata'],
+                stripe_account_id,
             )
 
     # Ask Stripe for the items that the user checked out with
@@ -230,7 +241,10 @@ async def checkout_processor(
     async with aiohttp.ClientSession() as session:
         url = f"{STRIPE_BASE}/invoices/{data['invoice']}"
         auth = aiohttp.BasicAuth(request.app['config']['stripe_api_key'])
-        resp = await session.get(url, auth=auth)
+        headers = {}
+        if stripe_account_id:
+            headers["Stripe-Account"] = stripe_account_id
+        resp = await session.get(url, auth=auth, headers=headers)
         invoice_object = await resp.json()
         line_items_object = invoice_object['lines']
     line_items = line_items_object['data']
@@ -258,6 +272,7 @@ async def checkout_processor(
     customer_data = await get_customer_by_id(
         request,
         data['customer'],
+        stripe_account_id,
     )
     all_metadata = {
         **customer_data['metadata'],
@@ -383,7 +398,8 @@ async def checkout_processor(
 async def set_customer_metadata(
         request: Request,
         customer_id: str,
-        metadata: dict) -> dict:
+        metadata: dict,
+        stripe_account_id: Optional[str]) -> dict:
     """
     Get the checkout session object given its payment intent ID.
     """
@@ -391,30 +407,38 @@ async def set_customer_metadata(
     url = STRIPE_BASE + "/customers/{0}".format(customer_id)
     auth = aiohttp.BasicAuth(request.app['config']['stripe_api_key'])
     data = form_encode({"metadata": metadata})
+    headers = {}
+    if stripe_account_id:
+        headers["Stripe-Account"] = stripe_account_id
     async with aiohttp.ClientSession() as session:
-        resp = await session.post(url, data=data, auth=auth)
+        resp = await session.post(url, data=data, auth=auth, headers=headers)
         response_json = await resp.json()
     return response_json
 
 
 async def get_customer_by_id(
         request: Request,
-        customer_id: str) -> dict:
+        customer_id: str,
+        stripe_account_id: Optional[str]) -> dict:
     """
     Get the checkout session object given its payment intent ID.
     """
 
     url = f"{STRIPE_BASE}/customers/{customer_id}"
     auth = aiohttp.BasicAuth(request.app['config']['stripe_api_key'])
+    headers = {}
+    if stripe_account_id:
+        headers["Stripe-Account"] = stripe_account_id
     async with aiohttp.ClientSession() as session:
-        resp = await session.get(url, auth=auth)
+        resp = await session.get(url, auth=auth, headers=headers)
         response_json = await resp.json()
     return response_json
 
 
 async def get_checkout_session_from_payment_intent(
         request: Request,
-        payment_intent_id: str) -> dict:
+        payment_intent_id: str,
+        stripe_account_id: Optional[str]) -> dict:
     """
     Get the checkout session object given its payment intent ID.
     """
@@ -422,8 +446,11 @@ async def get_checkout_session_from_payment_intent(
     url = STRIPE_BASE + "/checkout/sessions"
     params = {"payment_intent": payment_intent_id}
     auth = aiohttp.BasicAuth(request.app['config']['stripe_api_key'])
+    headers = {}
+    if stripe_account_id:
+        headers["Stripe-Account"] = stripe_account_id
     async with aiohttp.ClientSession() as session:
-        resp = await session.get(url, params=params, auth=auth)
+        resp = await session.get(url, params=params, auth=auth, headers=headers)
         response_json = await resp.json()
     return response_json['data'][0]
 
@@ -431,7 +458,7 @@ async def get_checkout_session_from_payment_intent(
 async def charge_refunded(
         request: Request,
         data: dict,
-        stripe_account_id: str) -> None:
+        stripe_account_id: Optional[str]) -> None:
     """
     Pinged when a charge is refunded.
     """
@@ -439,6 +466,7 @@ async def charge_refunded(
     checkout_data = await get_checkout_session_from_payment_intent(
         request,
         data['payment_intent'],
+        stripe_account_id,
     )
     await checkout_processor(
         request,
@@ -452,7 +480,7 @@ async def charge_refunded(
 async def subscription_deleted(
         request: Request,
         data: dict,
-        stripe_account_id: str) -> None:
+        stripe_account_id: Optional[str]) -> None:
     """
     Pinged when a subscription is deleted.
     """
@@ -474,7 +502,11 @@ async def subscription_deleted(
     item.quantity = subscription_item['quantity']
 
     # Get the customer item so that we can get the user's Discord ID
-    customer_data = await get_customer_by_id(request, data['customer'])
+    customer_data = await get_customer_by_id(
+        request,
+        data['customer'],
+        stripe_account_id,
+    )
     all_metadata = {
         **customer_data['metadata'],
         **subscription_item['metadata'],

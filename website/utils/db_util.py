@@ -19,6 +19,61 @@ __all__ = (
 log = logging.getLogger("vbu.voxelfox.webhook")
 
 
+class User:
+
+    __slots__ = (
+        '_id',
+        'discord_user_id',
+        'stripe_id',
+        'paypal_id',
+        'paypal_client_id',
+        'paypal_client_secret',
+    )
+
+    def __init__(
+            self,
+            id: str | uuid.UUID,
+            discord_user_id: Optional[int],
+            stripe_id: Optional[str],
+            paypal_id: Optional[str],
+            paypal_client_id: Optional[str],
+            paypal_client_secret: Optional[str]):
+        self._id
+        self.discord_user_id
+        self.stripe_id
+        self.paypal_id
+        self.paypal_client_id
+        self.paypal_client_secret
+
+    @property
+    def id(self) -> str:
+        return str(self._id)
+
+    @classmethod
+    def from_row(cls, row: dict):
+        return cls(
+            id=row['_id'],
+            discord_user_id=row.get('discord_user_id'),
+            stripe_id=row.get('stripe_id'),
+            paypal_id=row.get('paypal_id'),
+            paypal_client_id=row.get('paypal_client_id'),
+            paypal_client_secret=row.get('paypal_client_secret'),
+        )
+
+    @classmethod
+    async def fetch(
+            cls,
+            db: vbu.Database,
+            id: str | uuid.UUID) -> Optional[Self]:
+        row = await db.call(
+            """SELECT * FROM users WHERE id=$1""",
+            id,
+        )
+        if row:
+            return cls.from_row(row[0])
+        return None
+
+
 class CheckoutItem:
 
     __slots__ = (
@@ -42,6 +97,7 @@ class CheckoutItem:
         'price_number',
         'currency_code',
         '_currency_symbol',
+        'user',
     )
 
     def __init__(
@@ -85,6 +141,8 @@ class CheckoutItem:
         self.price_number: int = 0
         self.currency_code: str | None = None
         self._currency_symbol: str | None = None
+
+        self.user: User | None = None
 
     @property
     def id(self) -> str:
@@ -236,7 +294,9 @@ class CheckoutItem:
             return None
         if len(item_rows) > 1:
             raise ValueError("Multiple items found")
-        return cls.from_row(item_rows[0])
+        v = cls.from_row(item_rows[0])
+        v.user = await User.fetch(db, v.creator_id)
+        return v
 
 
 async def create_purchase(

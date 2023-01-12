@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS users(
     paypal_id TEXT,
 
     -- API keys for payments
-    stripe_api_key TEXT,
     paypal_client_id TEXT,
     paypal_client_secret TEXT
 );
