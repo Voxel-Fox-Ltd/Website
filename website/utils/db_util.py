@@ -38,12 +38,12 @@ class User:
             paypal_id: Optional[str],
             paypal_client_id: Optional[str],
             paypal_client_secret: Optional[str]):
-        self._id
-        self.discord_user_id
-        self.stripe_id
-        self.paypal_id
-        self.paypal_client_id
-        self.paypal_client_secret
+        self._id = id
+        self.discord_user_id = discord_user_id
+        self.stripe_id = stripe_id
+        self.paypal_id = paypal_id
+        self.paypal_client_id = paypal_client_id
+        self.paypal_client_secret = paypal_client_secret
 
     @property
     def id(self) -> str:
