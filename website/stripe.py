@@ -329,11 +329,10 @@ async def checkout_processor(
                     amount_gross=(
                         -data.get('_refund', data)['amount_refunded']
                         if data.get('_refund', data).get('refunded', False)
-                        else data.get('_refund', data)['amount_captured']
+                        else data.get('_refund', data)['amount']
                     ),
                     amount_net=(
                         data.get('_refund', data)['amount_captured']
-                        - data.get('_refund', data)['amount_captured']
                         - (data.get('_refund', data).get('amount_refunded', 0) or 0)
                     ),
                     currency=data.get('_refund', data)['currency'],
