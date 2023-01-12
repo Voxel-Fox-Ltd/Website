@@ -474,17 +474,17 @@ async def purchase(request: Request):
                     FROM
                         purchases
                     WHERE
-                        user_id = $1
+                        discord_user_id = $1
                     AND
-                        guild_id = $2
+                        discord_guild_id = $2
                     AND
-                        product_name = $3
+                        product_id = $3
                     AND
                         expiry_time IS NULL
                     """,
                     session['user_id'],
                     guild_id,
-                    items[0].name,
+                    items[0].id,
                     type=dict,
                 )
             else:
@@ -495,16 +495,16 @@ async def purchase(request: Request):
                     FROM
                         purchases
                     WHERE
-                        user_id = $1
+                        discord_user_id = $1
                     AND
-                        guild_id IS NULL
+                        discord_guild_id IS NULL
                     AND
-                        product_name = $2
+                        product_id = $2
                     AND
                         expiry_time IS NULL
                     """,
                     session['user_id'],
-                    items[0].name,
+                    items[0].id,
                     type=dict,
                 )
             if purchase_rows:
