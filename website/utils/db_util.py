@@ -256,9 +256,9 @@ async def create_purchase(
         INSERT INTO
             purchases
             (
-                user_id,
+                discord_user_id,
                 product_id,
-                guild_id,
+                discord_guild_id,
                 expiry_time,
                 cancel_url,
                 timestamp
