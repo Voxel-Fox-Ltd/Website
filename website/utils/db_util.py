@@ -40,7 +40,7 @@ class User:
             paypal_client_secret: Optional[str]):
         self._id = id
         self.discord_user_id = discord_user_id
-        self.stripe_id = stripe_id
+        self.stripe_id = None if stripe_id == "VFL" else stripe_id
         self.paypal_id = paypal_id
         self.paypal_client_id = paypal_client_id
         self.paypal_client_secret = paypal_client_secret
@@ -285,7 +285,7 @@ class CheckoutItem:
                         for index, key in enumerate(kwargs.keys())
                     )
                 ),
-                paypal_id or stripe_id,
+                paypal_id or (stripe_id or 'VFL'),
                 *kwargs.values()
             )
 
@@ -347,7 +347,7 @@ async def create_purchase(
         """.format(processor="paypal" if paypal_id else "stripe"),
         int(user_id),
         product_name,
-        paypal_id or stripe_id,
+        paypal_id or (stripe_id or 'VFL'),
         int(guild_id) if guild_id else None,
         expiry_time,
         cancel_url,
@@ -390,7 +390,7 @@ async def fetch_purchase(
             int(user_id),
             product_name,
             int(guild_id),
-            paypal_id or stripe_id,
+            paypal_id or (stripe_id or 'VFL'),
         )
     else:
         rows = await db.call(
@@ -418,7 +418,7 @@ async def fetch_purchase(
             """.format(processor="paypal" if paypal_id else "stripe"),
             int(user_id),
             product_name,
-            paypal_id or stripe_id,
+            paypal_id or (stripe_id or 'VFL'),
         )
     if rows:
         return rows[0]
