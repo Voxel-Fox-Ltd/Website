@@ -319,9 +319,9 @@ async def fetch_purchase(
             ON
                 checkout_items.creator_id = users.id
             WHERE
-                discord_user_id = $1
+                purchases.discord_user_id = $1
                 AND checkout_items.product_name = $2
-                AND discord_guild_id = $3
+                AND purchases.discord_guild_id = $3
                 AND users.{processor}_id = $4
             ORDER BY
                 timestamp DESC
@@ -348,9 +348,9 @@ async def fetch_purchase(
             ON
                 checkout_items.creator_id = users.id
             WHERE
-                discord_user_id = $1
+                purchases.discord_user_id = $1
                 AND checkout_items.product_name = $2
-                AND discord_guild_id IS NULL
+                AND purchases.discord_guild_id IS NULL
                 AND users.{processor}_id = $3
             ORDER BY
                 timestamp DESC
