@@ -200,7 +200,7 @@ class CheckoutItem:
                     {args}
                 """.format(
                     args=" AND ".join(
-                        f"checkout_items.{key} = ${index + 2}"
+                        f"checkout_items.{key} = ${index + 1}"
                         for index, key in enumerate(kwargs.keys())
                     )
                 ),
