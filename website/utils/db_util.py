@@ -173,9 +173,9 @@ class CheckoutItem:
 
     @classmethod
     async def fetch(
-            cls, 
-            db: vbu.Database, 
-            product_name: Optional[str] = None, 
+            cls,
+            db: vbu.Database,
+            product_name: Optional[str] = None,
             *,
             paypal_id: Optional[str] = None,
             stripe_id: Optional[str] = None,
@@ -340,8 +340,8 @@ async def fetch_purchase(
                 user_id = $1
                 AND product_name = $2
                 AND guild_id IS NULL
-            ORDER BY 
-                timestamp DESC 
+            ORDER BY
+                timestamp DESC
             LIMIT 1
             """,
             int(user_id),
@@ -353,7 +353,7 @@ async def fetch_purchase(
 
 
 async def update_purchase(
-        db: vbu.Database, 
+        db: vbu.Database,
         id: uuid.UUID | str,
         **kwargs):
     if kwargs.pop("delete", False) is True:

@@ -171,19 +171,19 @@ async def stripe_purchase_complete(request: Request):
         await checkout_processor(
             request,
             stripe_data['data']['object'],
-            stripe_data['account'],
+            stripe_data.get('account', 'Voxel Fox'),
         )
     elif event == "customer.subscription.deleted":
         await subscription_deleted(
             request,
             stripe_data['data']['object'],
-            stripe_data['account'],
+            stripe_data.get('account', 'Voxel Fox'),
         )
     elif event == "charge.refunded":
         await charge_refunded(
             request,
             stripe_data['data']['object'],
-            stripe_data['account'],
+            stripe_data.get('account', 'Voxel Fox'),
         )
     else:
         log.info(f"Unhandled Stripe event '{event}'")
