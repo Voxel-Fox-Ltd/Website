@@ -177,7 +177,7 @@ async def portal_check(request: Request):
                 LEFT JOIN
                     checkout_items
                 ON
-                    purchases.product_name = checkout_items.product_name
+                    purchases.product_id = checkout_items.id
                 WHERE
                     user_id = $1
                 AND
@@ -201,7 +201,7 @@ async def portal_check(request: Request):
                 LEFT JOIN
                     checkout_items
                 ON
-                    purchases.product_name = checkout_items.product_name
+                    purchases.product_id = checkout_items.id
                 WHERE
                     guild_id = $1
                 AND
