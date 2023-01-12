@@ -52,7 +52,7 @@ class User:
     @classmethod
     def from_row(cls, row: dict):
         return cls(
-            id=row['_id'],
+            id=row['id'],
             discord_user_id=row.get('discord_user_id'),
             stripe_id=row.get('stripe_id'),
             paypal_id=row.get('paypal_id'),
