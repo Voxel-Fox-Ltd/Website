@@ -339,7 +339,7 @@ async def checkout_processor(
                     currency=data.get('_refund', data)['currency'],
                     settle_amount=None,
                     settle_currency=None,
-                    identifier=data['id'],
+                    identifier=data.get('_refund', data)['id'],
                     payment_processor="Stripe",
                     customer_email=data.get('_refund', data)['billing_details']['email'],
                     metadata=all_metadata,
