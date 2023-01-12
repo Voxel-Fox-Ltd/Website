@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS users(
 
 
 CREATE TABLE IF NOT EXISTS checkout_items(
-    id UUID NOT NULL DEFAULT uuid_generate_v4(),
+    id UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
 
     -- The person who created this item
     creator_id UUID NOT NULL REFERENCES users(id),
@@ -64,6 +64,9 @@ CREATE TABLE IF NOT EXISTS checkout_items(
 
     -- Text to be displayed on the portal page.
     description TEXT
+
+    -- Add our constraints
+    UNIQUE (creator_id, product_name);
 );
 
 

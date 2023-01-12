@@ -30,7 +30,7 @@
 <script src="https://js.stripe.com/v3/"></script>
 <script
         id="stripe-script"
-        data-name="{{ item.name }}"
+        data-product-id="{{ item.id }}"
         data-user-id="{{ user_id }}"
         data-guild-id="{{ guild_id or '' }}"
         data-button="stripe-button">
@@ -42,7 +42,7 @@ button.onclick = () => {
     fetch("/webhooks/stripe/create_checkout_session", {
         method: "POST",
         body: JSON.stringify({
-            product_name: ss.dataset.name,
+            product_name: ss.dataset.productId,
             discord_user_id: ss.dataset.userId,
             discord_guild_id: ss.dataset.guildId,
         }),
