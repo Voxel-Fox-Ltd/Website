@@ -374,14 +374,22 @@ async def subscription_created(request: Request, data: dict):
     # And store in the database
     async with vbu.Database() as db:
         if data['txn_type'] == "recurring_payment":
+            if 'settle_amount' in data:
+                settle_amount = float(data['settle_amount'])
+            else:
+                settle_amount = float(data['mc_gross']) - float(data.get('mc_fee', 0))
+            if 'settle_currency' in data:
+                settle_currency = data['settle_currency']
+            else:
+                settle_currency = data['mc_currency']
             await log_transaction(
                 db,
                 product_id=item.id,
                 amount_gross=float(data['mc_gross']) * 100,
                 amount_net=float(data['mc_gross']) - float(data.get('mc_fee', 0)),
                 currency=data['mc_currency'],
-                settle_amount=float(data['settle_amount']),
-                settle_currency=data['settle_currency'],
+                settle_amount=settle_amount,
+                settle_currency=settle_currency,
                 identifier=data['txn_id'],
                 payment_processor="PayPal",
                 customer_email=data['payer_email'],
