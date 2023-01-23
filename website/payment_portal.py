@@ -18,6 +18,7 @@ from discord.ext import vbu
 import aiohttp
 
 from .utils.db_util import CheckoutItem
+from .utils.json_utils import serialize
 
 
 routes = RouteTableDef()
@@ -178,7 +179,14 @@ async def portal_check(request: Request):
             result = await db.call(
                 """
                 SELECT
-                    purchases.*, checkout_items.subscription, checkout_items.quantity
+                    purchases.id,
+                    purchases.discord_user_id,
+                    purchases.discord_guild_id,
+                    purchases.expiry_tiem,
+                    purchases.timestamp,
+                    checkout_items.product_name,
+                    checkout_items.subscription,
+                    checkout_items.quantity
                 FROM
                     purchases
                 LEFT JOIN
@@ -202,7 +210,14 @@ async def portal_check(request: Request):
             result = await db.call(
                 """
                 SELECT
-                    purchases.*, checkout_items.subscription, checkout_items.quantity
+                    purchases.id,
+                    purchases.discord_user_id,
+                    purchases.discord_guild_id,
+                    purchases.expiry_tiem,
+                    purchases.timestamp,
+                    checkout_items.product_name,
+                    checkout_items.subscription,
+                    checkout_items.quantity
                 FROM
                     purchases
                 LEFT JOIN
@@ -227,7 +242,8 @@ async def portal_check(request: Request):
             {
                 "success": True,
                 "result": True,
-                "quantity": reduce(lambda x, y: x + y['quantity'], result, 0),
+                # "quantity": reduce(lambda x, y: x + y['quantity'], result, 0),
+                "data": [serialize(i) for i in result],
                 "generated": dt.utcnow().isoformat(),
             },
         ), True
