@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS checkout_items(
     quantity INTEGER NOT NULL DEFAULT 1,
     min_quantity INTEGER,
     max_quantity INTEGER,
+    base_product UUID REFERENCES checkout_items(id) ON DELETE SET NULL,
 
     -- Add our constraints
     UNIQUE (creator_id, product_name)

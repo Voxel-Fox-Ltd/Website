@@ -37,7 +37,7 @@ CR = Callable[
 class CacheItem:
 
     all_items: dict[str, Self] = dict()
-    max_lifetime = timedelta(hours=1)
+    max_lifetime = timedelta(minutes=15)
 
     __slots__ = (
         '_response',
@@ -196,7 +196,11 @@ async def portal_check(request: Request):
                 WHERE
                     discord_user_id = $1
                 AND
-                    {identify_column} = $2
+                    (
+                            {identify_column} = $2
+                        OR
+                            checkout_items.base_product = $2
+                    )
                 AND
                     expiry_time IS NULL
                 """.format(identify_column=identify_column),
@@ -227,7 +231,11 @@ async def portal_check(request: Request):
                 WHERE
                     discord_guild_id = $1
                 AND
-                    {identify_column} = $2
+                    (
+                            {identify_column} = $2
+                        OR
+                            checkout_items.base_product = $2
+                    )
                 AND
                     expiry_time IS NULL
                 """.format(identify_column=identify_column),
@@ -242,7 +250,6 @@ async def portal_check(request: Request):
             {
                 "success": True,
                 "result": True,
-                # "quantity": reduce(lambda x, y: x + y['quantity'], result, 0),
                 "data": [serialize(i) for i in result],
                 "generated": dt.utcnow().isoformat(),
             },
