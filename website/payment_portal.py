@@ -35,7 +35,7 @@ CR = Callable[
 class CacheItem:
 
     all_items: dict[str, Self] = dict()
-    max_lifetime = timedelta(days=1)
+    max_lifetime = timedelta(hours=1)
 
     __slots__ = (
         '_response',
@@ -149,7 +149,7 @@ async def portal_check(request: Request):
                 "generated": dt.utcnow().isoformat(),
             },
             status=400,
-        ), timedelta(days=7)
+        ), True
 
     # Make sure the given item is an int
     if not (user_id or guild_id).isdigit():
@@ -235,7 +235,7 @@ async def portal_check(request: Request):
             "result": False,
             "generated": dt.utcnow().isoformat(),
         },
-    ), timedelta(hours=1)
+    ), True
 
 
 @routes.get("/api/portal/get_guilds")
