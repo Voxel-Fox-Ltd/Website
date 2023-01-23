@@ -2,7 +2,7 @@ import uuid
 from typing import Awaitable, Callable, Optional
 from typing_extensions import Self
 from datetime import datetime as dt, timedelta
-from functools import wraps
+from functools import reduce, wraps
 
 from aiohttp.web import (
     HTTPFound,
@@ -165,7 +165,7 @@ async def portal_check(request: Request):
         )
 
     # Check what they got
-    result = None
+    result: list[dict] | None = None
     identify_column = (
         "checkout_items.id"
         if product_id
@@ -227,6 +227,7 @@ async def portal_check(request: Request):
             {
                 "success": True,
                 "result": True,
+                "quantity": reduce(lambda x, y: x + y['quantity'], result, 0),
                 "generated": dt.utcnow().isoformat(),
             },
         ), True
