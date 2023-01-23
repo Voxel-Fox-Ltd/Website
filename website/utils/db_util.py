@@ -98,6 +98,9 @@ class CheckoutItem:
         'currency_code',
         '_currency_symbol',
         'user',
+        'quantity',
+        'min_quantity',
+        'max_quantity',
     )
 
     def __init__(
@@ -116,7 +119,10 @@ class CheckoutItem:
             product_group: str,
             multiple: bool,
             per_guild: bool,
-            description: str):
+            description: str,
+            quantity: int,
+            min_quantity: int | None,
+            max_quantity: int | None):
         self._id = id
         self._creator_id = creator_id
         self.product_name: str = product_name
@@ -135,7 +141,9 @@ class CheckoutItem:
 
         self.description: str = description
 
-        self.quantity: int = 1
+        self.quantity: int = quantity
+        self.min_quantity: int | None = min_quantity
+        self.max_quantity: int | None = max_quantity
 
         self.price: str | None = None
         self.price_number: int = 0
@@ -230,6 +238,9 @@ class CheckoutItem:
             per_guild=row['per_guild'],
             multiple=row.get('multiple', False),
             description=row['description'],
+            quantity=row['quantity'],
+            min_quantity=row.get('min_quantity'),
+            max_quantity=row.get('max_quantity'),
         )
 
     @classmethod

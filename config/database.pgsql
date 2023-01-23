@@ -63,6 +63,11 @@ CREATE TABLE IF NOT EXISTS checkout_items(
     -- Text to be displayed on the portal page.
     description TEXT,
 
+    -- Quantities for the items.
+    quantity INTEGER NOT NULL DEFAULT 1,
+    min_quantity INTEGER,
+    max_quantity INTEGER,
+
     -- Add our constraints
     UNIQUE (creator_id, product_name)
 );
