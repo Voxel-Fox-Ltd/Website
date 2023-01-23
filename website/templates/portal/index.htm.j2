@@ -21,7 +21,14 @@
                         {% if item.description %}
                             <p class="description">{{ item.description }}</p>
                         {% endif %}
-                        <p class="price">Price: <span>{{ item.currency_symbol }}{{ item.price }}</span></p>
+                        <p class="price">
+                            Price:
+                            <span>{{ item.currency_symbol }}{{ item.price }}</span>
+                            {% if item.quantity > 1 %}
+                                each
+                                (<span>{{ item.currency_symbol }}{{ item.price * item.quantity }}</span>)
+                            {% endif %}
+                        </p>
                         <select class="select guild-select" onchange="javascript:guildSelectChange('{{ item.id }}')">
                             <option value="">Purchase for Guild</option>
                         </select>
@@ -40,7 +47,14 @@
                         {% if item.description %}
                             <p class="description">{{ item.description }}</p>
                         {% endif %}
-                        <p class="price">Price: <span>{{ item.currency_symbol }}{{ item.price }}</span></p>
+                        <p class="price">
+                            Price:
+                            <span>{{ item.currency_symbol }}{{ item.price }}</span>
+                            {% if item.quantity > 1 %}
+                                each
+                                (<span>{{ item.currency_symbol }}{{ item.price * item.quantity }}</span>)
+                            {% endif %}
+                        </p>
                         <a href="/portal/item/{{ item.id }}" class="button">Purchase</a>
                     </div>
                 {% endfor %}
