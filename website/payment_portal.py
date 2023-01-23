@@ -1,3 +1,4 @@
+import uuid
 from typing import Awaitable, Callable, Optional
 from typing_extensions import Self
 from datetime import datetime as dt, timedelta
@@ -433,6 +434,13 @@ async def purchase(request: Request):
     Portal page for payments. This should show all items in the group.
     """
 
+    # Make sure we have an ID
+    product_id = request.match_info["id"]
+    try:
+        uuid.UUID(product_id)
+    except ValueError:
+        return HTTPFound("/")
+
     # Get session
     session = await aiohttp_session.get_session(request)
 
@@ -447,7 +455,7 @@ async def purchase(request: Request):
             WHERE
                 id = $1
             """,
-            request.match_info["id"],
+            product_id,
         )
         items = [
             CheckoutItem.from_row(row)
