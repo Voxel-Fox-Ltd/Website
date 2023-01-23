@@ -253,7 +253,7 @@ async def charge_captured(request: Request, data: dict):
             await CheckoutItem.fetch(
                 db,
                 product_name=i['name'],
-                paypal_id=data['receiver_id'],
+                paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
             )
             for i in products
         ]
@@ -312,7 +312,7 @@ async def charge_captured(request: Request, data: dict):
                     metadata['discord_user_id'],
                     i.name,
                     guild_id=metadata.get('discord_guild_id'),
-                    paypal_id=data['receiver_id'],
+                    paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
                 )
                 if current is None:
                     continue
@@ -323,7 +323,7 @@ async def charge_captured(request: Request, data: dict):
                     metadata['discord_user_id'],
                     i.name,
                     guild_id=metadata.get('discord_guild_id'),
-                    paypal_id=data['receiver_id'],
+                    paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
                 )
 
 
@@ -349,7 +349,7 @@ async def subscription_created(request: Request, data: dict):
         item = await CheckoutItem.fetch(
             db,
             product_name=product_name,
-            paypal_id=data['receiver_id'],
+            paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
         )
     if item is None:
         log.info(f"Missing item {product_name} from database.")
@@ -402,7 +402,7 @@ async def subscription_created(request: Request, data: dict):
                 metadata['discord_user_id'],
                 item.name,
                 guild_id=metadata.get('discord_guild_id'),
-                paypal_id=data['receiver_id'],
+                paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
             )
             if current:
                 return  # We only want to store the original subscription create
@@ -416,7 +416,7 @@ async def subscription_created(request: Request, data: dict):
                 f"{PAYPAL_BASE}/v1/billing/subscriptions/"
                 f"{recurring_payment_id}/cancel"
             ),
-            paypal_id=data['receiver_id'],
+            paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
         )
 
 
@@ -442,7 +442,7 @@ async def subscription_deleted(request: Request, data: dict):
         item = await CheckoutItem.fetch(
             db,
             product_name=product_name,
-            paypal_id=data['receiver_id'],
+            paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
         )
     if item is None:
         log.info(f"Missing item {product_name} from database")
@@ -473,7 +473,7 @@ async def subscription_deleted(request: Request, data: dict):
             metadata['discord_user_id'],
             item.name,
             guild_id=metadata.get('discord_guild_id'),
-            paypal_id=data['receiver_id'],
+            paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
         )
         if current is None:
             return
