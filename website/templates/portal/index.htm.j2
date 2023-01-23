@@ -26,7 +26,7 @@
                             <span>{{ item.currency_symbol }}{{ item.price }}</span>
                             {% if item.quantity > 1 %}
                                 each
-                                (<span>{{ item.currency_symbol }}{{ item.price * item.quantity }}</span>)
+                                (<span>{{ item.currency_symbol }}{{ item.price_number * item.quantity / 100 }}</span>)
                             {% endif %}
                         </p>
                         <select class="select guild-select" onchange="javascript:guildSelectChange('{{ item.id }}')">
@@ -52,7 +52,7 @@
                             <span>{{ item.currency_symbol }}{{ item.price }}</span>
                             {% if item.quantity > 1 %}
                                 each
-                                (<span>{{ item.currency_symbol }}{{ item.price * item.quantity }}</span>)
+                                (<span>{{ item.currency_symbol }}{{ item.price_number * item.quantity / 100 }}</span>)
                             {% endif %}
                         </p>
                         <a href="/portal/item/{{ item.id }}" class="button">Purchase</a>
