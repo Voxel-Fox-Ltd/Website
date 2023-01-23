@@ -199,7 +199,7 @@ async def portal_check(request: Request):
                     (
                             {identify_column} = $2
                         OR
-                            checkout_items.base_product = $2
+                            checkout_items.base_product = purchases.product_id
                     )
                 AND
                     expiry_time IS NULL
@@ -234,7 +234,7 @@ async def portal_check(request: Request):
                     (
                             {identify_column} = $2
                         OR
-                            checkout_items.base_product = $2
+                            checkout_items.base_product = purchases.product_id
                     )
                 AND
                     expiry_time IS NULL
