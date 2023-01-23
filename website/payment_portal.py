@@ -178,7 +178,7 @@ async def portal_check(request: Request):
             result = await db.call(
                 """
                 SELECT
-                    purchases.*, checkout_items.subscription
+                    purchases.*, checkout_items.subscription, checkout_items.quantity
                 FROM
                     purchases
                 LEFT JOIN
@@ -202,7 +202,7 @@ async def portal_check(request: Request):
             result = await db.call(
                 """
                 SELECT
-                    purchases.*, checkout_items.subscription
+                    purchases.*, checkout_items.subscription, checkout_items.quantity
                 FROM
                     purchases
                 LEFT JOIN
