@@ -108,11 +108,23 @@ async def discord(request: Request):
                 (discord_user_id)
             DO NOTHING
             RETURNING
-                *
+                id
             """,
             user_json['id'],
             token_json['refresh_token'],
         )
+        if not user_rows:
+            user_rows = await db.call(
+                """
+                SELECT
+                    id
+                FROM
+                    login_users
+                WHERE
+                    discord_user_id = $1
+                """,
+                user_json['id'],
+            )
 
     # Store the data in session
     storage = await aiohttp_session.get_session(request)
