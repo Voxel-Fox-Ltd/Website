@@ -26,6 +26,20 @@ CREATE TABLE IF NOT EXISTS users(
 );
 
 
+CREATE TABLE IF NOT EXISTS login_users(
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
+    discord_user_id TEXT UNIQUE,
+    discord_refresh_token TEXT,
+
+    google_user_id TEXT UNIQUE,
+    google_refresh_token TEXT,
+
+    facebook_user_id TEXT UNIQUE,
+    facebook_refresh_token TEXT,
+);
+
+
 CREATE TABLE IF NOT EXISTS checkout_items(
     id UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
 

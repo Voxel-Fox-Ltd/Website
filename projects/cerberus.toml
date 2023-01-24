@@ -1,8 +1,0 @@
-[[card]]
-    name = "Cerberus"
-    [[card.links]]
-        name = "Terms of Service"
-        link = "/md/terms_of_service/Cerberus.md"
-    [[card.links]]
-        name = "Privacy Policy"
-        link = "/md/privacy_policy/Cerberus.md"

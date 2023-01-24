@@ -1,8 +1,0 @@
-[[card]]
-    name = "Honey"
-    [[card.links]]
-        name = "Terms of Service"
-        link = "/md/terms_of_service/Honey.md"
-    [[card.links]]
-        name = "Privacy Policy"
-        link = "/md/privacy_policy/Honey.md"

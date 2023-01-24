@@ -4,17 +4,10 @@ import pathlib
 from aiohttp.web import RouteTableDef, Request, HTTPFound, Response
 from aiohttp_jinja2 import template
 import aiohttp_session
-import toml
 from discord.ext import vbu
 
 
 routes = RouteTableDef()
-
-
-def get_project_file(filename: str) -> list:
-    with open(f"projects/{filename}.toml") as a:
-        data = toml.load(a)
-    return data  # type: ignore
 
 
 @routes.get("/")
@@ -24,9 +17,7 @@ async def index(_: Request):
     Index page for the website.
     """
 
-    return {
-        "data": get_project_file("index"),
-    }
+    return {}
 
 
 @routes.get("/gforms")

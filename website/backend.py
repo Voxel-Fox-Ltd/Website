@@ -1,5 +1,5 @@
 import io
-from typing import  Tuple
+from typing import Tuple
 
 from aiohttp.web import HTTPFound, Request, RouteTableDef, Response
 import aiohttp_session
@@ -10,41 +10,6 @@ from discord.ext import vbu
 
 
 routes = RouteTableDef()
-
-
-@routes.get('/login_processor')
-async def login_processor(request: Request):
-    """
-    Page the discord login redirects the user to when successfully logged in
-    with Discord.
-    """
-
-    v = await vbu.web.process_discord_login(request)
-    if isinstance(v, Response):
-        return v
-    session = await aiohttp_session.get_session(request)
-    return HTTPFound(location=session.pop('redirect_on_login', '/'))
-
-
-@routes.get('/logout')
-async def logout(request: Request):
-    """
-    Destroy the user's login session.
-    """
-
-    session = await aiohttp_session.get_session(request)
-    session.invalidate()
-    return HTTPFound(location='/')
-
-
-@routes.get('/login')
-async def login(request: Request):
-    """
-    Direct the user to the bot's Oauth login page.
-    """
-
-    url = vbu.web.get_discord_login_url(request, "/login_processor")
-    return HTTPFound(location=url)
 
 
 @routes.post('/discord/chatlog')
@@ -80,7 +45,7 @@ async def colour(request: Request):
 
         /****** Colours *****/
 
-        /colour?hex=#ff00ff
+        /colour?hex=ff00ff
         /colour?r=255&g=000&b=255
 
         - If not given enough arguments for R/G/B, it will assume missing tag
@@ -94,7 +59,7 @@ async def colour(request: Request):
         /colour?w=200&h=1000
 
         - Short and normal tags can be used mixed.
-        - If diementions not specified, image is 100px to 100px.
+        - If dimensions not specified, image is 100px to 100px.
     """
 
     size_limit: Tuple[int, int] = (1000, 1000,)  # Maximum width and height of PNG
