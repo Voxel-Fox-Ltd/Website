@@ -35,7 +35,9 @@
 <body>
 
 <div id="main" class="content">
+
     {% if message %}<h1>{{ message }}</h1>{% endif %}
+
     <div class="discord">
         {% if session.discord %}
             <button
@@ -53,6 +55,25 @@
             </button>
         {% endif %}
     </div>
+
+    <div class="google">
+        {% if session.google %}
+            <button
+                    onclick="window.location = `{{ google }}`"
+                    type="button"
+                    class="button">
+                Google ({{ session.google.id }})
+            </button>
+        {% else %}
+            <button
+                    onclick="window.location = `{{ google }}`"
+                    type="button"
+                    class="button">
+                Login with Google
+            </button>
+        {% endif %}
+    </div>
+
     {% if session.id %}
         <div class="continue">
             <button
@@ -63,6 +84,7 @@
             </button>
         </div>
     {% endif %}
+
 </div>
 
 </body>
