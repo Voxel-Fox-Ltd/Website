@@ -275,7 +275,7 @@ async def google(request: Request):
         )
 
     # Store the data in session
-    storage['id'] = str(user_rows[0]['id'])
+    storage['id'] = storage_id
     storage['google'] = {
         "id": user_json['id'],
         "refresh_token": token_json['refresh_token'],
