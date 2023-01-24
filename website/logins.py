@@ -129,6 +129,9 @@ async def store_information(
     # Work out our cache
     storage['id'] = str(user_rows[0]['id'])
     for oid in oauth_identities:
+        user_oid = user_rows[0][f"{oid}_user_id"]
+        if user_oid is None:
+            continue
         storage[oid] = {
             "id": user_rows[0][f"{oid}_user_id"],
             "refresh_token": user_rows[0][f"{oid}_refresh_token"],
