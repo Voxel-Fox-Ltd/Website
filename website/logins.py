@@ -90,31 +90,50 @@ async def discord(request: Request):
         log.info("Got Discord user information %s" % user_json)
 
     # Store the data in database
+    storage = await aiohttp_session.get_session(request)
     async with vbu.Database() as db:
-        user_rows = await db.call(
-            """
-            INSERT INTO
-                login_users
-                (
-                    discord_user_id,
-                    discord_refresh_token
-                )
-            VALUES
-                (
-                    $1,
-                    $2
-                )
-            ON CONFLICT
-                (discord_user_id)
-            DO UPDATE
-            SET
-                discord_refresh_token = excluded.discord_refresh_token
-            RETURNING
-                id
-            """,
-            user_json['id'],
-            token_json['refresh_token'],
-        )
+        if storage.get('id') is not None:
+            user_rows = await db.call(
+                """
+                UPDATE
+                    login_users
+                SET
+                    discord_user_id = $2,
+                    discord_refresh_token = $3
+                WHERE
+                    id = $1
+                RETURNING
+                    id
+                """,
+                storage['id'],
+                user_json['id'],
+                token_json['refresh_token'],
+            )
+        else:
+            user_rows = await db.call(
+                """
+                INSERT INTO
+                    login_users
+                    (
+                        discord_user_id,
+                        discord_refresh_token
+                    )
+                VALUES
+                    (
+                        $1,
+                        $2
+                    )
+                ON CONFLICT
+                    (discord_user_id)
+                DO UPDATE
+                SET
+                    discord_refresh_token = excluded.discord_refresh_token
+                RETURNING
+                    id
+                """,
+                user_json['id'],
+                token_json['refresh_token'],
+            )
         if not user_rows:
             user_rows = await db.call(
                 """
@@ -129,7 +148,6 @@ async def discord(request: Request):
             )
 
     # Store the data in session
-    storage = await aiohttp_session.get_session(request)
     storage['id'] = str(user_rows[0]['id'])
     storage['discord'] = {
         "id": user_json['id'],
@@ -158,8 +176,12 @@ async def login(request: Request):
 
     # See if we're already logged in
     session = await aiohttp_session.get_session(request)
-    if session.get("id") is not None:
-        return HTTPFound(location=session.pop('redirect_on_login', '/'))
+    # if session.get("id") is not None:
+    #     login_keys = [
+    #         "discord",
+    #     ]
+    #     if any(session.get(i) is None for i in login_keys):
+    #     return HTTPFound(location=session.pop('redirect_on_login', '/'))
     base_url = request.app['config']['website_base_url']
 
     # Build Discord auth URL
@@ -176,5 +198,18 @@ async def login(request: Request):
 
     # Return auth URLs
     return {
+        "session": session,
         "discord": discord_url,
     }
+
+
+@routes.get('/login/done')
+async def login_done(request: Request):
+    """
+    We are done linking the accounts.
+    """
+
+    session = await aiohttp_session.get_session(request)
+    if session.get("id") is None:
+        return HTTPFound(location='/login')
+    return HTTPFound(location=session.pop('redirect_on_login', '/'))

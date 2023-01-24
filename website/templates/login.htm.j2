@@ -30,12 +30,33 @@
 <body>
 
 <div id="main" class="content">
-    <button
-            onclick="window.location = `{{ discord }}`"
-            type="button"
-            class="button">
-        Login with Discord
-    </button>
+    <div class="discord">
+        {% if session.discord %}
+            <button
+                    onclick="window.location = `{{ discord }}`"
+                    type="button"
+                    class="button">
+                Discord ({{ session.discord.id }})
+            </button>
+        {% else %}
+            <button
+                    onclick="window.location = `{{ discord }}`"
+                    type="button"
+                    class="button">
+                Login with Discord
+            </button>
+        {% endif %}
+    </div>
+    {% if session.id %}
+        <div class="continue">
+            <button
+                    onclick="window.location = `/login/done`"
+                    type="button"
+                    class="button">
+                Done linking accounts
+            </button>
+        </div>
+    {% endif %}
 </div>
 
 </body>
