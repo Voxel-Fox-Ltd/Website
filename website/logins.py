@@ -176,6 +176,7 @@ async def login(request: Request):
 
     # See if we're already logged in
     session = await aiohttp_session.get_session(request)
+    message = session.pop("login_message", None)
     base_url = request.app['config']['website_base_url']
 
     # Build Discord auth URL
@@ -193,6 +194,7 @@ async def login(request: Request):
     # Return auth URLs
     return {
         "session": session,
+        "message": message,
         "discord": discord_url,
     }
 

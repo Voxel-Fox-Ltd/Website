@@ -5,3 +5,4 @@ pyopenssl
 pillow
 typing_extensions
 asyncpg
+vf-flags

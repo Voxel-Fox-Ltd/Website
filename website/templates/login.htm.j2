@@ -35,6 +35,7 @@
 <body>
 
 <div id="main" class="content">
+    {% if message %}<h1>{{ message }}</h1>{% endif %}
     <div class="discord">
         {% if session.discord %}
             <button

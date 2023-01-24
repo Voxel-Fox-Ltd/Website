@@ -8,6 +8,8 @@ import json
 import aiohttp
 from discord.ext import vbu
 
+from .flags import RequiredLogins
+
 __all__ = (
     'CheckoutItem',
     'create_purchase',
@@ -101,6 +103,7 @@ class CheckoutItem:
         'quantity',
         'min_quantity',
         'max_quantity',
+        'required_logins',
     )
 
     def __init__(
@@ -122,7 +125,8 @@ class CheckoutItem:
             description: str,
             quantity: int,
             min_quantity: int | None,
-            max_quantity: int | None):
+            max_quantity: int | None,
+            required_logins: RequiredLogins):
         self._id = id
         self._creator_id = creator_id
         self.product_name: str = product_name
@@ -138,6 +142,7 @@ class CheckoutItem:
         self.product_group: str = product_group
         self.per_guild: bool = per_guild
         self.multiple = multiple
+        self.required_logins = required_logins
 
         self.description: str = description
 
@@ -241,6 +246,7 @@ class CheckoutItem:
             quantity=row['quantity'],
             min_quantity=row.get('min_quantity'),
             max_quantity=row.get('max_quantity'),
+            required_logins=RequiredLogins(row['required_logins']),
         )
 
     @classmethod

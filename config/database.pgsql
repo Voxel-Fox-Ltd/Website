@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS checkout_items(
     subscription BOOLEAN NOT NULL DEFAULT FALSE,
     success_url TEXT NOT NULL DEFAULT 'https://voxelfox.co.uk',
     cancel_url TEXT NOT NULL DEFAULT 'https://voxelfox.co.uk',
+    required_logins INTEGER NOT NULL DEFAULT 0,
 
     -- Information on the product IDs
     stripe_product_id TEXT NOT NULL,

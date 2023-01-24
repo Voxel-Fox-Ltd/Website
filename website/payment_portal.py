@@ -576,6 +576,21 @@ async def purchase(request: Request):
             if purchase_rows:
                 purchase = purchase_rows[0]
 
+    # See if we have relevant login data
+    flags = item.required_logins
+    if flags.discord and "discord" not in session:
+        session["login_message"] = "Discord login is required."
+        session["redirect_on_login"] = f"/portal/{item.product_group}"
+        return HTTPFound("/login")
+    if flags.google and "google" not in session:
+        session["login_message"] = "Google login is required."
+        session["redirect_on_login"] = f"/portal/{item.product_group}"
+        return HTTPFound("/login")
+    if flags.facebook and "facebook" not in session:
+        session["login_message"] = "Facebook login is required."
+        session["redirect_on_login"] = f"/portal/{item.product_group}"
+        return HTTPFound("/login")
+
     # Get the item price if they're able to buy it more
     if not purchase:
         await item.fetch_price(request.app['config']['stripe_api_key'])
