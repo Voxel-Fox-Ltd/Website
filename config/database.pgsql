@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS login_users(
     google_refresh_token TEXT,
 
     facebook_user_id TEXT UNIQUE,
-    facebook_refresh_token TEXT,
+    facebook_refresh_token TEXT
 );
 
 
