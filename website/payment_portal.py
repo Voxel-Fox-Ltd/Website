@@ -229,7 +229,7 @@ async def portal_check(request: Request):
                         checkout_items.base_product = $2
                 )
             """.format(user_column, identify_column),
-            int(user_id),
+            int(user_id or guild_id),
             base_product[0]['id'],
             type=dict,
         )
