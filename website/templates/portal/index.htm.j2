@@ -75,6 +75,8 @@ function guildSelectChange(itemId) {
 
 
 async function getGuilds() {
+    let allGuildSelectors = document.querySelectorAll(".guild-select");
+    if(allGuildSelectors.length <= 0) return;
     var guilds = await fetch("/api/portal/get_guilds");
     guilds = await guilds.json();
     guilds.sort((a, b) => {
@@ -88,7 +90,7 @@ async function getGuilds() {
         }
         return parseInt(a.id) - parseInt(b.id);
     });
-    for(let select of document.querySelectorAll(".guild-select")) {
+    for(let select of allGuildSelectors) {
         select.innerHTML = "<option value='' selected>Purchase for Guild</option>";
         let owned = document.createElement("optgroup");
         owned.label = "Guilds you own";
