@@ -1,6 +1,7 @@
 import json
 from urllib.parse import urlencode
 import logging
+from typing import Any
 
 import aiohttp
 from aiohttp.web import HTTPFound, Request, RouteTableDef, StreamResponse
@@ -35,10 +36,21 @@ User Session
 
 async def store_information(
         db: vbu.Database,
-        current_id: str | None,
+        storage: dict[str, str | dict[str, str]],
         identity: str,
         user_id: str,
-        refresh_token: str) -> str:
+        refresh_token: str) -> None:
+    """
+    Store given token information in database and cache.
+    """
+
+    # Get current ID
+    current_id: str | None = storage.get('id')  # pyright: ignore
+    oauth_identities = [
+        "discord",
+        "google",
+        "facebook",
+    ]
 
     # See if a user exists already
     if current_id is not None:
@@ -55,7 +67,7 @@ async def store_information(
                 WHERE
                     id = $1
                 RETURNING
-                    id
+                    *
                 """.format(identity),
                 current_id,
                 user_id,
@@ -74,21 +86,16 @@ async def store_information(
             )
 
             # Update
-            oauth_identities = [
-                "discord",
-                "google",
-                "facebook",
-            ]
             for oid in oauth_identities:
                 if conflict_row[0][f"{oid}_user_id"]:
                     await store_information(
                         db,
-                        current_id,
+                        storage,
                         oid,
                         conflict_row[0][f"{oid}_user_id"],
                         conflict_row[0][f"{oid}_refresh_token"],
                     )
-            return current_id
+            return
 
     # No current ID
     else:
@@ -113,14 +120,19 @@ async def store_information(
             SET
                 {0}_refresh_token = excluded.{0}_refresh_token
             RETURNING
-                id
+                *
             """.format(identity),
             user_id,
             refresh_token,
         )
 
-    # Give back ID
-    return str(user_rows[0]['id'])
+    # Work out our cache
+    storage['id'] = str(user_rows[0]['id'])
+    for oid in oauth_identities:
+        storage[oid] = {
+            "id": user_rows[0][f"{oid}_user_id"],
+            "refresh_token": user_rows[0][f"{oid}_refresh_token"],
+        }
 
 
 def always_return(location: str):
