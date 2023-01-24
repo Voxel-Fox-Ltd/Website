@@ -1,3 +1,4 @@
+import json
 from urllib.parse import urlencode
 import logging
 
@@ -6,10 +7,12 @@ from aiohttp.web import HTTPFound, Request, RouteTableDef, StreamResponse
 import aiohttp_session
 from aiohttp_jinja2 import template
 from discord.ext import vbu
+import asyncpg
 
 
 routes = RouteTableDef()
 log = logging.getLogger("vbu.voxelfox.login")
+dump = json.dumps
 
 
 """
@@ -28,6 +31,96 @@ User Session
     },
 }
 """
+
+
+async def store_information(
+        db: vbu.Database,
+        current_id: str | None,
+        identity: str,
+        user_id: str,
+        refresh_token: str) -> str:
+
+    # See if a user exists already
+    if current_id is not None:
+
+        # Try and add this identity to the given user
+        try:
+            user_rows = await db.call(
+                """
+                UPDATE
+                    login_users
+                SET
+                    {0}_user_id = $2,
+                    {0}_refresh_token = $3
+                WHERE
+                    id = $1
+                RETURNING
+                    id
+                """.format(identity),
+                current_id,
+                user_id,
+                refresh_token,
+            )
+
+        # That identity exists for another user - try and merge
+        except asyncpg.UniqueViolationError:
+
+            # Delete existing
+            conflict_row = await db.call(
+                """
+                DELETE FROM login_users WHERE {0}_user_id = $1 RETURNING *
+                """.format(identity),
+                user_id,
+            )
+
+            # Update
+            oauth_identities = [
+                "discord",
+                "google",
+                "facebook",
+            ]
+            for oid in oauth_identities:
+                if conflict_row[0][f"{oid}_user_id"]:
+                    await store_information(
+                        db,
+                        current_id,
+                        oid,
+                        conflict_row[0][f"{oid}_user_id"],
+                        conflict_row[0][f"{oid}_refresh_token"],
+                    )
+            return current_id
+
+    # No current ID
+    else:
+
+        # Create new account
+        user_rows = await db.call(
+            """
+            INSERT INTO
+                login_users
+                (
+                    {0}_user_id,
+                    {0}_refresh_token
+                )
+            VALUES
+                (
+                    $1,
+                    $2
+                )
+            ON CONFLICT
+                ({0}_user_id)
+            DO UPDATE
+            SET
+                {0}_refresh_token = excluded.{0}_refresh_token
+            RETURNING
+                id
+            """.format(identity),
+            user_id,
+            refresh_token,
+        )
+
+    # Give back ID
+    return str(user_rows[0]['id'])
 
 
 def always_return(location: str):
@@ -77,7 +170,7 @@ async def discord(request: Request):
         if 'error' in token_json:
             log.error(token_json)
             return None
-        log.info("Got Discord token information %s" % token_json)
+        log.info("Got Discord token information %s" % dump(token_json))
 
         # Use token to get user ID
         url = "https://discord.com/api/v9/users/@me"
@@ -90,68 +183,21 @@ async def discord(request: Request):
         if 'error' in user_json:
             log.error(user_json)
             return None
-        log.info("Got Discord user information %s" % user_json)
+        log.info("Got Discord user information %s" % dump(user_json))
 
     # Store the data in database
     storage = await aiohttp_session.get_session(request)
     async with vbu.Database() as db:
-        if storage.get('id') is not None:
-            user_rows = await db.call(
-                """
-                UPDATE
-                    login_users
-                SET
-                    discord_user_id = $2,
-                    discord_refresh_token = $3
-                WHERE
-                    id = $1
-                RETURNING
-                    id
-                """,
-                storage['id'],
-                user_json['id'],
-                token_json['refresh_token'],
-            )
-        else:
-            user_rows = await db.call(
-                """
-                INSERT INTO
-                    login_users
-                    (
-                        discord_user_id,
-                        discord_refresh_token
-                    )
-                VALUES
-                    (
-                        $1,
-                        $2
-                    )
-                ON CONFLICT
-                    (discord_user_id)
-                DO UPDATE
-                SET
-                    discord_refresh_token = excluded.discord_refresh_token
-                RETURNING
-                    id
-                """,
-                user_json['id'],
-                token_json['refresh_token'],
-            )
-        if not user_rows:
-            user_rows = await db.call(
-                """
-                SELECT
-                    id
-                FROM
-                    login_users
-                WHERE
-                    discord_user_id = $1
-                """,
-                user_json['id'],
-            )
+        storage_id = await store_information(
+            db,
+            storage.get('id'),
+            'discord',
+            user_json['id'],
+            token_json['refresh_token'],
+        )
 
     # Store the data in session
-    storage['id'] = str(user_rows[0]['id'])
+    storage['id'] = storage_id
     storage['discord'] = {
         "id": user_json['id'],
         "refresh_token": token_json['refresh_token'],
@@ -196,85 +242,85 @@ async def google(request: Request):
         if 'error' in token_json:
             log.error(token_json)
             return None
-        log.info("Got Google token information %s" % token_json)
+        log.info("Got Google token information %s" % dump(token_json))
 
-    #     # Use token to get user ID
-    #     url = "https://discord.com/api/v9/users/@me"
-    #     headers = {
-    #         "Authorization": f"Bearer {token_json['access_token']}",
-    #         "User-Agent": "VoxelFox.co.uk Login Processor (kae@voxelfox.co.uk)",
-    #     }
-    #     r = await s.get(url, headers=headers)
-    #     user_json = await r.json()
-    #     if 'error' in user_json:
-    #         log.error(user_json)
-    #         return None
-    #     log.info("Got Google user information %s" % user_json)
+        # Use token to get user ID
+        url = "https://www.googleapis.com/oauth2/v1/userinfo"
+        headers = {
+            "Authorization": f"Bearer {token_json['access_token']}",
+            "User-Agent": "VoxelFox.co.uk Login Processor (kae@voxelfox.co.uk)",
+        }
+        r = await s.get(url, headers=headers)
+        user_json = await r.json()
+        if 'error' in user_json:
+            log.error(user_json)
+            return None
+        log.info("Got Google user information %s" % dump(user_json))
 
-    # # Store the data in database
-    # storage = await aiohttp_session.get_session(request)
-    # async with vbu.Database() as db:
-    #     if storage.get('id') is not None:
-    #         user_rows = await db.call(
-    #             """
-    #             UPDATE
-    #                 login_users
-    #             SET
-    #                 discord_user_id = $2,
-    #                 discord_refresh_token = $3
-    #             WHERE
-    #                 id = $1
-    #             RETURNING
-    #                 id
-    #             """,
-    #             storage['id'],
-    #             user_json['id'],
-    #             token_json['refresh_token'],
-    #         )
-    #     else:
-    #         user_rows = await db.call(
-    #             """
-    #             INSERT INTO
-    #                 login_users
-    #                 (
-    #                     discord_user_id,
-    #                     discord_refresh_token
-    #                 )
-    #             VALUES
-    #                 (
-    #                     $1,
-    #                     $2
-    #                 )
-    #             ON CONFLICT
-    #                 (discord_user_id)
-    #             DO UPDATE
-    #             SET
-    #                 discord_refresh_token = excluded.discord_refresh_token
-    #             RETURNING
-    #                 id
-    #             """,
-    #             user_json['id'],
-    #             token_json['refresh_token'],
-    #         )
-    #     if not user_rows:
-    #         user_rows = await db.call(
-    #             """
-    #             SELECT
-    #                 id
-    #             FROM
-    #                 login_users
-    #             WHERE
-    #                 discord_user_id = $1
-    #             """,
-    #             user_json['id'],
-    #         )
+    # Store the data in database
+    storage = await aiohttp_session.get_session(request)
+    async with vbu.Database() as db:
+        if storage.get('id') is not None:
+            user_rows = await db.call(
+                """
+                UPDATE
+                    login_users
+                SET
+                    google_user_id = $2,
+                    google_refresh_token = $3
+                WHERE
+                    id = $1
+                RETURNING
+                    id
+                """,
+                storage['id'],
+                user_json['id'],
+                token_json['refresh_token'],
+            )
+        else:
+            user_rows = await db.call(
+                """
+                INSERT INTO
+                    login_users
+                    (
+                        google_user_id,
+                        google_refresh_token
+                    )
+                VALUES
+                    (
+                        $1,
+                        $2
+                    )
+                ON CONFLICT
+                    (google_user_id)
+                DO UPDATE
+                SET
+                    google_refresh_token = excluded.google_refresh_token
+                RETURNING
+                    id
+                """,
+                user_json['id'],
+                token_json['refresh_token'],
+            )
+        if not user_rows:
+            user_rows = await db.call(
+                """
+                SELECT
+                    id
+                FROM
+                    login_users
+                WHERE
+                    google_user_id = $1
+                """,
+                user_json['id'],
+            )
 
-    # # Store the data in session
-    # storage['id'] = str(user_rows[0]['id'])
-    # storage['discord'] = {
-    #     "id": user_json['id'],
-    #     "refresh_token": token_json['refresh_token'],
-    # }
+    # Store the data in session
+    storage['id'] = str(user_rows[0]['id'])
+    storage['google'] = {
+        "id": user_json['id'],
+        "refresh_token": token_json['refresh_token'],
+    }
     return None
 
 
