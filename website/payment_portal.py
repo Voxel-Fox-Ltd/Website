@@ -230,7 +230,7 @@ async def portal_check(request: Request):
                 )
             """.format(user_column, identify_column),
             int(user_id),
-            base_product[0].id,
+            base_product[0]['id'],
             type=dict,
         )
 
