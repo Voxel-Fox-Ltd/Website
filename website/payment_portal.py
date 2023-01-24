@@ -172,77 +172,67 @@ async def portal_check(request: Request):
         if product_id
         else "checkout_items.product_name"
     )
+    user_column = (
+        "discord_user_id"
+        if user_id
+        else "discord_guild_id"
+    )
     async with vbu.Database() as db:
-
-        # Check by user ID
-        if user_id:
-            result = await db.call(
-                """
-                SELECT
-                    purchases.id,
-                    purchases.discord_user_id,
-                    purchases.discord_guild_id,
-                    purchases.expiry_time,
-                    purchases.timestamp,
-                    checkout_items.product_name,
-                    checkout_items.subscription,
-                    checkout_items.quantity
-                FROM
-                    purchases
-                LEFT JOIN
-                    checkout_items
-                ON
-                    purchases.product_id = checkout_items.id
-                WHERE
-                    discord_user_id = $1
-                AND
-                    (
-                            {identify_column} = $2
-                        OR
-                            checkout_items.base_product = $2
-                    )
-                AND
-                    expiry_time IS NULL
-                """.format(identify_column=identify_column),
-                int(user_id),
-                product_id or product_name,
-                type=dict,
+        base_product = await db.call(
+            """
+            SELECT
+                id,
+                product_name,
+                subscription,
+                description
+            FROM
+                checkout_items
+            WHERE
+                {0} = $1
+            """.format(identify_column),
+            product_id or product_name,
+            type=dict,
+        )
+        if not base_product:
+            return json_response(
+                {
+                    "error": "Product doesn't exist.",
+                    "success": False,
+                    "result": False,
+                    "generated": dt.utcnow().isoformat(),
+                },
+                status=400,
             )
-
-        # Check by guild ID
-        elif guild_id:
-            result = await db.call(
-                """
-                SELECT
-                    purchases.id,
-                    purchases.discord_user_id,
-                    purchases.discord_guild_id,
-                    purchases.expiry_time,
-                    purchases.timestamp,
-                    checkout_items.product_name,
-                    checkout_items.subscription,
-                    checkout_items.quantity
-                FROM
-                    purchases
-                LEFT JOIN
-                    checkout_items
-                ON
-                    purchases.product_id = checkout_items.id
-                WHERE
-                    discord_guild_id = $1
-                AND
-                    (
-                            {identify_column} = $2
-                        OR
-                            checkout_items.base_product = $2
-                    )
-                AND
-                    expiry_time IS NULL
-                """.format(identify_column=identify_column),
-                int(guild_id),
-                product_id or product_name,
-                type=dict,
-            )
+        result = await db.call(
+            """
+            SELECT
+                purchases.id,
+                purchases.discord_user_id,
+                purchases.discord_guild_id,
+                purchases.expiry_time,
+                purchases.timestamp,
+                checkout_items.quantity
+            FROM
+                purchases
+            LEFT JOIN
+                checkout_items
+            ON
+                purchases.product_id = checkout_items.id
+            WHERE
+                {0} = $1
+            AND
+                expiry_time IS NULL
+            AND
+                (
+                        purchases.product_id = $2
+                    OR
+                        purchases.base_product = $2
+                )
+            """.format(user_column, identify_column),
+            int(user_id),
+            base_product[0].id,
+            type=dict,
+        )
 
     # Return the result
     if result:
@@ -250,7 +240,8 @@ async def portal_check(request: Request):
             {
                 "success": True,
                 "result": True,
-                "data": [serialize(i) for i in result],
+                "product": [serialize(i) for i in result],
+                "purchases": [serialize(i) for i in result],
                 "generated": dt.utcnow().isoformat(),
             },
         ), True
