@@ -1,17 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="{{ static('/images/_voxelfox/logo.png') }}" />
+    <link rel="stylesheet" href="{{ static('/css/index.css') }}" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@VoxelFoxKae" />
+    <meta name="twitter:title" content="Voxel Fox" />
+    <meta name="twitter:description" content="I make things on the internet and sometimes they get popular." />
+    <meta property="og:image" content="{{ static('/images/_voxelfox/logo.png') }}" />
+    <meta name="theme-color" content="#f17824">
     <title>Voxel Fox Login</title>
 </head>
 <body>
 
-<button
-        onclick="window.location = `{{ discord }}`"
-        type="button">
-    Login with Discord
-</button>
+<div id="main" class="content">
+    <button
+            onclick="window.location = `{{ discord }}`"
+            type="button">
+        Login with Discord
+    </button>
+</div>
 
 </body>
 </html>

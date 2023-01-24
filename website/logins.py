@@ -106,7 +106,9 @@ async def discord(request: Request):
                 )
             ON CONFLICT
                 (discord_user_id)
-            DO NOTHING
+            DO UPDATE
+            SET
+                discord_refresh_token = excluded.discord_refresh_token
             RETURNING
                 id
             """,

@@ -2,7 +2,7 @@ import uuid
 from typing import Awaitable, Callable, Optional
 from typing_extensions import Self
 from datetime import datetime as dt, timedelta
-from functools import reduce, wraps
+from functools import wraps
 
 from aiohttp.web import (
     HTTPFound,
@@ -106,6 +106,18 @@ def cache_by_query():
             return response
         return wrapper
     return decorator
+
+
+def requires_login():
+    def inner(func):
+        async def wrapper(request: Request) -> StreamResponse:
+            session = await aiohttp_session.get_session(request)
+            if session.get('id') is None:
+                session['redirect_on_login'] = str(request.url)
+                return HTTPFound("/login")
+            return await func(request)
+        return wrapper
+    return inner
 
 
 @routes.get("/api/portal/check")
@@ -263,12 +275,34 @@ async def portal_get_guilds(request: Request):
 
     # Get session
     user_session = await aiohttp_session.get_session(request)
-    access_token = user_session.get("token_info", dict()).get("access_token")
-    if not access_token:
+    refresh_token = user_session.get("discord", dict()).get("refresh_token")
+    if not refresh_token:
         return json_response([])
 
-    # Get the guilds
+    # Do some web requesting
     async with aiohttp.ClientSession() as session:
+
+        # Get an access token
+        discord_config = request.app['config']['oauth']['discord']
+        resp = await session.post(
+            "owo",
+            data={
+                "client_id": discord_config['client_id'],
+                "client_secret": discord_config['client_secret'],
+                "grant_type": "refresh_token",
+                "refresh_token": refresh_token,
+            },
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        )
+        token_json = await resp.json()
+        try:
+            access_token = token_json['access_token']
+        except KeyError:
+            return json_response([])
+
+        # Get the guilds
         resp = await session.get(
             "https://discord.com/api/users/@me/guilds",
             headers={
@@ -326,14 +360,14 @@ async def portal_unsubscribe(request: Request):
             WHERE
                 id = $1
             AND
-                user_id = $2
+                discord_user_id = $2
             AND
                 expiry_time IS NULL
             AND
                 cancel_url IS NOT NULL
             """,
             purchase_id,
-            user_session.get("user_id"),
+            user_session['discord']['id'],
             type=dict,
         )
         if purchase_rows:
@@ -394,7 +428,7 @@ async def portal_unsubscribe(request: Request):
 
 
 @routes.get("/portal/{group}")
-@vbu.web.requires_login()
+@requires_login()
 @template("portal/index.htm.j2")
 async def index(request: Request):
     """
@@ -443,7 +477,7 @@ async def index(request: Request):
 
 
 @routes.get("/portal/item/{id}")
-@vbu.web.requires_login()
+@requires_login()
 async def purchase(request: Request):
     """
     Portal page for payments. This should show all items in the group.
@@ -549,7 +583,7 @@ async def purchase(request: Request):
     # Render the template
     context = {
         "item": item,
-        "user_id": session['user_id'],
+        "user_id": session['discord']['id'],
         "guild_id": request.query.get("guild"),
         "purchase": purchase,
     }
