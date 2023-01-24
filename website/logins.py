@@ -116,7 +116,7 @@ async def discord(request: Request):
 
     # Store the data in session
     storage = await aiohttp_session.get_session(request)
-    storage['id'] = user_rows[0]['id']
+    storage['id'] = str(user_rows[0]['id'])
     storage['discord'] = {
         "id": user_json['id'],
         "refresh_token": token_json['refresh_token'],
