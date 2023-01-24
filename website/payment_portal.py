@@ -240,7 +240,7 @@ async def portal_check(request: Request):
             {
                 "success": True,
                 "result": True,
-                "product": [serialize(i) for i in result],
+                "product": serialize(base_product[0]),
                 "purchases": [serialize(i) for i in result],
                 "generated": dt.utcnow().isoformat(),
             },
