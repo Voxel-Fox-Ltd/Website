@@ -18,7 +18,7 @@
             {% if item.description %}
                 <p class="description">{{ item.description }}</p>
             {% endif %}
-            <p class="price">Price: <span>{{ item.currency_symbol }}{{ item.price }}</span></p>
+            <p class="price">Price: <span>{{ item.currency_symbol }}{{ "%.2f" | format(item.price_number * item.quantity / 100) }}</span></p>
         </div>
         <div id="stripe-button" class="button-holder block"></div>
         <div id="paypal-button" class="button-holder block"></div>
