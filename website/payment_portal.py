@@ -367,7 +367,7 @@ async def portal_unsubscribe(request: Request):
                 cancel_url IS NOT NULL
             """,
             purchase_id,
-            user_session['discord']['id'],
+            int(user_session['discord']['id']),
             type=dict,
         )
         if purchase_rows:
@@ -548,7 +548,7 @@ async def purchase(request: Request):
                     AND
                         expiry_time IS NULL
                     """,
-                    session['discord']['id'],
+                    int(session['discord']['id']),
                     guild_id,
                     items[0].id,
                     type=dict,
@@ -569,7 +569,7 @@ async def purchase(request: Request):
                     AND
                         expiry_time IS NULL
                     """,
-                    session['discord']['id'],
+                    int(session['discord']['id']),
                     items[0].id,
                     type=dict,
                 )
