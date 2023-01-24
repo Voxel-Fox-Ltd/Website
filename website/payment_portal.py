@@ -548,7 +548,7 @@ async def purchase(request: Request):
                     AND
                         expiry_time IS NULL
                     """,
-                    session['user_id'],
+                    session['discord']['id'],
                     guild_id,
                     items[0].id,
                     type=dict,
@@ -569,7 +569,7 @@ async def purchase(request: Request):
                     AND
                         expiry_time IS NULL
                     """,
-                    session['user_id'],
+                    session['discord']['id'],
                     items[0].id,
                     type=dict,
                 )
