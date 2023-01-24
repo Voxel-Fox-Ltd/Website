@@ -176,12 +176,6 @@ async def login(request: Request):
 
     # See if we're already logged in
     session = await aiohttp_session.get_session(request)
-    # if session.get("id") is not None:
-    #     login_keys = [
-    #         "discord",
-    #     ]
-    #     if any(session.get(i) is None for i in login_keys):
-    #     return HTTPFound(location=session.pop('redirect_on_login', '/'))
     base_url = request.app['config']['website_base_url']
 
     # Build Discord auth URL
