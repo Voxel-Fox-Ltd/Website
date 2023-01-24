@@ -200,21 +200,13 @@ async def discord(request: Request):
     # Store the data in database
     storage = await aiohttp_session.get_session(request)
     async with vbu.Database() as db:
-        storage_id = await store_information(
+        await store_information(
             db,
-            storage.get('id'),
+            storage,
             'discord',
             user_json['id'],
             token_json['refresh_token'],
         )
-
-    # Store the data in session
-    storage['id'] = storage_id
-    storage['discord'] = {
-        "id": user_json['id'],
-        "refresh_token": token_json['refresh_token'],
-    }
-    return None
 
 
 @routes.get('/login/google')
@@ -278,20 +270,13 @@ async def google(request: Request):
     # Store the data in database
     storage = await aiohttp_session.get_session(request)
     async with vbu.Database() as db:
-        storage_id = await store_information(
+        await store_information(
             db,
-            storage.get('id'),
+            storage,
             'google',
             user_json['id'],
             token_json['refresh_token'],
         )
-
-    # Store the data in session
-    storage['id'] = storage_id
-    storage['google'] = {
-        "id": user_json['id'],
-        "refresh_token": token_json['refresh_token'],
-    }
     return None
 
 
