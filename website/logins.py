@@ -244,6 +244,12 @@ async def google(request: Request):
             return None
         log.info("Got Google token information %s" % dump(token_json))
 
+        # Regen token if we don't have a refresh
+        if 'refresh_token' not in token_json:
+            url = f"https://oauth2.googleapis.com/revoke?token={json_token['access_token']}"
+            await s.post(url)
+            return None
+
         # Use token to get user ID
         url = "https://www.googleapis.com/oauth2/v1/userinfo"
         headers = {
@@ -260,60 +266,13 @@ async def google(request: Request):
     # Store the data in database
     storage = await aiohttp_session.get_session(request)
     async with vbu.Database() as db:
-        if storage.get('id') is not None:
-            user_rows = await db.call(
-                """
-                UPDATE
-                    login_users
-                SET
-                    google_user_id = $2,
-                    google_refresh_token = $3
-                WHERE
-                    id = $1
-                RETURNING
-                    id
-                """,
-                storage['id'],
-                user_json['id'],
-                token_json['refresh_token'],
-            )
-        else:
-            user_rows = await db.call(
-                """
-                INSERT INTO
-                    login_users
-                    (
-                        google_user_id,
-                        google_refresh_token
-                    )
-                VALUES
-                    (
-                        $1,
-                        $2
-                    )
-                ON CONFLICT
-                    (google_user_id)
-                DO UPDATE
-                SET
-                    google_refresh_token = excluded.google_refresh_token
-                RETURNING
-                    id
-                """,
-                user_json['id'],
-                token_json['refresh_token'],
-            )
-        if not user_rows:
-            user_rows = await db.call(
-                """
-                SELECT
-                    id
-                FROM
-                    login_users
-                WHERE
-                    google_user_id = $1
-                """,
-                user_json['id'],
-            )
+        storage_id = await store_information(
+            db,
+            storage.get('id'),
+            'google',
+            user_json['id'],
+            token_json['refresh_token'],
+        )
 
     # Store the data in session
     storage['id'] = str(user_rows[0]['id'])
