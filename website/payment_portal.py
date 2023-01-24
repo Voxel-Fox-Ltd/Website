@@ -226,7 +226,7 @@ async def portal_check(request: Request):
                 (
                         purchases.product_id = $2
                     OR
-                        purchases.base_product = $2
+                        checkout_items.base_product = $2
                 )
             """.format(user_column, identify_column),
             int(user_id),
