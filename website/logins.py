@@ -68,15 +68,16 @@ async def discord(request: Request):
     async with aiohttp.ClientSession() as s:
 
         # Use code to get a token
-        url = "https://discordapp.com/api/v10/oauth2/token"
+        url = "https://discordapp.com/api/v9/oauth2/token"
         r = await s.post(url, data=data, headers=headers)
         token_json = await r.json()
         if 'error' in token_json:
             log.error(token_json)
             return None
+        log.info("Got Discord token information %s" % token_json)
 
         # Use token to get user ID
-        url = "https://discordapp.com/api/v10/users/@me"
+        url = "https://discordapp.com/api/v9/users/@me"
         headers = {
             "Authorization": f"Bearer {token_json['access_token']}",
             "User-Agent": "VoxelFox.co.uk Login Processor (kae@voxelfox.co.uk)",
@@ -86,6 +87,7 @@ async def discord(request: Request):
         if 'error' in user_json:
             log.error(user_json)
             return None
+        log.info("Got Discord user information %s" % user_json)
 
     # Store the data in database
     async with vbu.Database() as db:
@@ -149,7 +151,7 @@ async def login(request: Request):
     # Build Discord auth URL
     discord_config = request.app['config']['oauth']['discord']
     discord_url = (
-        "https://discordapp.com/api/v10/oauth2/authorize?"
+        "https://discordapp.com/api/v9/oauth2/authorize?"
         + urlencode({
             "response_type": "code",
             "client_id": discord_config['client_id'],
