@@ -246,7 +246,7 @@ async def google(request: Request):
 
         # Regen token if we don't have a refresh
         if 'refresh_token' not in token_json:
-            url = f"https://oauth2.googleapis.com/revoke?token={json_token['access_token']}"
+            url = f"https://oauth2.googleapis.com/revoke?token={token_json['access_token']}"
             await s.post(url)
             return None
 
