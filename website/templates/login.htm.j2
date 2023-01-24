@@ -12,13 +12,28 @@
     <meta property="og:image" content="{{ static('/images/_voxelfox/logo.png') }}" />
     <meta name="theme-color" content="#f17824">
     <title>Voxel Fox Login</title>
+    <style type="text/css">
+        .button {
+            padding: 1em 1.5em;
+            font-size: 1em;
+            background: #f17824;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .button:hover {
+            box-shadow: 0 0 5px white;
+            color: white;
+        }
+    </style>
 </head>
 <body>
 
 <div id="main" class="content">
     <button
             onclick="window.location = `{{ discord }}`"
-            type="button">
+            type="button"
+            class="button">
         Login with Discord
     </button>
 </div>
