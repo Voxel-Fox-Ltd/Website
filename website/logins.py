@@ -368,6 +368,7 @@ async def login(request: Request):
             "client_id": google_config['client_id'],
             "redirect_uri": base_url + google_config['redirect_uri'],
             "scope": "openid",
+            "access_type": "offline",
         })
     )
 
