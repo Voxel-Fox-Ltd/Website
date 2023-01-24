@@ -68,7 +68,7 @@ async def discord(request: Request):
     async with aiohttp.ClientSession() as s:
 
         # Use code to get a token
-        url = "https://discordapp.com/api/v9/oauth2/token"
+        url = "https://discord.com/api/v9/oauth2/token"
         r = await s.post(url, data=data, headers=headers)
         token_json = await r.json()
         if 'error' in token_json:
@@ -77,7 +77,7 @@ async def discord(request: Request):
         log.info("Got Discord token information %s" % token_json)
 
         # Use token to get user ID
-        url = "https://discordapp.com/api/v9/users/@me"
+        url = "https://discord.com/api/v9/users/@me"
         headers = {
             "Authorization": f"Bearer {token_json['access_token']}",
             "User-Agent": "VoxelFox.co.uk Login Processor (kae@voxelfox.co.uk)",
@@ -165,7 +165,7 @@ async def login(request: Request):
     # Build Discord auth URL
     discord_config = request.app['config']['oauth']['discord']
     discord_url = (
-        "https://discordapp.com/api/v9/oauth2/authorize?"
+        "https://discord.com/api/v9/oauth2/authorize?"
         + urlencode({
             "response_type": "code",
             "client_id": discord_config['client_id'],

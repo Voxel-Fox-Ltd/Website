@@ -285,7 +285,7 @@ async def portal_get_guilds(request: Request):
         # Get an access token
         discord_config = request.app['config']['oauth']['discord']
         resp = await session.post(
-            "owo",
+            "https://discord.com/api/v9/oauth2/token",
             data={
                 "client_id": discord_config['client_id'],
                 "client_secret": discord_config['client_secret'],
