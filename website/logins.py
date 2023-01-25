@@ -39,7 +39,7 @@ async def store_information(
         storage: dict[str, str | dict[str, str]],
         identity: str,
         user_id: str,
-        refresh_token: str) -> None:
+        refresh_token: str | None) -> None:
     """
     Store given token information in database and cache.
     """
@@ -53,7 +53,7 @@ async def store_information(
     ]
 
     # See if a user exists already
-    if current_id is not None:
+    if current_id is not None and refresh_token is not None:
 
         # Try and add this identity to the given user
         try:
@@ -97,34 +97,45 @@ async def store_information(
                     )
             return
 
-    # No current ID
+    # No current ID or no refresh token
     else:
 
-        # Create new account
-        user_rows = await db.call(
-            """
-            INSERT INTO
-                login_users
-                (
-                    {0}_user_id,
-                    {0}_refresh_token
-                )
-            VALUES
-                (
-                    $1,
-                    $2
-                )
-            ON CONFLICT
-                ({0}_user_id)
-            DO UPDATE
-            SET
-                {0}_refresh_token = excluded.{0}_refresh_token
-            RETURNING
-                *
-            """.format(identity),
-            user_id,
-            refresh_token,
-        )
+        # If there's no refresh token, an account must exist
+        user_rows = None
+        if refresh_token is None:
+            user_rows = await db.call(
+                """
+                SELECT * FROM login_users WHERE {0}_user_id = $1
+                """.format(identity),
+                user_id,
+            )
+
+        # Create new account if we got nothing
+        if not user_rows:
+            user_rows = await db.call(
+                """
+                INSERT INTO
+                    login_users
+                    (
+                        {0}_user_id,
+                        {0}_refresh_token
+                    )
+                VALUES
+                    (
+                        $1,
+                        $2
+                    )
+                ON CONFLICT
+                    ({0}_user_id)
+                DO UPDATE
+                SET
+                    {0}_refresh_token = excluded.{0}_refresh_token
+                RETURNING
+                    *
+                """.format(identity),
+                user_id,
+                refresh_token,
+            )
 
     # Work out our cache
     storage['id'] = str(user_rows[0]['id'])
@@ -251,12 +262,6 @@ async def google(request: Request):
             return None
         log.info("Got Google token information %s" % dump(token_json))
 
-        # Regen token if we don't have a refresh
-        if 'refresh_token' not in token_json:
-            url = f"https://oauth2.googleapis.com/revoke?token={token_json['access_token']}"
-            await s.post(url)
-            return None
-
         # Use token to get user ID
         url = "https://www.googleapis.com/oauth2/v1/userinfo"
         headers = {
@@ -278,7 +283,7 @@ async def google(request: Request):
             storage,
             'google',
             user_json['id'],
-            token_json['refresh_token'],
+            token_json.get('refresh_token'),
         )
     return None
 
