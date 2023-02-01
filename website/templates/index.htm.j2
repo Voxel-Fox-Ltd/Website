@@ -29,36 +29,39 @@
 {% set logo = static('/images/_voxelfox/white.svg') %}
 
 
+{# Index social links #}
 {% macro create_link(href, icon, kwargs=none) %}
 <li><a href="{{ href }}" target="_blank" {% for k, v in (kwargs or {}).items() %}{{ k }}="{{ v }}"{% endfor %}><span class="icon-{{ icon }}" /></a></li>
 {% endmacro %}
 
-<!-- Main -->
+
+{# Branding downloads #}
+{% macro create_download(static, caption) %}
+<li><a href="{{ static(static) }}" download>{{ caption }}</a></li>
+{% endmacro %}
+
+
 <div id="main" class="content hidable" data-hidden="0">
     <img class="logo" src="{{ index_logo }}" />
     <h1>Voxel Fox</h1>
     <ul class="contact-links">
         {{ create_link("mailto:kae@voxelfox.co.uk", "at") }}
         {{ create_link("https://discord.gg/vfl", "discord") }}
-        {{ create_link("https://twitter.com/VoxelFoxKae", "twitter") }}
         {{ create_link("https://uwu.social/@kae", "mastodon", {"rel": "me"}) }}
         {{ create_link("https://twitch.tv/VoxelFoxKae", "twitch") }}
+        {{ create_link("https://twitter.com/VoxelFoxKae", "twitter") }}
         {{ create_link("https://www.youtube.com/c/kaevf", "youtube") }}
         {{ create_link("https://github.com/4Kaylum", "github") }}
         {{ create_link("https://github.com/Voxel-Fox-Ltd", "github") }}
     </ul>
     <p><a href="#projects">Projects</a></p>
     <p><a href="#branding">Branding</a></p>
-</div>
+</div>  <!-- Main -->
 
-<!-- Branding -->
+
 <div id="branding" class="content hidable" data-hidden="1">
-    <a href="#main">
-        <img class="logo" src="{{ logo }}" />
-    </a>
+    <a href="#main"><img class="logo" src="{{ logo }}" /></a>
     <h1>Branding</h1>
-
-    <!-- Voxel Fox -->
     <div class="brand">
         <h2>Voxel Fox</h2>
         <p>
@@ -71,20 +74,8 @@
             <figure>
                 <img src="{{ static('/images/_voxelfox/black.svg') }}" />
                 <ul>
-                    <li>
-                        <a
-                                href="{{ static('/images/_voxelfox/logo.png') }}"
-                                download>
-                            PNG100px
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                                href="{{ static('/images/_voxelfox/black.svg') }}"
-                                download>
-                            SVG
-                        </a>
-                    </li>
+                    {{ create_download('/images/_voxelfox/logo.png', 'PNG100px') }}
+                    {{ create_download('/images/_voxelfox/black.svg', 'SVG') }}
                 </ul>
                 <figcaption>
                     Orange (<code>#f17824</code>) fill, black outline. The
@@ -94,13 +85,7 @@
             <figure>
                 <img src="{{ static('/images/_voxelfox/white.svg') }}" />
                 <ul>
-                    <li>
-                        <a
-                                href="{{ static('/images/_voxelfox/white.svg') }}"
-                                download>
-                            SVG
-                        </a>
-                    </li>
+                    {{ create_download('/images/_voxelfox/white.svg', 'SVG') }}
                 </ul>
                 <figcaption>
                     Orange (<code>#f17824</code>) fill, white outline. The
@@ -110,59 +95,33 @@
             <figure>
                 <img src="{{ static('/images/_voxelfox/gayBlack.svg') }}" />
                 <ul>
-                    <li>
-                        <a
-                                href="{{ static('/images/_voxelfox/gayBlack.svg') }}"
-                                download>
-                            SVG
-                        </a>
-                    </li>
+                    {{ create_download('/images/_voxelfox/gayBlack.svg', 'SVG') }}
                 </ul>
                 <figcaption>Gay pride fill, black outline.</figcaption>
             </figure>
             <figure>
                 <img src="{{ static('/images/_voxelfox/gay.svg') }}" />
                 <ul>
-                    <li>
-                        <a
-                                href="{{ static('/images/_voxelfox/gay.svg') }}"
-                                download>
-                            SVG
-                        </a>
-                    </li>
+                    {{ create_download('/images/_voxelfox/gay.svg', 'SVG') }}
                 </ul>
                 <figcaption>Gay pride fill, white outline.</figcaption>
             </figure>
             <figure>
                 <img src="{{ static('/images/_voxelfox/transBlack.svg') }}" />
                 <ul>
-                    <li>
-                        <a
-                                href="{{ static('/images/_voxelfox/transBlack.svg') }}"
-                                download>
-                            SVG
-                        </a>
-                    </li>
+                    {{ create_download('/images/_voxelfox/transBlack.svg', 'SVG') }}
                 </ul>
                 <figcaption>Trans pride fill, black outline.</figcaption>
             </figure>
             <figure>
                 <img src="{{ static('/images/_voxelfox/trans.svg') }}" />
                 <ul>
-                    <li>
-                        <a
-                                href="{{ static('/images/_voxelfox/trans.svg') }}"
-                                download>
-                            SVG
-                        </a>
-                    </li>
+                    {{ create_download('/images/_voxelfox/trans.svg', 'SVG') }}
                 </ul>
                 <figcaption>Trans pride fill, white outline.</figcaption>
             </figure>
         </div>
     </div>
-
-    <!-- MarriageBot -->
     <div class="brand">
         <h2>MarriageBot</h2>
         <p>
@@ -173,44 +132,23 @@
             <figure>
                 <img src="{{ static('/images/marriagebot/rings.png') }}" />
                 <ul>
-                    <li>
-                        <a
-                                href="{{ static('/images/marriagebot/rings.png') }}"
-                                download>
-                            PNG1200px
-                        </a>
-                    </li>
+                    {{ create_download('/images/marriagebot/rings.png', 'PNG1200px') }}
                 </ul>
                 <figcaption>The MarriageBot logo without a background.</figcaption>
             </figure>
             <figure>
                 <img src="{{ static('/images/marriagebot/MarriageBot.150.png') }}" />
                 <ul>
-                    <li>
-                        <a
-                                href="{{ static('/images/marriagebot/MarriageBot.png') }}"
-                                download>
-                            PNG1280px
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                                href="{{ static('/images/marriagebot/MarriageBot.150.png') }}"
-                                download>
-                            PNG150px
-                        </a>
-                    </li>
+                    {{ create_download('/images/marriagebot/MarriageBot.png', 'PNG1280px') }}
+                    {{ create_download('/images/marriagebot/MarriageBot.150.png', 'PNG150px') }}
                 </ul>
-                <figcaption>
-                    The MarriageBot logo with the normal bot background.
-                </figcaption>
+                <figcaption>The MarriageBot logo with the normal bot background.</figcaption>
             </figure>
         </div>
     </div>
+</div>  <!-- Branding -->
 
-</div>
 
-<!-- Project list -->
 <div id="projects" class="content hidable" data-hidden="1">
     <a href="#main">
         <img class="logo" src="{{ logo }}" />
@@ -252,9 +190,9 @@
             </a>
         </p>
     </div>
-</div>
+</div>  <!-- Projects -->
 
-<!-- Project - MarriageBot -->
+
 <div id="project-marriagebot" class="content project hidable" data-hidden="1">
     <a href="#projects">
         <img class="image" src="{{ static('/images/marriagebot/rings.png') }}" />
@@ -273,6 +211,11 @@
             </a>
         </li>
         <li>
+            <a href="https://upgrade.chat/voxelfox" target="_blank">
+                Donate <span class="icon icon-banknote" />
+            </a>
+        </li>
+        <li>
             <a href="/md/privacy_policy/MarriageBot.md" target="_blank">
                 Privacy <span class="icon icon-link" />
             </a>
@@ -283,9 +226,9 @@
             </a>
         </li>
     </ul>
-</div>
+</div>  <!-- Project - MarriageBot -->
 
-<!-- Project - Flower -->
+
 <div id="project-flower" class="content project hidable" data-hidden="1">
     <a href="#projects">
         <img class="image" src="{{ static('/images/flower/FlowerTransparentCropped.png') }}" />
@@ -299,6 +242,11 @@
             </a>
         </li>
         <li>
+            <a href="/portal/flower" target="_blank">
+                Donate <span class="icon icon-banknote" />
+            </a>
+        </li>
+        <li>
             <a href="/md/privacy_policy/Flower.md" target="_blank">
                 Privacy <span class="icon icon-link" />
             </a>
@@ -309,9 +257,9 @@
             </a>
         </li>
     </ul>
-</div>
+</div>  <!-- Project - Flower -->
 
-<!-- Project - Over 18 -->
+
 <div id="project-over18" class="content project hidable" data-hidden="1">
     <a href="#projects">
         <img class="logo" src="{{ logo }}" />
@@ -326,9 +274,9 @@
             </a>
         </li>
     </ul>
-</div>
+</div>  <!-- Project - age checker -->
 
-<!-- Project - Profile -->
+
 <div id="project-profile" class="content project hidable" data-hidden="1">
     <a href="#projects">
         <img class="image rounded" src="{{ static('/images/profile/logo.png') }}" />
@@ -347,6 +295,11 @@
             </a>
         </li>
         <li>
+            <a href="/portal/profile" target="_blank">
+                Donate <span class="icon icon-banknote" />
+            </a>
+        </li>
+        <li>
             <a href="/md/privacy_policy/Profile.md" target="_blank">
                 Privacy <span class="icon icon-link" />
             </a>
@@ -357,9 +310,9 @@
             </a>
         </li>
     </ul>
-</div>
+</div>  <!-- Project - Profile -->
 
-<!-- Project - TitleScraper -->
+
 <div id="project-titlescraper" class="content project hidable" data-hidden="1">
     <a href="#projects">
         <img class="logo" src="{{ logo }}" />
@@ -374,9 +327,9 @@
             </a>
         </li>
     </ul>
-</div>
+</div>  <!-- Project - TitleScraper -->
 
-<!-- Project - Cerberus -->
+
 <div id="project-cerberus" class="content project hidable" data-hidden="1">
     <a href="#projects">
         <img class="image rounded" src="{{ static('/images/cerberus/Cerberus.png') }}" />
@@ -400,9 +353,9 @@
             </a>
         </li>
     </ul>
-</div>
+</div>  <!-- Project - Cerberus -->
 
-<!-- Project - Streamlinkj -->
+
 <div id="project-streamlink" class="content project hidable" data-hidden="1">
     <a href="#projects">
         <img class="logo" src="{{ logo }}" />
@@ -416,7 +369,8 @@
             </a>
         </li>
     </ul>
-</div>
+</div>  <!-- Project - Streamlink -->
+
 
 <!-- Script to change displayed content with anchor click -->
 <script type="text/javascript">
@@ -429,11 +383,7 @@ function changeContentString(hash) {
     }
     if(!found) document.querySelector("#main").dataset.hidden = "0";
 }
-
-
 changeContentString(window.location.hash.slice(1));
-
-
 window.addEventListener('hashchange', function() {
     changeContentString(window.location.hash.slice(1));
 });
