@@ -36,8 +36,8 @@
 
 
 {# Branding downloads #}
-{% macro create_download(static, caption) %}
-<li><a href="{{ static(static) }}" download>{{ caption }}</a></li>
+{% macro create_download(fp, caption) %}
+<li><a href="{{ static(fp) }}" download>{{ caption }}</a></li>
 {% endmacro %}
 
 
