@@ -305,7 +305,9 @@ async def portal_get_guilds(request: Request):
         try:
             access_token = token_json['access_token']
         except KeyError:
+            user_session["discord"]["refresh_token"] = None
             return json_response([], headers={"X-Message": "Failed getting access token"})
+        user_session["discord"]["refresh_token"] = token_json['refresh_token']
 
         # Get the guilds
         resp = await session.get(
@@ -317,6 +319,14 @@ async def portal_get_guilds(request: Request):
         if not resp.ok:
             return json_response([], headers={"X-Message": "Failed getting guilds"})
         guilds = await resp.json()
+
+    # Save new token to db
+    async with vbu.Database() as db:
+        await db.call(
+            "UPDATE login_users SET discord_refresh_token = $2 WHERE id = $1",
+            user_session["id"],
+            user_session["discord"]["refresh_token"],
+        )
 
     # Return the guilds
     return json_response(
