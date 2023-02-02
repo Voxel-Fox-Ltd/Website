@@ -63,7 +63,7 @@
     </div>
 </div>
 
-<script id="guild-script" type="text/javascript" data-logged-in="{{ int(logged_in) }}">
+<script id="guild-script" type="text/javascript" data-logged-in="{{ logged_in | int }}">
 function guildSelectChange(itemId) {
     var guildSelect = document.querySelector(`.item[data-id="${itemId}"] .guild-select`);
     var guildId = guildSelect.value;
