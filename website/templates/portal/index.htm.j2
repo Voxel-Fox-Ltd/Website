@@ -81,7 +81,7 @@ async function getGuilds() {
     if(allGuildSelectors.length <= 0) return;
 
     // See if we need to replace the item
-    if (!document.querySelector("#guild-script").dataset.loggedIn) {
+    if (document.querySelector("#guild-script").dataset.loggedIn == "0") {
         for(let g of allGuildSelectors) {
             select.innerHTML = `<a href="?login" class="button">Login to see guilds</a>`;
         }
