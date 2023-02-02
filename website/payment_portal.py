@@ -282,7 +282,7 @@ async def portal_get_guilds(request: Request):
     user_session = await aiohttp_session.get_session(request)
     refresh_token = user_session.get("discord", dict()).get("refresh_token")
     if not refresh_token:
-        return json_response([])
+        return json_response([], headers={"X-Message": "Missing refresh token"})
 
     # Do some web requesting
     async with aiohttp.ClientSession() as session:
@@ -305,7 +305,7 @@ async def portal_get_guilds(request: Request):
         try:
             access_token = token_json['access_token']
         except KeyError:
-            return json_response([])
+            return json_response([], headers={"X-Message": "Failed getting access token"})
 
         # Get the guilds
         resp = await session.get(
@@ -315,7 +315,7 @@ async def portal_get_guilds(request: Request):
             },
         )
         if not resp.ok:
-            return json_response([])
+            return json_response([], headers={"X-Message": "Failed getting guilds"})
         guilds = await resp.json()
 
     # Return the guilds
