@@ -17,7 +17,16 @@ async def index(_: Request):
     Index page for the website.
     """
 
-    return {}
+    target = pathlib.Path("./website/static/docs")
+    markdown_files: dict[str, str] = {}
+    if target.exists():
+        for fn in target.rglob("*.md"):
+            with fn.open() as a:
+                markdown_files[fn.name.split(".")[0]] = a.read()
+
+    return {
+        "mdfiles": markdown_files,
+    }
 
 
 @routes.get("/gforms")
