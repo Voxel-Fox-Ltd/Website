@@ -2,6 +2,7 @@ import json
 from urllib.parse import urlencode
 import logging
 from typing import Any
+import time
 
 import aiohttp
 from aiohttp.web import HTTPFound, Request, RouteTableDef, StreamResponse
@@ -25,6 +26,7 @@ User Session
     "discord?": {
         "id": str,
         "refresh_token": str,
+        "access_token?": str,
     },
     "google?": {
         "id": str,
@@ -221,6 +223,10 @@ async def discord(request: Request):
             user_json['id'],
             token_json['refresh_token'],
         )
+    storage['discord']['access_token'] = (
+        f"{token_json['expires_in'] + int(time.time())}:"
+        f"{token_json['access_token']}"
+    )
 
 
 @routes.get('/login/google')

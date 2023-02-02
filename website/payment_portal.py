@@ -3,6 +3,7 @@ from typing import Awaitable, Callable, Optional
 from typing_extensions import Self
 from datetime import datetime as dt, timedelta
 from functools import wraps
+import time
 
 from aiohttp.web import (
     HTTPFound,
@@ -280,6 +281,7 @@ async def portal_get_guilds(request: Request):
 
     # Get session
     user_session = await aiohttp_session.get_session(request)
+    access_token = user_session.get("discord", dict()).get("access_token")
     refresh_token = user_session.get("discord", dict()).get("refresh_token")
     if not refresh_token:
         user_session.invalidate()  # type: ignore
@@ -289,27 +291,28 @@ async def portal_get_guilds(request: Request):
     async with aiohttp.ClientSession() as session:
 
         # Get an access token
-        discord_config = request.app['config']['oauth']['discord']
-        resp = await session.post(
-            "https://discord.com/api/v9/oauth2/token",
-            data={
-                "client_id": discord_config['client_id'],
-                "client_secret": discord_config['client_secret'],
-                "grant_type": "refresh_token",
-                "refresh_token": refresh_token,
-            },
-            headers={
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        )
-        token_json = await resp.json()
-        try:
-            access_token = token_json['access_token']
-        except KeyError:
-            user_session["discord"]["refresh_token"] = None
-            user_session.invalidate()  # type: ignore
-            return json_response([], headers={"X-Message": "Failed getting access token"})
-        user_session["discord"]["refresh_token"] = token_json['refresh_token']
+        if access_token and int(access_token.split(":", 1)[0]) < time.time():
+            discord_config = request.app['config']['oauth']['discord']
+            resp = await session.post(
+                "https://discord.com/api/v9/oauth2/token",
+                data={
+                    "client_id": discord_config['client_id'],
+                    "client_secret": discord_config['client_secret'],
+                    "grant_type": "refresh_token",
+                    "refresh_token": refresh_token,
+                },
+                headers={
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            )
+            token_json = await resp.json()
+            try:
+                access_token = token_json['access_token']
+            except KeyError:
+                user_session.invalidate()  # type: ignore
+                return json_response([], headers={"X-Message": "Failed getting access token"})
+            user_session["discord"]["access_token"] = token_json['access_token']
+            user_session["discord"]["refresh_token"] = token_json['refresh_token']
 
         # Get the guilds
         resp = await session.get(
