@@ -45,7 +45,7 @@
                     <div class="item" data-id="{{ item.id }}">
                         <p class="name">{{ item.name }}</p>
                         {% if item.description %}
-                            <p class="description">{{ item.description }}</p>
+                            <p class="description">{{ item.description | markdown }}</p>
                         {% endif %}
                         <p class="price">
                             Price:
