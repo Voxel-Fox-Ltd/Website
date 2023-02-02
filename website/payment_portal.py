@@ -108,13 +108,18 @@ def cache_by_query():
     return decorator
 
 
+async def _require_login_wrapper(request: Request) -> StreamResponse | None:
+    session = await aiohttp_session.get_session(request)
+    if session.get('id') is None:
+        session['redirect_on_login'] = str(request.url)
+        return HTTPFound("/login")
+
+
 def requires_login():
     def inner(func):
         async def wrapper(request: Request) -> StreamResponse:
-            session = await aiohttp_session.get_session(request)
-            if session.get('id') is None:
-                session['redirect_on_login'] = str(request.url)
-                return HTTPFound("/login")
+            if (x := await _require_login_wrapper(request)):
+                return x
             return await func(request)
         return wrapper
     return inner
@@ -428,12 +433,16 @@ async def portal_unsubscribe(request: Request):
 
 
 @routes.get("/portal/{group}")
-@requires_login()
 @template("portal/index.htm.j2")
 async def index(request: Request):
     """
     Portal page for payments. This should show all items in the group.
     """
+
+    # See if we were redirected
+    if request.query.get("login"):
+        if (x := await _require_login_wrapper(request)):
+            return x
 
     # Get the items to be shown on the page
     async with vbu.Database() as db:
@@ -462,7 +471,9 @@ async def index(request: Request):
         return HTTPFound("/")
 
     # Render the template
+    logged_in = await _require_login_wrapper(request) is not None
     return {
+        "logged_in": logged_in,
         "guild_items": [
             i
             for i in items

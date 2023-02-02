@@ -63,7 +63,7 @@
     </div>
 </div>
 
-<script type="text/javascript">
+<script id="guild-script" type="text/javascript" data-logged-in="{{ int(logged_in) }}">
 function guildSelectChange(itemId) {
     var guildSelect = document.querySelector(`.item[data-id="${itemId}"] .guild-select`);
     var guildId = guildSelect.value;
@@ -75,10 +75,24 @@ function guildSelectChange(itemId) {
 
 
 async function getGuilds() {
+
+    // Get selectors
     let allGuildSelectors = document.querySelectorAll(".guild-select");
     if(allGuildSelectors.length <= 0) return;
+
+    // See if we need to replace the item
+    if (!document.querySelector("#guild-script").dataset.loggedIn) {
+        for(let g of allGuildSelectors) {
+            select.innerHTML = `<a href="?login" class="button">Login to see guilds</a>`;
+        }
+        return;
+    }
+
+    // Get guilds
     var guilds = await fetch("/api/portal/get_guilds");
     guilds = await guilds.json();
+
+    // Sort by name
     guilds.sort((a, b) => {
         var nameA = a.name.toUpperCase();
         var nameB = b.name.toUpperCase();
@@ -90,6 +104,8 @@ async function getGuilds() {
         }
         return parseInt(a.id) - parseInt(b.id);
     });
+
+    // Add to dropdowns
     for(let select of allGuildSelectors) {
         select.innerHTML = "<option value='' selected>Purchase for Guild</option>";
         let owned = document.createElement("optgroup");
