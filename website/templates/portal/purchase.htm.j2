@@ -12,13 +12,13 @@
 
 
 <div class="container">
-    <div class="item" data-id="{{ item.id }}">
+    <div class="item content" data-id="{{ item.id }}">
         <h1 class="title">{{ item.name }}</h1>
-        <div class="block">
+        <div class="content">
             {% if item.description %}
-                <p class="description">{{ item.description }}</p>
+                <div class="description block">{{ item.description | markdown | safe }}</div>
             {% endif %}
-            <p class="price">Price: <span>{{ item.currency_symbol }}{{ "%.2f" | format(item.price_number * item.quantity / 100) }}</span></p>
+            <p class="price block">Price: <span>{{ item.currency_symbol }}{{ "%.2f" | format(item.price_number * item.quantity / 100) }}</span></p>
         </div>
         <div id="stripe-button" class="button-holder block"></div>
         <div id="paypal-button" class="button-holder block"></div>
