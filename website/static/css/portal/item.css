@@ -15,6 +15,14 @@ body {
     padding-bottom: 10em;
 }
 
+.back-button {
+    text-align: left;
+    color: rgba(100, 100, 255, 0.7);
+    width: 100%;
+    display: block;
+    margin-left: 50px;
+}
+
 .title {
     color: #ccc !important;
 }
