@@ -440,7 +440,7 @@ async def index(request: Request):
     """
 
     # See if we were redirected
-    if request.query.get("login"):
+    if "login" in request.query:
         if (x := await _require_login_wrapper(request)):
             return x
 
