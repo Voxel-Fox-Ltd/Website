@@ -16,10 +16,10 @@
             <h1 class="title">Per-Guild Items</h1>
             <div class="items">
                 {% for item in guild_items %}
-                    <div class="item" data-id="{{ item.id }}">
+                    <div class="item content" data-id="{{ item.id }}">
                         <p class="name">{{ item.name }}</p>
                         {% if item.description %}
-                            <p class="description">{{ item.description }}</p>
+                            <div class="description content">{{ item.description | markdown | safe }}</div>
                         {% endif %}
                         <p class="price">
                             Price:
