@@ -471,9 +471,9 @@ async def index(request: Request):
         return HTTPFound("/")
 
     # Render the template
-    logged_in = await _require_login_wrapper(request) is not None
+    session = await aiohttp_session.get_session(request)
     return {
-        "logged_in": logged_in,
+        "logged_in": session.get('id') is not None,
         "guild_items": [
             i
             for i in items
