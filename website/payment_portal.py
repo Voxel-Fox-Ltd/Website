@@ -291,7 +291,7 @@ async def portal_get_guilds(request: Request):
     async with aiohttp.ClientSession() as session:
 
         # Get an access token
-        if access_token and int(access_token.split(":", 1)[0]) < time.time():
+        if access_token is None or int(access_token.split(":", 1)[0]) < time.time():
             discord_config = request.app['config']['oauth']['discord']
             resp = await session.post(
                 "https://discord.com/api/v9/oauth2/token",
@@ -311,8 +311,13 @@ async def portal_get_guilds(request: Request):
             except KeyError:
                 user_session.invalidate()  # type: ignore
                 return json_response([], headers={"X-Message": "Failed getting access token"})
-            user_session["discord"]["access_token"] = token_json['access_token']
+            user_session["discord"]["access_token"] = (
+                f"{token_json['expires_at'] + time.time() - 60}:"
+                f"{token_json['access_token']}"
+            )
             user_session["discord"]["refresh_token"] = token_json['refresh_token']
+        else:
+            access_token = user_session['discord']['access_token'].split(":", 1)[-1]
 
         # Get the guilds
         resp = await session.get(

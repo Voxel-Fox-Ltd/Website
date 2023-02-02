@@ -224,7 +224,7 @@ async def discord(request: Request):
             token_json['refresh_token'],
         )
     storage['discord']['access_token'] = (
-        f"{token_json['expires_in'] + int(time.time())}:"
+        f"{token_json['expires_in'] + int(time.time() - 60)}:"
         f"{token_json['access_token']}"
     )
 
