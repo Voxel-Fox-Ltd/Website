@@ -20,6 +20,8 @@ import aiohttp
 
 from .utils.db_util import CheckoutItem
 from .utils.json_utils import serialize
+from .utils.login import requires_login, _require_login_wrapper
+from .utils.get_paypal_access_token import get_paypal_basicauth
 
 
 routes = RouteTableDef()
@@ -107,23 +109,6 @@ def cache_by_query():
             return response
         return wrapper
     return decorator
-
-
-async def _require_login_wrapper(request: Request) -> StreamResponse | None:
-    session = await aiohttp_session.get_session(request)
-    if session.get('id') is None:
-        session['redirect_on_login'] = str(request.url)
-        return HTTPFound("/login")
-
-
-def requires_login():
-    def inner(func):
-        async def wrapper(request: Request) -> StreamResponse:
-            if (x := await _require_login_wrapper(request)):
-                return x
-            return await func(request)
-        return wrapper
-    return inner
 
 
 @routes.get("/api/portal/check")
@@ -408,10 +393,7 @@ async def portal_unsubscribe(request: Request):
     auth: Optional[aiohttp.BasicAuth] = None
     method: str = ""
     if "paypal.com" in purchased['cancel_url'].casefold():
-        auth = aiohttp.BasicAuth(
-            request.app['config']['paypal_client_id'],
-            request.app['config']['paypal_client_secret'],
-        )
+        auth = await get_paypal_basicauth()
         method = "POST"
     elif "stripe.com" in purchased['cancel_url'].casefold():
         auth = aiohttp.BasicAuth(

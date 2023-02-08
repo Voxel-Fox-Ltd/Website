@@ -6,6 +6,8 @@ from aiohttp_jinja2 import template
 import aiohttp_session
 from discord.ext import vbu
 
+from .utils.login import requires_login
+
 
 routes = RouteTableDef()
 
@@ -30,7 +32,7 @@ async def index(_: Request):
 
 
 @routes.get("/gforms")
-@vbu.web.requires_login()
+@requires_login()
 async def gforms(request: Request):
     """
     Redirect to Google forms with given items filled in with session data.

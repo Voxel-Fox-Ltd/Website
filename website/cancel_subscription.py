@@ -2,6 +2,8 @@ import aiohttp
 from aiohttp.web import Request, RouteTableDef, json_response
 from discord.ext import vbu
 
+from .utils.get_paypal_access_token import get_paypal_basicauth
+
 
 routes = RouteTableDef()
 
@@ -50,10 +52,7 @@ async def cancel_subscription(request: Request):
 
     # Get the right auth and url
     if "paypal.com" in cancel_url:
-        auth = aiohttp.BasicAuth(
-            request.app['config']['paypal_client_id'],
-            request.app['config']['paypal_client_secret'],
-        )
+        auth = await get_paypal_basicauth()
         method = "POST"
     elif "stripe.com" in cancel_url:
         auth = aiohttp.BasicAuth(

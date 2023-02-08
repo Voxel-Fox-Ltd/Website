@@ -9,11 +9,6 @@ routes = [
     "cancel_subscription",
     "payment_portal",
 ]
-oauth_scopes = [
-    "identify",
-    "guilds",
-]
-
 stripe_api_key = ""
 stripe_webhook_signing_secret = ""
 
@@ -22,8 +17,12 @@ stripe_webhook_signing_secret = ""
     client_id = ""
     client_secret = ""
     redirect_uri = "/login/discord"
+[oauth.google]
+    client_id = ""
+    client_secret = ""
+    redirect_uri = "/login/google"
 
-# This data is passed directly over to asyncpg.connect()
+
 [database]
     enabled = true
     user = ""
@@ -32,7 +31,7 @@ stripe_webhook_signing_secret = ""
     host = ""
     port = 5432
 
-# This data is passed directly over to aioredis.connect()
+
 [redis]
     enabled = false
     host = "127.0.0.1"
