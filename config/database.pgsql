@@ -135,7 +135,8 @@ CREATE TABLE IF NOT EXISTS purchases(
     product_id UUID NOT NULL REFERENCES checkout_items(id),
 
     -- The user who purchased the item
-    discord_user_id BIGINT NOT NULL,
+    user_id UUID,  -- technically not null, but I can't promise everyone has an account
+    discord_user_id BIGINT,
     discord_guild_id BIGINT,
 
     -- If the item is a subscription, cancel metadata
