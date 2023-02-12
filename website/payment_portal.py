@@ -131,20 +131,23 @@ async def portal_check(request: Request):
             },
             status=400,
         ), timedelta(days=7)
-    user_id = request.query.get("user_id", "")
+
+    vfl_id = request.query.get("id", "")
+    discord_user_id = request.query.get("discord_user_id", request.query.get("user_id", ""))
+    google_user_id = request.query.get("google_user_id", "")
+    facebook_user_id = request.query.get("facebook_user_id", "")
+    everlasting_user_id = request.query.get("everlasting_user_id", "")
     guild_id = request.query.get("guild_id", "")
-    if user_id or guild_id:
+    any_id = (
+        ("vfl", vfl_id,),
+        ("discord", discord_user_id,),
+        ("guild", guild_id,),
+        ("google", google_user_id,),
+        ("facebook", facebook_user_id,),
+        ("everlasting", everlasting_user_id,),
+    )
+    if any((i[1] for i in any_id)):
         pass
-    elif user_id and guild_id:
-        return json_response(
-            {
-                "error": "Both user_id and guild_id provided.",
-                "success": False,
-                "result": False,
-                "generated": dt.utcnow().isoformat(),
-            },
-            status=400,
-        ), timedelta(days=7)
     else:
         return json_response(
             {
@@ -156,18 +159,6 @@ async def portal_check(request: Request):
             status=400,
         ), True
 
-    # Make sure the given item is an int
-    if not (user_id or guild_id).isdigit():
-        return json_response(
-            {
-                "error": "Invalid user or guild ID provided.",
-                "success": False,
-                "result": False,
-                "generated": dt.utcnow().isoformat(),
-            },
-            status=400,
-        )
-
     # Check what they got
     result: list[dict] | None = None
     identify_column = (
@@ -175,11 +166,23 @@ async def portal_check(request: Request):
         if product_id
         else "checkout_items.product_name"
     )
-    user_column = (
-        "discord_user_id"
-        if user_id
-        else "discord_guild_id"
-    )
+    user_column: str
+    identity: str | int
+    for k, i in any_id:
+        if i:
+            identity = i
+            if k == "guild":
+                user_column = "purchases.discord_guild_id"
+                identity = int(i)
+            elif k == "vfl":
+                user_column = "login_users.user_id"
+            else:
+                if k ==  "discord":
+                    identity = int(i)
+                user_column = f"login_users.{k}_user_id"
+            break
+    else:
+        raise ValueError("Could not find identity")
     async with vbu.Database() as db:
         base_product = await db.call(
             """
@@ -210,7 +213,7 @@ async def portal_check(request: Request):
             """
             SELECT
                 purchases.id,
-                purchases.discord_user_id,
+                purchases.user_id,
                 purchases.discord_guild_id,
                 purchases.expiry_time,
                 purchases.timestamp,
@@ -221,6 +224,10 @@ async def portal_check(request: Request):
                 checkout_items
             ON
                 purchases.product_id = checkout_items.id
+            LEFT JOIN
+                login_users
+            ON
+                login_users.id = purchases.user_id
             WHERE
                 {0} = $1
             AND
@@ -232,7 +239,7 @@ async def portal_check(request: Request):
                         checkout_items.base_product = $2
                 )
             """.format(user_column, identify_column),
-            int(user_id or guild_id),
+            identity,
             base_product[0]['id'],
             type=dict,
         )
