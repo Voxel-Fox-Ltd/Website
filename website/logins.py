@@ -327,13 +327,13 @@ async def everlasting(request: Request):
         url = "https://everlastingservers.companion.repl.co/auth/verify"
         r = await s.post(url, data=data, headers=headers)
         try:
-            token_json = await r.json()
+            token_json = await r.json(content_type=None)  # don't verify mimetype
         except Exception:
             token_text = await r.text()
-            log.error(token_text)
+            log.error(f"Failed to parse Everlasting JSON - {token_text}")
             return None
         if token_json.get("valid", False):
-            log.error(token_json)
+            log.error(f"Failed to validate Everlasting token - {token_json}")
             return None
         log.info("Got Everlasting token information %s" % dump(token_json))
 
