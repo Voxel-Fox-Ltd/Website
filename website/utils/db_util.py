@@ -101,6 +101,7 @@ class CheckoutItem:
         '_currency_symbol',
         'user',
         'quantity',
+        'purchased_quantity',
         'min_quantity',
         'max_quantity',
         'required_logins',
@@ -147,6 +148,7 @@ class CheckoutItem:
         self.description: str = description
 
         self.quantity: int = quantity
+        self.purchased_quantity: int = quantity
         self.min_quantity: int | None = min_quantity
         self.max_quantity: int | None = max_quantity
 

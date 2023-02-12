@@ -304,8 +304,10 @@ async def checkout_processor(
         for o in line_items:
             if i.stripe_product_id == o['price']['product']:
                 i.subscription = o['price']['type'] == "recurring"
-                i.quantity = o['quantity']
+                i.purchased_quantity = o['quantity']
                 break
+        else:
+            log.warning(f"Line item not found for {i!r}")
 
     # Throw all the relevant data to the specified webhook if this is the
     # first checkout
@@ -313,7 +315,7 @@ async def checkout_processor(
         for item in items:
             json_data = {
                 "product_name": item.name,
-                "quantity": item.quantity,
+                "quantity": item.purchased_quantity,
                 "refund": refunded,
                 "subscription": item.subscription,
                 **all_metadata,
@@ -413,6 +415,7 @@ async def checkout_processor(
                     cancel_url=subscription_cancel_url,
                     stripe_id=stripe_account_id,
                     identifier=data.get("id"),
+                    quantity=i.purchased_quantity,
                 )
 
 
