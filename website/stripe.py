@@ -250,7 +250,7 @@ async def checkout_processor(
                 headers["Stripe-Account"] = stripe_account_id
             resp = await session.get(url, auth=auth, headers=headers)
             invoice_object = await resp.json()
-            log.info(f"Invoice object - {invoice_object}")
+            log.info(f"Invoice object: {json.dumps(invoice_object)}")
             line_items_object = invoice_object['lines']
     elif data['id'].startswith('cs_'):
         log.info(f"Getting items from an checkout session {data['id']}")
@@ -262,7 +262,7 @@ async def checkout_processor(
                 headers["Stripe-Account"] = stripe_account_id
             resp = await session.get(url, auth=auth, headers=headers)
             session_object = await resp.json()
-            log.info(f"Session object - {session_object}")
+            log.info(f"Session object: {json.dumps(session_object)}")
             line_items_object = session_object
     else:
         log.critical("Failed to get line items for purchase.")

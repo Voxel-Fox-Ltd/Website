@@ -320,7 +320,13 @@ class CheckoutItem:
             d = kwargs.copy()
             d['processor_id'] = paypal_id or (stripe_id or 'VFL')
             d['processor'] = "paypal" if paypal_id else "stripe"
-            log.error(f"Multiple items found - {d} {items!r}")
+            try:
+                new_items = [i for i in items if i.quantity == 1][0]
+            except IndexError:
+                log.warning(f"Multiple items found with no 1 quantity - {d} {items!r}")
+            else:
+                log.warning(f"Multiple items found; using 1 quantity - {d} {items!r}")
+                items = [new_items]
         await items[0].fetch_user(db)
         return items[0]
 
