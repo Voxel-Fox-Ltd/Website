@@ -254,7 +254,7 @@ async def checkout_processor(
     elif data['id'].startswith('cs_'):
         log.info(f"Getting items from an checkout session {data['id']}")
         async with aiohttp.ClientSession() as session:
-            url = f"{STRIPE_BASE}/checkout/sessions/{data['id']}"
+            url = f"{STRIPE_BASE}/checkout/sessions/{data['id']}/line_items"
             auth = aiohttp.BasicAuth(request.app['config']['stripe_api_key'])
             headers = {}
             if stripe_account_id:
