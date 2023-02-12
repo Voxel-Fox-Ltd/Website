@@ -157,6 +157,9 @@ class CheckoutItem:
 
         self.user: User | None = None
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} id={self.id!s} name={self.name}>"
+
     @property
     def id(self) -> str:
         return str(self._id)
@@ -312,14 +315,14 @@ class CheckoutItem:
         # Return what we got
         if not item_rows:
             return None
-        if len(item_rows) > 1:
+        items = [cls.from_row(i) for i in item_rows]
+        if len(items) > 1:
             d = kwargs.copy()
             d['processor_id'] = paypal_id or (stripe_id or 'VFL')
             d['processor'] = "paypal" if paypal_id else "stripe"
-            log.warning(f"Multiple items found - {d}")
-        v = cls.from_row(item_rows[0])
-        await v.fetch_user(db)
-        return v
+            log.error(f"Multiple items found - {d} {items!r}")
+        await items[0].fetch_user(db)
+        return items[0]
 
     async def fetch_user(self, db):
         self.user = await User.fetch(db, self.creator_id)
