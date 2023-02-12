@@ -412,6 +412,7 @@ async def checkout_processor(
                     expiry_time=None,
                     cancel_url=subscription_cancel_url,
                     stripe_id=stripe_account_id,
+                    identifier=data.get("id"),
                 )
 
 

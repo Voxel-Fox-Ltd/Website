@@ -344,7 +344,8 @@ async def create_purchase(
         cancel_url: Optional[str] = None,
         timestamp: Optional[dt] = None,
         paypal_id: Optional[str] = None,
-        stripe_id: Optional[str] = None):
+        stripe_id: Optional[str] = None,
+        identifier: Optional[str] = None):
     log.info("Storing purchase in database")
     await db.call(
         """
@@ -356,7 +357,8 @@ async def create_purchase(
                 discord_guild_id,
                 expiry_time,
                 cancel_url,
-                timestamp
+                timestamp,
+                identifier
             )
         VALUES
             (
@@ -377,8 +379,12 @@ async def create_purchase(
                 $4,
                 $5,
                 $6,
-                $7
+                $7,
+                $8
             )
+        ON CONFLICT
+            (identifier)
+        DO NOTHING
         """.format(processor="paypal" if paypal_id else "stripe"),
         user_id,
         product_name,
@@ -387,6 +393,7 @@ async def create_purchase(
         expiry_time,
         cancel_url,
         timestamp or dt.utcnow(),
+        str(identifier or uuid.uuid4()),
     )
 
 
