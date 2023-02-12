@@ -373,7 +373,7 @@ async def create_purchase(
             RETURNING
                 id
             """,
-            discord_user_id,
+            int(discord_user_id),
         )
         user_id = str(id_row[0]['id'])
     else:
