@@ -131,6 +131,8 @@ CREATE TABLE IF NOT EXISTS transactions(
 CREATE TABLE IF NOT EXISTS purchases(
     id UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
 
+    quantity INTEGER NOT NULL DEFAULT 1,
+
     identifier TEXT UNIQUE DEFAULT uuid_generate_v4()::TEXT,  -- identifier from the API
 
     -- The product that was purchased

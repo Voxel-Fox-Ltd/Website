@@ -339,6 +339,7 @@ async def create_purchase(
         user_id: int,
         product_name: str,
         *,
+        quantity: int = 1,
         guild_id: Optional[int] = None,
         expiry_time: Optional[dt] = None,
         cancel_url: Optional[str] = None,
@@ -358,7 +359,8 @@ async def create_purchase(
                 expiry_time,
                 cancel_url,
                 timestamp,
-                identifier
+                identifier,
+                quantity
             )
         VALUES
             (
@@ -380,7 +382,8 @@ async def create_purchase(
                 $5,
                 $6,
                 $7,
-                $8
+                $8,
+                $9
             )
         ON CONFLICT
             (identifier)
@@ -394,6 +397,7 @@ async def create_purchase(
         cancel_url,
         timestamp or dt.utcnow(),
         str(identifier or uuid.uuid4()),
+        quantity,
     )
 
 
