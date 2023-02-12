@@ -332,7 +332,7 @@ async def everlasting(request: Request):
             token_text = await r.text()
             log.error(f"Failed to parse Everlasting JSON - {token_text}")
             return None
-        if token_json.get("valid", False):
+        if token_json.get("valid", False) is False:
             log.error(f"Failed to validate Everlasting token - {token_json}")
             return None
         log.info("Got Everlasting token information %s" % dump(token_json))
