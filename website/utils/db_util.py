@@ -313,7 +313,10 @@ class CheckoutItem:
         if not item_rows:
             return None
         if len(item_rows) > 1:
-            raise ValueError("Multiple items found")
+            d = kwargs.copy()
+            d['processor_id'] = paypal_id or (stripe_id or 'VFL')
+            d['processor'] = "paypal" if paypal_id else "stripe"
+            log.warning(f"Multiple items found - {d}")
         v = cls.from_row(item_rows[0])
         await v.fetch_user(db)
         return v
