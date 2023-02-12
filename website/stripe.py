@@ -408,8 +408,9 @@ async def checkout_processor(
                 # Not a subscription OR a subscription not stored already
                 await create_purchase(
                     db,
-                    all_metadata.get('user_id') or all_metadata.get('discord_user_id'),  # pyright: ignore
+                    all_metadata.get('user_id'),
                     i.name,
+                    discord_user_id=all_metadata.get('discord_user_id'),
                     guild_id=all_metadata.get('discord_guild_id'),
                     expiry_time=None,
                     cancel_url=subscription_cancel_url,

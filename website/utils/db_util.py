@@ -338,10 +338,11 @@ class CheckoutItem:
 
 async def create_purchase(
         db: vbu.Database,
-        user_id: int,
+        user_id: Optional[str],
         product_name: str,
         *,
         quantity: int = 1,
+        discord_user_id: Optional[int] = None,
         guild_id: Optional[int] = None,
         expiry_time: Optional[dt] = None,
         cancel_url: Optional[str] = None,
@@ -350,57 +351,129 @@ async def create_purchase(
         stripe_id: Optional[str] = None,
         identifier: Optional[str] = None):
     log.info("Storing purchase in database")
-    await db.call(
-        """
-        INSERT INTO
-            purchases
-            (
-                user_id,
-                product_id,
-                discord_guild_id,
-                expiry_time,
-                cancel_url,
-                timestamp,
-                identifier,
-                quantity
-            )
-        VALUES
-            (
-                $1,
+    if user_id is not None:
+        await db.call(
+            """
+            INSERT INTO
+                purchases
                 (
-                    SELECT
-                        checkout_items.id
-                    FROM
-                        checkout_items
-                    LEFT JOIN
-                        users
-                    ON
-                        checkout_items.creator_id = users.id
-                    WHERE
-                        checkout_items.product_name = $2
-                        AND users.{processor}_id = $3
-                ),
-                $4,
-                $5,
-                $6,
-                $7,
-                $8,
-                $9
-            )
-        ON CONFLICT
-            (identifier)
-        DO NOTHING
-        """.format(processor="paypal" if paypal_id else "stripe"),
-        user_id,
-        product_name,
-        paypal_id or (stripe_id or 'VFL'),
-        int(guild_id) if guild_id else None,
-        expiry_time,
-        cancel_url,
-        timestamp or dt.utcnow(),
-        str(identifier or uuid.uuid4()),
-        quantity,
-    )
+                    user_id,
+                    product_id,
+                    discord_guild_id,
+                    expiry_time,
+                    cancel_url,
+                    timestamp,
+                    identifier,
+                    quantity
+                )
+            VALUES
+                (
+                    $1,
+                    (
+                        SELECT
+                            checkout_items.id
+                        FROM
+                            checkout_items
+                        LEFT JOIN
+                            users
+                        ON
+                            checkout_items.creator_id = users.id
+                        WHERE
+                            checkout_items.product_name = $2
+                            AND users.{processor}_id = $3
+                    ),
+                    $4,
+                    $5,
+                    $6,
+                    $7,
+                    $8,
+                    $9
+                )
+            ON CONFLICT
+                (identifier)
+            DO NOTHING
+            """.format(processor="paypal" if paypal_id else "stripe"),
+            user_id,
+            product_name,
+            paypal_id or (stripe_id or 'VFL'),
+            int(guild_id) if guild_id else None,
+            expiry_time,
+            cancel_url,
+            timestamp or dt.utcnow(),
+            str(identifier or uuid.uuid4()),
+            quantity,
+        )
+    elif discord_user_id is not None:
+        await db.call(
+            """
+            INSERT INTO
+                purchases
+                (
+                    user_id,
+                    product_id,
+                    discord_guild_id,
+                    expiry_time,
+                    cancel_url,
+                    timestamp,
+                    identifier,
+                    quantity
+                )
+            VALUES
+                (
+                    (
+                        INSERT INTO
+                            login_users
+                            (
+                                discord_user_id
+                            )
+                        VALUES
+                            (
+                                $1
+                            )
+                        ON CONFLICT
+                            (discord_user_id)
+                        DO UPDATE
+                        SET
+                            discord_user_id = excluded.discord_user_id
+                        RETURNING
+                            id
+                    ),
+                    (
+                        SELECT
+                            checkout_items.id
+                        FROM
+                            checkout_items
+                        LEFT JOIN
+                            users
+                        ON
+                            checkout_items.creator_id = users.id
+                        WHERE
+                            checkout_items.product_name = $2
+                            AND users.{processor}_id = $3
+                    ),
+                    $4,
+                    $5,
+                    $6,
+                    $7,
+                    $8,
+                    $9
+                )
+            ON CONFLICT
+                (identifier)
+            DO NOTHING
+            """.format(processor="paypal" if paypal_id else "stripe"),
+            discord_user_id,
+            product_name,
+            paypal_id or (stripe_id or 'VFL'),
+            int(guild_id) if guild_id else None,
+            expiry_time,
+            cancel_url,
+            timestamp or dt.utcnow(),
+            str(identifier or uuid.uuid4()),
+            quantity,
+        )
+    else:
+        raise ValueError("Missing any ID for create purchase")
 
 
 async def fetch_purchase(

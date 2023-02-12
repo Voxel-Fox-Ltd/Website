@@ -309,8 +309,9 @@ async def charge_captured(request: Request, data: dict):
             if refunded:
                 current = await fetch_purchase(
                     db,
-                    metadata['discord_user_id'],
+                    metadata.get('user_id', metadata['discord_user_id']),
                     i.name,
+                    # discord_user_id=metadata.get('discord_user_id'),
                     guild_id=metadata.get('discord_guild_id'),
                     paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
                 )
@@ -320,8 +321,9 @@ async def charge_captured(request: Request, data: dict):
             else:
                 await create_purchase(
                     db,
-                    metadata['discord_user_id'],
+                    metadata.get('user_id'),
                     i.name,
+                    discord_user_id=metadata.get('discord_user_id'),
                     guild_id=metadata.get('discord_guild_id'),
                     paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
                 )
