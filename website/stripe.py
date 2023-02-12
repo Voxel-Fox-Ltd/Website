@@ -240,16 +240,31 @@ async def checkout_processor(
             )
 
     # Ask Stripe for the items that the user checked out with
-    log.info(f"Getting items from an invoice {data['invoice']}")
-    async with aiohttp.ClientSession() as session:
-        url = f"{STRIPE_BASE}/invoices/{data['invoice']}"
-        auth = aiohttp.BasicAuth(request.app['config']['stripe_api_key'])
-        headers = {}
-        if stripe_account_id:
-            headers["Stripe-Account"] = stripe_account_id
-        resp = await session.get(url, auth=auth, headers=headers)
-        invoice_object = await resp.json()
-        line_items_object = invoice_object['lines']
+    if data['invoice']:
+        log.info(f"Getting items from an invoice {data['invoice']}")
+        async with aiohttp.ClientSession() as session:
+            url = f"{STRIPE_BASE}/invoices/{data['invoice']}"
+            auth = aiohttp.BasicAuth(request.app['config']['stripe_api_key'])
+            headers = {}
+            if stripe_account_id:
+                headers["Stripe-Account"] = stripe_account_id
+            resp = await session.get(url, auth=auth, headers=headers)
+            invoice_object = await resp.json()
+            line_items_object = invoice_object['lines']
+    elif data['id'].startswith('cs_'):
+        log.info(f"Getting items from an checkout session {data['id']}")
+        async with aiohttp.ClientSession() as session:
+            url = f"{STRIPE_BASE}/checkout/sessions/{data['id']}"
+            auth = aiohttp.BasicAuth(request.app['config']['stripe_api_key'])
+            headers = {}
+            if stripe_account_id:
+                headers["Stripe-Account"] = stripe_account_id
+            resp = await session.get(url, auth=auth, headers=headers)
+            session_object = await resp.json()
+            line_items_object = session_object
+    else:
+        log.critical("Failed to get line items for purchase.")
+        return
     line_items = line_items_object['data']
 
     # Grab the item from the database
