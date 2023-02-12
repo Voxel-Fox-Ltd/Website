@@ -326,6 +326,7 @@ async def charge_captured(request: Request, data: dict):
                     discord_user_id=metadata.get('discord_user_id'),
                     guild_id=metadata.get('discord_guild_id'),
                     paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
+                    identifier=data.get('txn_id')
                 )
 
 
@@ -410,8 +411,9 @@ async def subscription_created(request: Request, data: dict):
                 return  # We only want to store the original subscription create
         await create_purchase(
             db,
-            metadata.get('user_id') or metadata.get('discord_user_id'),  # pyright: ignore
+            metadata.get('user_id'),
             item.name,
+            discord_user_id=metadata.get('discord_user_id'),
             guild_id=metadata.get('discord_guild_id'),
             expiry_time=None,
             cancel_url=(
@@ -419,6 +421,7 @@ async def subscription_created(request: Request, data: dict):
                 f"{recurring_payment_id}/cancel"
             ),
             paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
+            identifier=data.get('txn_id'),
         )
 
 
