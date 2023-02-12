@@ -604,6 +604,10 @@ async def purchase(request: Request):
         session["login_message"] = "Facebook login is required."
         session["redirect_on_login"] = f"/portal/{item.product_group}"
         return HTTPFound("/login")
+    if flags.everlasting and "everlasting" not in session:
+        session["login_message"] = "Everlasting login is required."
+        session["redirect_on_login"] = f"/portal/{item.product_group}"
+        return HTTPFound("/login")
 
     # Get the item price if they're able to buy it more
     if not purchase:
