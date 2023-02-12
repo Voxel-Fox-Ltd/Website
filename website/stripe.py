@@ -68,7 +68,7 @@ async def create_checkout_session(request: Request):
     quantity = post_data.pop('quantity', 1)
 
     # Get the user's login details for metadata
-    if 'discord_user_id' not in post_data:
+    if "user_id" not in post_data:
         raise Exception("Missing user ID from POST request")
     metadata = post_data
 
@@ -124,13 +124,16 @@ async def create_checkout_session(request: Request):
                 headers={"Access-Control-Allow-Origin": "*"},
             )
 
-    # And while we're here, add a Discord user ID to the customer's metadata
+    # And while we're here, add a User ID to the customer's metadata
     if response['customer']:
         await set_customer_metadata(
             request,
             response['customer'],
+            # {
+            #     "discord_user_id": metadata['discord_user_id'],
+            # },
             {
-                "discord_user_id": metadata['discord_user_id'],
+                "user_id": metadata['user_id'],
             },
             stripe_id,
         )
@@ -351,7 +354,7 @@ async def checkout_processor(
                 # See if we've already stored it
                 current = await fetch_purchase(
                     db,
-                    all_metadata['discord_user_id'],
+                    all_metadata.get('user_id') or all_metadata.get('discord_user_id'),  # pyright: ignore
                     i.name,
                     guild_id=all_metadata.get('discord_guild_id'),
                     stripe_id=stripe_account_id,
@@ -373,7 +376,7 @@ async def checkout_processor(
                     # Do we have it stored already?
                     current = await fetch_purchase(
                         db,
-                        all_metadata['discord_user_id'],
+                        all_metadata.get('user_id') or all_metadata.get('discord_user_id'),  # pyright: ignore
                         i.name,
                         guild_id=all_metadata.get('discord_guild_id'),
                         stripe_id=stripe_account_id,
@@ -386,7 +389,7 @@ async def checkout_processor(
                 # Not a subscription OR a subscription not stored already
                 await create_purchase(
                     db,
-                    all_metadata['discord_user_id'],
+                    all_metadata.get('user_id') or all_metadata.get('discord_user_id'),  # pyright: ignore
                     i.name,
                     guild_id=all_metadata.get('discord_guild_id'),
                     expiry_time=None,
@@ -530,7 +533,7 @@ async def subscription_deleted(
     async with vbu.Database() as db:
         current = await fetch_purchase(
             db,
-            all_metadata['discord_user_id'],
+            all_metadata.get('user_id') or all_metadata.get('discord_user_id'),  # pyright: ignore
             item.name,
             guild_id=all_metadata.get('discord_guild_id'),
             stripe_id=stripe_account_id,

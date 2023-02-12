@@ -545,7 +545,7 @@ async def purchase(request: Request):
         # redirect (if they can't buy multiple) or show an unsubscribe screen
         # (if it's a subscription)
         purchase: Optional[dict] = None
-        if item.subscription or not item.multiple:
+        if (item.subscription or not item.multiple) and "discord" in session:
             if item.per_guild:
                 purchase_rows = await db.call(
                     """
@@ -616,8 +616,8 @@ async def purchase(request: Request):
     # Render the template
     context = {
         "item": item,
-        "user_id": session['discord']['id'],
-        "guild_id": request.query.get("guild"),
+        "user_id": session['id'],
+        "discord_guild_id": request.query.get("guild"),
         "purchase": purchase,
     }
     template_name = "portal/purchase.htm.j2"

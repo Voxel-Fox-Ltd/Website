@@ -386,12 +386,22 @@ async def create_purchase(
 
 async def fetch_purchase(
         db: vbu.Database,
-        user_id: int,
+        user_id: str | int,
         product_name: str,
         *,
         paypal_id: Optional[str] = None,
         stripe_id: Optional[str] = None,
         guild_id: Optional[int] = None) -> Optional[dict]:
+    uid_row = (
+        "purchases.discord_user_id"
+        if isinstance(user_id, int) or user_id.isdigit()
+        else "purchases.user_id"
+    )
+    user_id = (
+        int(user_id)
+        if isinstance(user_id, int) or user_id.isdigit()
+        else user_id
+    )
     if guild_id:
         rows = await db.call(
             """
@@ -408,15 +418,18 @@ async def fetch_purchase(
             ON
                 checkout_items.creator_id = users.id
             WHERE
-                purchases.discord_user_id = $1
+                {uid} = $1
                 AND checkout_items.product_name = $2
                 AND purchases.discord_guild_id = $3
                 AND users.{processor}_id = $4
             ORDER BY
                 timestamp DESC
             LIMIT 1
-            """.format(processor="paypal" if paypal_id else "stripe"),
-            int(user_id),
+            """.format(
+                uid=uid_row,
+                processor="paypal" if paypal_id else "stripe",
+            ),
+            user_id,
             product_name,
             int(guild_id),
             paypal_id or (stripe_id or 'VFL'),
@@ -437,15 +450,18 @@ async def fetch_purchase(
             ON
                 checkout_items.creator_id = users.id
             WHERE
-                purchases.discord_user_id = $1
+                {uid} = $1
                 AND checkout_items.product_name = $2
                 AND purchases.discord_guild_id IS NULL
                 AND users.{processor}_id = $3
             ORDER BY
                 timestamp DESC
             LIMIT 1
-            """.format(processor="paypal" if paypal_id else "stripe"),
-            int(user_id),
+            """.format(
+                uid=uid_row,
+                processor="paypal" if paypal_id else "stripe",
+            ),
+            user_id,
             product_name,
             paypal_id or (stripe_id or 'VFL'),
         )

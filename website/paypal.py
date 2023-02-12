@@ -399,7 +399,7 @@ async def subscription_created(request: Request, data: dict):
             )
             current = await fetch_purchase(
                 db,
-                metadata['discord_user_id'],
+                metadata.get('user_id') or metadata.get('discord_user_id'),  # pyright: ignore
                 item.name,
                 guild_id=metadata.get('discord_guild_id'),
                 paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
@@ -408,7 +408,7 @@ async def subscription_created(request: Request, data: dict):
                 return  # We only want to store the original subscription create
         await create_purchase(
             db,
-            metadata['discord_user_id'],
+            metadata.get('user_id') or metadata.get('discord_user_id'),  # pyright: ignore
             item.name,
             guild_id=metadata.get('discord_guild_id'),
             expiry_time=None,
@@ -470,7 +470,7 @@ async def subscription_deleted(request: Request, data: dict):
     async with vbu.Database() as db:
         current = await fetch_purchase(
             db,
-            metadata['discord_user_id'],
+            metadata.get('user_id') or metadata.get('discord_user_id'),  # pyright: ignore
             item.name,
             guild_id=metadata.get('discord_guild_id'),
             paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
