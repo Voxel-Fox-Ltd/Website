@@ -44,7 +44,7 @@ async def store_information(
         storage: dict[str, str | dict[str, str]],
         identity: str,
         user_id: str,
-        refresh_token: str | None) -> None:
+        refresh_token: str | None) -> str:
     """
     Store given token information in database and cache.
     """
@@ -92,16 +92,25 @@ async def store_information(
             )
 
             # Update
+            check_user_ids = set()
             for oid in oauth_identities:
                 if conflict_row[0][f"{oid}_user_id"]:
-                    await store_information(
+                    v = await store_information(
                         db,
                         storage,
                         oid,
                         conflict_row[0][f"{oid}_user_id"],
                         conflict_row[0][f"{oid}_refresh_token"],
                     )
-            return
+                    check_user_ids.add(v)
+            if len(check_user_ids) > 1:
+                log.warning(
+                    "Somehow we still have multiple accounts - %s"
+                    % check_user_ids
+                )
+            elif len(check_user_ids) == 0:
+                raise ValueError("Cannot have no accounts made.")
+            return list(check_user_ids)[0]
 
     # No current ID or no refresh token
     else:
@@ -153,6 +162,9 @@ async def store_information(
             "id": user_rows[0][f"{oid}_user_id"],
             "refresh_token": user_rows[0][f"{oid}_refresh_token"],
         }
+
+    # Return the account ID
+    return storage['id']
 
 
 def always_return(location: str):
