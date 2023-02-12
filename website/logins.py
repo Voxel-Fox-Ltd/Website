@@ -55,6 +55,7 @@ async def store_information(
         "discord",
         "google",
         "facebook",
+        "everlasting",
     ]
 
     # See if a user exists already
