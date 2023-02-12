@@ -177,8 +177,8 @@ async def portal_check(request: Request):
             elif k == "vfl":
                 user_column = "login_users.user_id"
             else:
-                if k ==  "discord":
-                    identity = int(i)
+                # if k ==  "discord":
+                #     identity = int(i)
                 user_column = f"login_users.{k}_user_id"
             break
     else:
