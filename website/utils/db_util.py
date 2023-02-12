@@ -345,7 +345,7 @@ async def create_purchase(
         INSERT INTO
             purchases
             (
-                discord_user_id,
+                user_id,
                 product_id,
                 discord_guild_id,
                 expiry_time,
@@ -374,7 +374,7 @@ async def create_purchase(
                 $7
             )
         """.format(processor="paypal" if paypal_id else "stripe"),
-        int(user_id),
+        user_id,
         product_name,
         paypal_id or (stripe_id or 'VFL'),
         int(guild_id) if guild_id else None,
