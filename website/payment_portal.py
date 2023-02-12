@@ -217,7 +217,7 @@ async def portal_check(request: Request):
                 purchases.discord_guild_id,
                 purchases.expiry_time,
                 purchases.timestamp,
-                purchases.quantity,
+                purchases.quantity
             FROM
                 purchases
             LEFT JOIN
