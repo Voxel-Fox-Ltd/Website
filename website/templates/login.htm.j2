@@ -75,6 +75,24 @@
         {% endif %}
     </div>
 
+    <div class="everlasting">
+        {% if session.everlasting %}
+            <button
+                    onclick="window.location = `{{ everlasting }}`"
+                    type="button"
+                    class="button">
+                Everlasting ({{ session.everlasting.id }})
+            </button>
+        {% else %}
+            <button
+                    onclick="window.location = `{{ everlasting }}`"
+                    type="button"
+                    class="button">
+                Login with Everlasting Auth
+            </button>
+        {% endif %}
+    </div>
+
     {% if session.id %}
         <div class="continue">
             <button

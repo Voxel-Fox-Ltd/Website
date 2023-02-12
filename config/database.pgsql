@@ -36,7 +36,10 @@ CREATE TABLE IF NOT EXISTS login_users(
     google_refresh_token TEXT,
 
     facebook_user_id TEXT UNIQUE,
-    facebook_refresh_token TEXT
+    facebook_refresh_token TEXT,
+
+    everlasting_user_id TEXT UNIQUE,
+    everlasting_refresh_token TEXT  -- Will never be used, but dw about it
 );
 
 
