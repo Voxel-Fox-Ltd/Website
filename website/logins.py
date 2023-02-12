@@ -346,7 +346,7 @@ async def everlasting(request: Request):
             storage,
             'everlasting',
             token_json['id'],
-            None,
+            "UNUSED",
         )
     return None
 
