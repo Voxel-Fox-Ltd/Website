@@ -25,7 +25,6 @@ class User:
 
     __slots__ = (
         '_id',
-        'discord_user_id',
         'stripe_id',
         'paypal_id',
         'paypal_client_id',
@@ -35,13 +34,11 @@ class User:
     def __init__(
             self,
             id: str | uuid.UUID,
-            discord_user_id: Optional[int],
             stripe_id: Optional[str],
             paypal_id: Optional[str],
             paypal_client_id: Optional[str],
             paypal_client_secret: Optional[str]):
         self._id = id
-        self.discord_user_id = discord_user_id
         self.stripe_id = None if stripe_id == "VFL" else stripe_id
         self.paypal_id = paypal_id
         self.paypal_client_id = paypal_client_id
@@ -55,7 +52,6 @@ class User:
     def from_row(cls, row: dict):
         return cls(
             id=row['id'],
-            discord_user_id=row.get('discord_user_id'),
             stripe_id=row.get('stripe_id'),
             paypal_id=row.get('paypal_id'),
             paypal_client_id=row.get('paypal_client_id'),
@@ -68,7 +64,7 @@ class User:
             db: vbu.Database,
             id: str | uuid.UUID) -> Optional[Self]:
         row = await db.call(
-            """SELECT * FROM users WHERE id=$1""",
+            """SELECT * FROM payment_users WHERE id = $1""",
             id,
         )
         if row:

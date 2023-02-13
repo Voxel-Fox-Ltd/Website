@@ -10,17 +10,13 @@ CREATE TABLE IF NOT EXISTS google_forms_redirects(
 );
 
 
-CREATE TABLE IF NOT EXISTS users(
+-- A table of users (and related information) who can create and manage
+-- checkout items
+CREATE TABLE IF NOT EXISTS payment_users(
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-
-    -- The user who the account belongs to
-    discord_user_id BIGINT UNIQUE NOT NULL,
-
-    -- IDs for other services
+    login_id UUID NOT NULL REFERENCES login_users(id),
     stripe_id TEXT,
     paypal_id TEXT,
-
-    -- API keys for payments
     paypal_client_id TEXT,
     paypal_client_secret TEXT
 );
@@ -45,8 +41,6 @@ CREATE TABLE IF NOT EXISTS login_users(
 
 CREATE TABLE IF NOT EXISTS checkout_items(
     id UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
-
-    -- The person who created this item
     creator_id UUID NOT NULL REFERENCES users(id),
 
     -- Product information
@@ -130,9 +124,7 @@ CREATE TABLE IF NOT EXISTS transactions(
 -- income.
 CREATE TABLE IF NOT EXISTS purchases(
     id UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
-
     quantity INTEGER NOT NULL DEFAULT 1,
-
     identifier TEXT UNIQUE DEFAULT uuid_generate_v4()::TEXT,  -- identifier from the API
 
     -- The product that was purchased

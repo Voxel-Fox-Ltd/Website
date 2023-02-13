@@ -632,7 +632,6 @@ async def purchase(request: Request):
         if item.subscription:
             template_name = "portal/unsubscribe.htm.j2"
         elif not item.multiple:
-            # template_name = "portal/owned.htm.j2"
             return HTTPFound(f"/portal/{item.product_group}")
         else:
             raise Exception("This shouldn't happen")
