@@ -164,8 +164,8 @@ async def send_email(request: Request):
     content: str = (
         f'''<html><body>'''
         f'''<div style="font-family: 'Century Gothic', 'Helvetica', sans-serif;">'''
-        f'''<p><i>Commission type:</i> <b>{data['type']}</b></p>'''
-        f'''<p><i>Reply to:</i> <b>{data['from']}</b></p>'''
+        f'''<p>Commission type: <b>{data['type']}</b><br />'''
+        f'''Reply to: <b>{data['from']}</b></p>'''
         f'''{html.escape(data['content'])}'''
         f'''</div>'''
         f'''</body></html>'''

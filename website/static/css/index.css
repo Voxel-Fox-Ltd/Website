@@ -8,7 +8,7 @@ body {
     color: white;
     font-family: "Century Gothic", "Helvetica", sans-serif;
     display: flex;
-    margin: 0 auto;
+    margin: 20px auto;
     justify-content: center;
     align-items: center;
     min-height: calc(100vh - 100px);
@@ -131,4 +131,62 @@ figure {
 
 .brand figure img {
     width: 150px;
+}
+
+#commissions:not(h1,img) {
+    font-size: 1.5rem;
+}
+
+#commission-form {
+    margin-top: 20px;
+    width: 60%;
+    align-content: center;
+    border: 1px solid darkgray;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+#commission-form p {
+    text-align: left;
+}
+
+#commission-form > div {
+    width: 100%;
+    padding-bottom: 20px;
+}
+
+#commission-form .commission-form-email-div input,
+#commission-form textarea,
+#commission-form button{
+    font-size: 1.3rem;
+    font-family: inherit;
+    border-radius: 5px;
+    border: none;
+    padding: 2px 10px;
+    display: block;
+    width: calc(100% - 20px);
+    margin-top: 5px;
+}
+
+#commission-form input:invalid,
+#commission-form textarea:invalid {
+    border: 2px solid red;
+}
+
+#commission-form .commission-form-radio-div label {
+    margin-left: 20px;
+}
+
+#commission-form .commission-form-content-div * {
+    display: block;
+}
+
+#commission-form textarea {
+    height: 6em;
+    min-height: 6em;
+    resize: vertical;
+}
+
+#commission-form button {
+    padding: 10px;
 }

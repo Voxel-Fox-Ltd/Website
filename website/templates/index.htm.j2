@@ -55,6 +55,7 @@
         {{ create_link("https://github.com/Voxel-Fox-Ltd", "github") }}
     </ul>
     <p><a href="#projects">Projects</a></p>
+    <p><a href="#commissions">Commissions</a></p>
     <p><a href="#branding">Branding</a></p>
 </div>  <!-- Main -->
 
@@ -73,45 +74,57 @@
         all through with you :)
     </p>
     <form id="commission-form" onsubmit="sendEmail(this);">
-        <label for="commission-form-email">Email:</label>
-        <input id="commission-form-email" name="from" type="email" required />
+        <div class="commission-form-email-div">
+            <label for="commission-form-email">Email:</label>
+            <input id="commission-form-email" name="from" type="email" required />
+        </div>
 
+        <div class="commission-form-radio-div">
         <p>Commission type:</p>
         <div>
             <div>
                 <label for="commission-form-type-db">Discord Bot</label>
-                <input id="commission-form-type-db" name="type" type="radio" required />
+                <input id="commission-form-type-db" name="type" type="radio" value="Discord bot" required />
             </div>
             <div>
                 <label for="commission-form-type-s">Slack Bot</label>
-                <input id="commission-form-type-s" name="type" type="radio" required />
+                <input id="commission-form-type-s" name="type" type="radio" value="Slack bot" required />
             </div>
             <div>
                 <label for="commission-form-type-ttv">Twitch Bot</label>
-                <input id="commission-form-type-ttv" name="type" type="radio" required />
+                <input id="commission-form-type-ttv" name="type" type="radio" value="Twitch bot" required />
             </div>
             <div>
                 <label for="commission-form-type-w">Website</label>
-                <input id="commission-form-type-w" name="type" type="radio" required />
+                <input id="commission-form-type-w" name="type" type="radio" value="Website" required />
             </div>
             <div>
                 <label for="commission-form-type-k">Kik Bot</label>
-                <input id="commission-form-type-k" name="type" type="radio" required />
+                <input id="commission-form-type-k" name="type" type="radio" value="Kik bot" required />
             </div>
             <div>
                 <label for="commission-form-type-f">Facebook Bot</label>
-                <input id="commission-form-type-f" name="type" type="radio" required />
+                <input id="commission-form-type-f" name="type" type="radio" value="Facebook bot" required />
             </div>
             <div>
                 <label for="commission-form-type-tbr">Tumblr Bot</label>
-                <input id="commission-form-type-tbr" name="type" type="radio" required />
+                <input id="commission-form-type-tbr" name="type" type="radio" value="Tumblr bot" required />
+            </div>
+            <div>
+                <label for="commission-form-type-other">Other</label>
+                <input id="commission-form-type-other" name="type" type="radio" value="Other" required />
             </div>
         </div>
+        </div>
 
-        <label for="commission-form-content">Tell us about your idea:</label>
-        <textarea id="commission-form-content" name="content" required></textarea>
+        <div class="commission-form-content-div">
+            <label for="commission-form-content">Tell us about your idea:</label>
+            <textarea id="commission-form-content" name="content" required></textarea>
+        </div>
 
-        <button type="submit">Send Email</button>
+        <div>
+            <button type="submit">Send Email</button>
+        </div>
     </form>
 
     <script type="text/javascript">
