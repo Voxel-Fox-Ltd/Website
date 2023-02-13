@@ -113,6 +113,27 @@
 
         <button type="submit">Send Email</button>
     </form>
+
+    <script type="text/javascript">
+        function sendEmail(form) {
+            return fetch(
+                "/send_email/commission",
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        from: form.querySelector("[name='from']").value,
+                        type: form.querySelector("[name='type']").value,
+                        content: form.querySelector("[name='content']").value,
+                    }),
+                }
+            ).then((response) => {
+                return response.json();
+            }).then((data) => {
+                alert(data.message);
+                return false;
+            });
+        }
+    </script>
 </div>  <!-- Commissions -->
 
 
