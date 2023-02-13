@@ -1,9 +1,10 @@
 import io
 from typing import Tuple
 import smtplib
-from email.message import EmailMessage
 import asyncio
 import html
+from email.message import EmailMessage
+from email.mime.text import MIMEText
 
 from aiohttp.web import Request, RouteTableDef, Response, json_response
 from aiohttp_jinja2 import render_template
@@ -154,21 +155,25 @@ async def send_email(request: Request):
             status=400,
         )
 
+    # Build email
     msg = EmailMessage()
     msg["Subject"] = "Commission Enquiry via VoxelFox.co.uk"
     msg["To"] = "kae@voxelfox.co.uk"
     msg["From"] = "commissions.voxelfox.co.uk"
     msg["Reply-To"] = data['from']
-    msg.set_content(
-        (
-            f'''<div style="font-family: 'Century Gothic', 'Helvetica', sans-serif;">'''
-            f'''<p><i>Commission type:</i> <b>{data['type']}</b></p>'''
-            f'''<p><i>Reply to:</i> <b>{data['from']}</b></p>'''
-            f'''{html.escape(data['content'])}'''
-            f'''</div>'''
-        )
+    content: str = (
+        f'''<html><body>'''
+        f'''<div style="font-family: 'Century Gothic', 'Helvetica', sans-serif;">'''
+        f'''<p><i>Commission type:</i> <b>{data['type']}</b></p>'''
+        f'''<p><i>Reply to:</i> <b>{data['from']}</b></p>'''
+        f'''{html.escape(data['content'])}'''
+        f'''</div>'''
+        f'''</body></html>'''
     )
+    part = MIMEText(content, 'html')
+    msg.attach(part)
 
+    # Send email
     s = smtplib.SMTP('localhost')
     task = (
         asyncio.get_running_loop()
