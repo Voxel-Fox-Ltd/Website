@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+    <link rel="stylesheet" type="text/css" href="{{ static('css/portal/manage.css') }}" />
+    <link rel="icon" href="{{ static('/images/_voxelfox/logo.png') }}" />
+    <title>Voxel Fox Payment Portal - Manage</title>
+</head>
+<body>
+<div id="payment-details">
+    <input type="hidden" name="stripe-id" value="{{ stripe_id }}" />
+    <input type="hidden" name="paypal-id" value="{{ paypal_id }}" />
+    <input type="hidden" name="paypal-client-id" value="{{ paypal_client_id }}" />
+    <input type="hidden" name="paypal-client-secret" value="{{ paypal_client_secret }}" />
+</div>
+<div class="content">
+
+{% for item in items %}
+    <div class="checkout-item" data-id="{{ item.id }}">
+        <div class="field">
+            <label class="label">Item ID</label>
+            <input class="input" type="text" name="id" value="{{ item['id'] }}" disabled />
+        </div>
+        <div class="field">
+            <label class="label">Name</label>
+            <input class="input" type="text" name="product-name" value="{{ item['product_name'] }}" disabled />
+        </div>
+        <div class="field">
+            <label class="label">Description</label>
+            <input class="input" type="text" name="description" value="{{ item['description'] }}" disabled />
+        </div>
+        <div class="field">
+            <label class="label">Product Group</label>
+            <input class="input" type="text" name="product-group" value="{{ item['product_group'] }}" disabled />
+        </div>
+        <div class="field">
+            <label class="label">Success URL</label>
+            <input class="input" type="text" name="success-url" value="{{ item['success_url'] }}" disabled />
+        </div>
+        <div class="field">
+            <label class="label">Cancel URL</label>
+            <input class="input" type="text" name="cancel-url" value="{{ item['cancel_url'] }}" disabled />
+        </div>
+        <div class="field">
+            <label class="label">Stripe Product ID</label>
+            <input class="input" type="text" name="stripe-product-id" value="{{ item['stripe_product_id'] }}" disabled />
+        </div>
+        <div class="field">
+            <label class="label">Stripe Price ID</label>
+            <input class="input" type="text" name="stripe-price-id" value="{{ item['stripe_price_id'] }}" disabled />
+        </div>
+        <div class="field">
+            <label class="label">PayPal Plan ID</label>
+            <input class="input" type="text" name="paypal-plan-id" value="{{ item['paypal_plan_id'] }}" disabled />
+        </div>
+    </div>
+{% endfor %}
+
+</div>
+</body>

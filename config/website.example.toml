@@ -8,6 +8,7 @@ routes = [
     "logins",
     "cancel_subscription",
     "payment_portal",
+    "payment_portal_api",
 ]
 stripe_api_key = ""
 stripe_webhook_signing_secret = ""

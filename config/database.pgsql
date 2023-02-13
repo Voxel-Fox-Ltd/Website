@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS google_forms_redirects(
 CREATE TABLE IF NOT EXISTS payment_users(
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     login_id UUID NOT NULL REFERENCES login_users(id),
+    manager BOOLEAN NOT NULL DEFAULT FALSE,
     stripe_id TEXT,
     paypal_id TEXT,
     paypal_client_id TEXT,
@@ -24,16 +25,12 @@ CREATE TABLE IF NOT EXISTS payment_users(
 
 CREATE TABLE IF NOT EXISTS login_users(
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-
     discord_user_id TEXT UNIQUE,
     discord_refresh_token TEXT,
-
     google_user_id TEXT UNIQUE,
     google_refresh_token TEXT,
-
     facebook_user_id TEXT UNIQUE,
     facebook_refresh_token TEXT,
-
     everlasting_user_id TEXT UNIQUE,
     everlasting_refresh_token TEXT  -- Will never be used, but dw about it
 );
@@ -41,7 +38,7 @@ CREATE TABLE IF NOT EXISTS login_users(
 
 CREATE TABLE IF NOT EXISTS checkout_items(
     id UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
-    creator_id UUID NOT NULL REFERENCES users(id),
+    creator_id UUID NOT NULL REFERENCES payment_users(id),
 
     -- Product information
     product_name CITEXT NOT NULL,
