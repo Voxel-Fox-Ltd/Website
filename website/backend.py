@@ -1,8 +1,11 @@
 import io
 from typing import Tuple
+import smtplib
+from email.message import EmailMessage
+import asyncio
+import html
 
-from aiohttp.web import HTTPFound, Request, RouteTableDef, Response
-import aiohttp_session
+from aiohttp.web import Request, RouteTableDef, Response, json_response
 from aiohttp_jinja2 import render_template
 import htmlmin
 from PIL import Image
@@ -112,3 +115,70 @@ async def colour(request: Request):
         "Cache-Control": "public, max-age=604800, immutable",
     }
     return Response(body=file.read(), headers=headers)
+
+
+@routes.post("/send_email/commission")
+async def send_email(request: Request):
+    """
+    Send an email over to Kae.
+    """
+
+    # Get body
+    try:
+        data = await request.json()
+        if not data:
+            raise ValueError()
+    except Exception:
+        return json_response(
+            {
+                "message": "Missing data.",
+            },
+            status=400,
+        )
+
+    # Make sure we have everything necessary
+    required_keys: set[str] = {
+        "from",
+        "type",
+        "content",
+    }
+    missing: set[str] = set()
+    for requirement in required_keys:
+        if requirement not in data:
+            missing.add(requirement)
+    if missing:
+        return json_response(
+            {
+                "message": f"Missing keys: {', '.join(missing)}",
+            },
+            status=400,
+        )
+
+    msg = EmailMessage()
+    msg["Subject"] = "Commission Enquiry via VoxelFox.co.uk"
+    msg["To"] = "kae@voxelfox.co.uk"
+    msg["From"] = "commissions.voxelfox.co.uk"
+    msg["Reply-To"] = data['from']
+    msg.set_content(
+        (
+            f'''<div style="font-family: 'Century Gothic', 'Helvetica', sans-serif;">'''
+            f'''<p><i>Commission type:</i> <b>{data['type']}</b></p>'''
+            f'''<p><i>Reply to:</i> <b>{data['from']}</b></p>'''
+            f'''{html.escape(data['content'])}'''
+            f'''</div>'''
+        )
+    )
+
+    s = smtplib.SMTP('localhost')
+    task = (
+        asyncio.get_running_loop()
+        .run_in_executor(None, s.send_message, msg)
+    )
+    await asyncio.wait([task])
+    s.quit()
+    return json_response(
+        {
+            "message": f"Email sent!",
+        },
+        status=200,
+    )
