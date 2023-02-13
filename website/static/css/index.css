@@ -168,7 +168,7 @@ figure {
     margin-top: 5px;
 }
 
-#commission-form input:invalid,
+#commission-form input:not([type="radio"]):invalid,
 #commission-form textarea:invalid {
     border: 2px solid red;
     width: calc(100% - 20px - 4px);
