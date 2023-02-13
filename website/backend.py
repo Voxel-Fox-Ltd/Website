@@ -3,7 +3,7 @@ from typing import Tuple
 import smtplib
 import asyncio
 import html
-from email.message import EmailMessage
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from aiohttp.web import Request, RouteTableDef, Response, json_response
@@ -156,7 +156,7 @@ async def send_email(request: Request):
         )
 
     # Build email
-    msg = EmailMessage()
+    msg = MIMEMultipart("alternative")
     msg["Subject"] = "Commission Enquiry via VoxelFox.co.uk"
     msg["To"] = "kae@voxelfox.co.uk"
     msg["From"] = "commissions.voxelfox.co.uk"
@@ -170,8 +170,10 @@ async def send_email(request: Request):
         f'''</div>'''
         f'''</body></html>'''
     )
-    part = MIMEText(content, 'html')
-    msg.attach(part)
+    part1 = MIMEText(content, "plain")
+    part2 = MIMEText(content, "html")
+    msg.attach(part1)
+    msg.attach(part2)
 
     # Send email
     s = smtplib.SMTP('localhost')
