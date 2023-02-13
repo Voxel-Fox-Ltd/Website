@@ -157,7 +157,7 @@ figure {
 
 #commission-form .commission-form-email-div input,
 #commission-form textarea,
-#commission-form button{
+#commission-form button {
     font-size: 1.3rem;
     font-family: inherit;
     border-radius: 5px;
@@ -171,6 +171,7 @@ figure {
 #commission-form input:invalid,
 #commission-form textarea:invalid {
     border: 2px solid red;
+    width: calc(100% - 20px - 4px);
 }
 
 #commission-form .commission-form-radio-div label {
@@ -189,4 +190,5 @@ figure {
 
 #commission-form button {
     padding: 10px;
+    width: 100%;
 }
