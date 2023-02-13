@@ -16,7 +16,7 @@
             <h1 class="title">Per-Guild Items</h1>
             <div class="items">
                 {% for item in guild_items %}
-                    <div class="item content" data-id="{{ item.id }}">
+                    <div class="item" data-id="{{ item.id }}">
                         <p class="name">{{ item.name }}</p>
                         {% if item.description %}
                             <div class="description content">{{ item.description | markdown | safe }}</div>
@@ -42,7 +42,7 @@
             <h1 class="title">Per-User Items</h1>
             <div class="items">
                 {% for item in user_items %}
-                    <div class="item content" data-id="{{ item.id }}">
+                    <div class="item" data-id="{{ item.id }}">
                         <p class="name">{{ item.name }}</p>
                         {% if item.description %}
                             <div class="description content">{{ item.description | markdown | safe }}</div>
