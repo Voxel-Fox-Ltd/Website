@@ -20,7 +20,7 @@
 {% for item in items %}
     <div class="checkout-item" data-id="{{ item.id }}">
         <div class="field">
-            <label class="label">Item ID</label>
+            <label class="label">Item ID (<a href="/portal/item/{{ item['id'] }}">product link</a>) (<a href="/portal/{{ item['product_group'] }}">group link</a>)</label>
             <input class="input" type="text" name="id" value="{{ item['id'] }}" disabled />
         </div>
         <div class="field">
