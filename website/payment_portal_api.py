@@ -345,11 +345,12 @@ async def portal_get_guilds(request: Request):
             token_json = await resp.json()
             try:
                 access_token = token_json['access_token']
+                expires_at = token_json['expires_at']
             except KeyError:
                 user_session.invalidate()  # type: ignore
                 return json_response([], headers={"X-Message": "Failed getting access token"})
             user_session["discord"]["access_token"] = (
-                f"{token_json['expires_at'] + time.time() - 60}:"
+                f"{expires_at + time.time() - 60}:"
                 f"{token_json['access_token']}"
             )
             user_session["discord"]["refresh_token"] = token_json['refresh_token']
