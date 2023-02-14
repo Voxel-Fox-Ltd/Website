@@ -36,11 +36,12 @@ def requires_login():
 def requires_manager_login(location: str = "/"):
     """
     Check if the user is in the payment processor users.
-    Assumes they've already logged in.
     """
 
     def inner(func: RouteFunc):
         async def wrapper(request: Request) -> RouteOutput:
+            if (x := await _require_login_wrapper(request)):
+                return x
             session = await aiohttp_session.get_session(request)
             user_id = session['id']
             async with vbu.Database() as db:
@@ -57,6 +58,6 @@ def requires_manager_login(location: str = "/"):
                 )
             if not rows:
                 return HTTPFound(location)
-            return func(request)
+            return await func(request)
         return wrapper
     return inner

@@ -25,38 +25,65 @@
         </div>
         <div class="field">
             <label class="label">Name</label>
-            <input class="input" type="text" name="product-name" value="{{ item['product_name'] }}" disabled />
+            <input class="input" type="text" name="product-name" value="{{ item['product_name'] or '' }}" required />
         </div>
         <div class="field">
             <label class="label">Description</label>
-            <input class="input" type="text" name="description" value="{{ item['description'] }}" disabled />
+            <textarea class="textarea" name="description">{{ item['description'] or '' }}</textarea>
         </div>
         <div class="field">
             <label class="label">Product Group</label>
-            <input class="input" type="text" name="product-group" value="{{ item['product_group'] }}" disabled />
+            <input class="input" type="text" name="product-group" value="{{ item['product_group'] or '' }}" />
         </div>
         <div class="field">
             <label class="label">Success URL</label>
-            <input class="input" type="text" name="success-url" value="{{ item['success_url'] }}" disabled />
+            <input class="input" type="text" name="success-url" value="{{ item['success_url'] or '' }}" required />
         </div>
         <div class="field">
             <label class="label">Cancel URL</label>
-            <input class="input" type="text" name="cancel-url" value="{{ item['cancel_url'] }}" disabled />
+            <input class="input" type="text" name="cancel-url" value="{{ item['cancel_url'] or '' }}" required />
         </div>
         <div class="field">
             <label class="label">Stripe Product ID</label>
-            <input class="input" type="text" name="stripe-product-id" value="{{ item['stripe_product_id'] }}" disabled />
+            <input class="input" type="text" name="stripe-product-id" value="{{ item['stripe_product_id'] or '' }}" required />
         </div>
         <div class="field">
             <label class="label">Stripe Price ID</label>
-            <input class="input" type="text" name="stripe-price-id" value="{{ item['stripe_price_id'] }}" disabled />
+            <input class="input" type="text" name="stripe-price-id" value="{{ item['stripe_price_id'] or '' }}" required />
         </div>
         <div class="field">
             <label class="label">PayPal Plan ID</label>
-            <input class="input" type="text" name="paypal-plan-id" value="{{ item['paypal_plan_id'] }}" disabled />
+            <input class="input" type="text" name="paypal-plan-id" value="{{ item['paypal_plan_id'] or '' }}" />
         </div>
+        <button class="button is-success" name="submit" onclick="submitEdits(this.parentNode.dataset.id);">Submit Edits</button>
     </div>
 {% endfor %}
+
+<script type="text/javascript">
+async function submitEdits(itemId) {
+    node = document.querySelector(`.checkout-item[data-id="${itemId}"]`);
+    button = node.querySelector('[name="submit"]');
+    button.disabled = true;
+    site = await fetch(
+        "/api/portal/update",
+        {
+            method: "PATCH",
+            body: JSON.stringify({
+                id: node.querySelector('[name="id"]').value,
+                product_name: node.querySelector('[name="product-name"]').value,
+                description: node.querySelector('[name="description"]').value,
+                product_group: node.querySelector('[name="product-group"]').value,
+                success_url: node.querySelector('[name="success-url"]').value,
+                cancel_url: node.querySelector('[name="cancel-url"]').value,
+                stripe_product_id: node.querySelector('[name="stripe-product-id"]').value,
+                stripe_price_id: node.querySelector('[name="stripe-price-id"]').value,
+                paypal_plan_id: node.querySelector('[name="paypal-plan-id"]').value,
+            }),
+        },
+    );
+    button.disabled = false;
+}
+</script>
 
 </div>
 </body>

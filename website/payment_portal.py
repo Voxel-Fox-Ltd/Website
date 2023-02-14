@@ -20,7 +20,6 @@ routes = RouteTableDef()
 @routes.get("/portal/manage")
 @template("portal/manage.htm.j2")
 @requires_manager_login()
-@requires_login()
 async def portal_management(request: Request):
     """
     A management page for payment items.
@@ -65,7 +64,7 @@ async def portal_management(request: Request):
                 product_group,
                 per_guild,
                 multiple,
-                description,
+                description
                 -- quantity,
                 -- min_quantity,
                 -- max_quantity,

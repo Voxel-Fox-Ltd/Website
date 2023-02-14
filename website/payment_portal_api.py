@@ -17,6 +17,7 @@ import aiohttp
 
 from .utils.json_utils import serialize
 from .utils.get_paypal_access_token import get_paypal_basicauth
+from .utils.login import requires_manager_login
 
 
 routes = RouteTableDef()
@@ -104,6 +105,55 @@ def cache_by_query():
             return response
         return wrapper
     return decorator
+
+
+@routes.patch("/api/portal/update")
+@requires_manager_login()
+async def portal_update(request: Request):
+    """
+    Update a given item.
+    """
+
+    data = await request.json()
+    session = await aiohttp_session.get_session(request)
+    async with vbu.Database() as db:
+        await db.call(
+            """
+            UPDATE
+                checkout_items
+            SET
+                product_name = $2,
+                description = $3,
+                product_group = $4,
+                success_url = $5,
+                cancel_url = $6,
+                stripe_product_id = $7,
+                stripe_price_id = $8,
+                paypal_plan_id = $9
+            WHERE
+                id = $1
+            AND
+                creator_id = (
+                    SELECT
+                        id
+                    FROM
+                        payment_users
+                    WHERE
+                        login_id = $10
+                )
+            """,
+            data['id'],
+            data['product_name'],
+            data['description'],
+            data['product_group'],
+            data['success_url'],
+            data['cancel_url'],
+            data['stripe_product_id'],
+            data['stripe_price_id'],
+            data['paypal_plan_id'],
+            session['id'],
+        )
+    return Response()
 
 
 @routes.get("/api/portal/check")
