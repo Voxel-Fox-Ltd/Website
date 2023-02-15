@@ -21,7 +21,7 @@ async def get_paypal_basicauth() -> aiohttp.BasicAuth:
                 paypal_client_id,
                 paypal_client_secret
             FROM
-                payument_users
+                payment_users
             WHERE
                 stripe_id = 'VFL'
             """,
