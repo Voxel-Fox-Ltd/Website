@@ -293,12 +293,12 @@ class CheckoutItem:
                 FROM
                     checkout_items
                 LEFT JOIN
-                    users
+                    payment_users
                 ON
-                    checkout_items.creator_id = users.id
+                    checkout_items.creator_id = payment_users.id
                 WHERE
                     {args}
-                    AND users.{processor}_id = $1
+                    AND payment_users.{processor}_id = $1
                 """.format(
                     processor="paypal" if paypal_id else "stripe",
                     args=" AND ".join(
@@ -397,12 +397,12 @@ async def create_purchase(
                     FROM
                         checkout_items
                     LEFT JOIN
-                        users
+                        payment_users
                     ON
-                        checkout_items.creator_id = users.id
+                        checkout_items.creator_id = payment_users.id
                     WHERE
                         checkout_items.product_name = $2
-                        AND users.{processor}_id = $3
+                        AND payment_users.{processor}_id = $3
                 ),
                 $4,
                 $5,
@@ -457,14 +457,14 @@ async def fetch_purchase(
             ON
                 purchases.product_id = checkout_items.id
             LEFT JOIN
-                users
+                payment_users
             ON
-                checkout_items.creator_id = users.id
+                checkout_items.creator_id = payment_users.id
             WHERE
                 {uid} = $1
                 AND checkout_items.product_name = $2
                 AND purchases.discord_guild_id = $3
-                AND users.{processor}_id = $4
+                AND payment_users.{processor}_id = $4
             ORDER BY
                 timestamp DESC
             LIMIT 1
@@ -489,14 +489,14 @@ async def fetch_purchase(
             ON
                 purchases.product_id = checkout_items.id
             LEFT JOIN
-                users
+                payment_users
             ON
-                checkout_items.creator_id = users.id
+                checkout_items.creator_id = payment_users.id
             WHERE
                 {uid} = $1
                 AND checkout_items.product_name = $2
                 AND purchases.discord_guild_id IS NULL
-                AND users.{processor}_id = $3
+                AND payment_users.{processor}_id = $3
             ORDER BY
                 timestamp DESC
             LIMIT 1
