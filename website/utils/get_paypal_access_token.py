@@ -52,6 +52,6 @@ async def get_paypal_access_token(request: Request) -> str:
             response = await r.json()
     PAYPAL_TOKEN_CACHE.update(response)
     PAYPAL_TOKEN_CACHE.update({
-        "expires_at": dt.utcnow() + timedelta(seconds=response['expires_in'])
+        "expires_at": dt.utcnow() + timedelta(seconds=response.get('expires_in', 60))
     })
     return response['access_token']
