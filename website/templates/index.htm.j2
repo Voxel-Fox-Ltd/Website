@@ -73,7 +73,7 @@
         you contact us and let us know your idea, we'd be happy to talk it
         all through with you :)
     </p>
-    <form id="commission-form" onsubmit="sendEmail(this);">
+    <form id="commission-form" onsubmit="sendEmail(this); return false;">
         <div class="commission-form-email-div">
             <label for="commission-form-email">Email:</label>
             <input id="commission-form-email" name="from" type="email" required />
@@ -128,8 +128,8 @@
     </form>
 
     <script type="text/javascript">
-        function sendEmail(form) {
-            return fetch(
+        async function sendEmail(form) {
+            site = await fetch(
                 "/send_email/commission",
                 {
                     method: "POST",
@@ -139,12 +139,9 @@
                         content: form.querySelector("[name='content']").value,
                     }),
                 }
-            ).then((response) => {
-                return response.json();
-            }).then((data) => {
-                alert(data.message);
-                return false;
-            });
+            );
+            data = await site.json();
+            alert(data.message);
         }
     </script>
 </div>  <!-- Commissions -->
