@@ -129,19 +129,26 @@
 
     <script type="text/javascript">
         async function sendEmail(form) {
+            from = form.querySelector("[name='from']");
+            type = form.querySelector("[name='type']");
+            content = form.querySelector("[name='content']");
             site = await fetch(
                 "/send_email/commission",
                 {
                     method: "POST",
                     body: JSON.stringify({
-                        from: form.querySelector("[name='from']").value,
-                        type: form.querySelector("[name='type']").value,
-                        content: form.querySelector("[name='content']").value,
+                        from: from.value,
+                        type: type.value,
+                        content: content.value,
                     }),
                 }
             );
             data = await site.json();
             alert(data.message);
+            from.disabled = true;
+            type.disabled = true;
+            content.disabled = true;
+            form.querySelector("button").disabled = true;
         }
     </script>
 </div>  <!-- Commissions -->
