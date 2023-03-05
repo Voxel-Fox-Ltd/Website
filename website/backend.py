@@ -1,3 +1,4 @@
+import functools
 import io
 from typing import Tuple
 import smtplib
@@ -103,11 +104,14 @@ async def discord_handler(request: Request):
             pass
         subset = str(soup)
 
-        response_data = imgkit.from_string(
+        loop = asyncio.get_running_loop()
+        partial = functools.partial(
+            imgkit.from_string,
             subset,
             None,
             options={"format": "png"},
         )
+        response_data = loop.run_in_executor(None, partial)
         headers = {"Content-Type": "image/png"}
     return Response(
         body=response_data,
