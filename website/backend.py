@@ -90,7 +90,7 @@ async def discord_handler(request: Request):
         reduce_boolean_attributes=True
     )
     rendered_template.text = response_text
-    if "image" in request.query:
+    if "image" not in request.query:
         return rendered_template
 
     soup = BeautifulSoup(response_text, "html.parser")
