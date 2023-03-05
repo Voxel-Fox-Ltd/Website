@@ -7,7 +7,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from aiohttp.web import Request, RouteTableDef, Response, json_response
-from aiohttp_jinja2 import render_string_async
+from aiohttp_jinja2 import render_string
 import htmlmin
 from PIL import Image
 from discord.ext import vbu
@@ -77,7 +77,7 @@ async def discord_handler(request: Request):
         core_css = a.read()
     with open("website/static/css/discord/dark.min.css") as a:
         dark_css = a.read()
-    rendered_template: str = await render_string_async(
+    rendered_template: str = render_string(
         "discord_page.html.j2",
         request,
         {
