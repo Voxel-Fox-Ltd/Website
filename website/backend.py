@@ -12,7 +12,7 @@ import htmlmin
 from PIL import Image
 from discord.ext import vbu
 from bs4 import BeautifulSoup, Tag
-from playwright.async_api import async_playwright
+import imgkit
 
 
 routes = RouteTableDef()
@@ -102,13 +102,7 @@ async def discord_handler(request: Request):
         pass
     subset = str(soup)
 
-    playwright = await async_playwright().start()
-    browser = await playwright.chromium.launch(headless=True)
-    page = await browser.new_page()
-    await page.set_content(subset)
-    screenshot_buffer = await page.screenshot(type="png")
-    await browser.close()
-    playwright.stop()
+    screenshot_buffer = imgkit.from_string(subset, None, options={"format": "png"})
     return Response(
         body=screenshot_buffer,
         headers={"Content-Type": "image/png"},
