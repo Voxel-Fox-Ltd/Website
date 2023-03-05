@@ -6,3 +6,5 @@ pillow
 typing_extensions
 asyncpg
 vf-flags
+beautifulsoup4
+playwright
