@@ -111,7 +111,7 @@ async def discord_handler(request: Request):
             None,
             options={"format": "png"},
         )
-        response_data = loop.run_in_executor(None, partial)
+        response_data = await loop.run_in_executor(None, partial)
         headers = {"Content-Type": "image/png"}
     return Response(
         body=response_data,
