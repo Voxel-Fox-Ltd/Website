@@ -11,6 +11,8 @@ from aiohttp_jinja2 import render_template
 import htmlmin
 from PIL import Image
 from discord.ext import vbu
+from bs4 import BeautifulSoup, Tag
+from playwright.async_api import async_playwright
 
 
 routes = RouteTableDef()
@@ -20,6 +22,55 @@ routes = RouteTableDef()
 async def discord_handler(request: Request):
     """
     Creates you a Discord chatlog you might be able to use.
+
+    Acceptable JSON data:
+    {
+        "guild_name": str,
+        "channel_name": str,
+        "category_name": str,
+        "users": {
+            int: {
+                "color": int,
+                "display_name": str,
+                "username": str,
+                "bot": bool,
+            },
+        },
+        "messages": [
+            {
+                "author_id": str | int,
+                "timestamp": int,
+                "content": str,
+                "attachments": list[str],
+                "embeds": [
+                    {
+                        "color": int,
+                        "author": {
+                            "icon_url": str,
+                            "name": str,
+                            "url": str,
+                        },
+                        "title": str,
+                        "url": str,
+                        "description": str,
+                        "fields": [
+                            {
+                                "name": str,
+                                "value": str,
+                            },
+                        ],
+                        "thumbnail": {"url": str},
+                        "image": {"url": str},
+                        "footer": {
+                            "icon_url": str,
+                            "text": str,
+                        },
+                        "timestamp": int,
+                    },
+                ]
+            },
+        ],
+    }
     """
 
     with open('website/static/css/discord/core.min.css') as a:
@@ -39,7 +90,27 @@ async def discord_handler(request: Request):
         reduce_boolean_attributes=True
     )
     rendered_template.text = response_text
-    return rendered_template
+    if "image" in request.query:
+        return rendered_template
+
+    soup = BeautifulSoup(response_text, "html.parser")
+    pre = soup.find(class_="preamble")
+    assert isinstance(pre, Tag)
+    try:
+        pre.decompose()  # Remove from the containing page
+    except Exception:
+        pass
+    subset = str(soup)
+
+    playwright = await async_playwright().start()
+    browser = await playwright.chromium.launch(headless=True)
+    page = await browser.new_page()
+    await page.set_content(subset)
+    screenshot_buffer = await page.screenshot(type="png")
+    return Response(
+        body=screenshot_buffer,
+        headers={"Content-Type": "image/png"},
+    )
 
 
 @routes.get("/colour")
