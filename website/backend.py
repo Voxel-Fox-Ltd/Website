@@ -7,7 +7,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from aiohttp.web import Request, RouteTableDef, Response, json_response
-from aiohttp_jinja2 import render_template
+from aiohttp_jinja2 import render_string_async
 import htmlmin
 from PIL import Image
 from discord.ext import vbu
@@ -73,39 +73,45 @@ async def discord_handler(request: Request):
     }
     """
 
-    with open('website/static/css/discord/core.min.css') as a:
+    with open("website/static/css/discord/core.min.css") as a:
         core_css = a.read()
-    with open('website/static/css/discord/dark.min.css') as a:
+    with open("website/static/css/discord/dark.min.css") as a:
         dark_css = a.read()
-    rendered_template: Response
-    rendered_template = render_template('discord_page.html.j2', request, {
-        'data': (await request.json()),
-        'core_css': core_css,
-        'dark_css': dark_css,
-    })
-    response_text = htmlmin.minify(
-        rendered_template.text,
+    rendered_template: str = await render_string_async(
+        "discord_page.html.j2",
+        request,
+        {
+            "data": (await request.json()),
+            "core_css": core_css,
+            "dark_css": dark_css,
+        },
+    )
+    response_data = htmlmin.minify(
+        rendered_template,
         remove_comments=True,
         remove_empty_space=True,
         reduce_boolean_attributes=True
     )
-    rendered_template.text = response_text
-    if "image" not in request.query:
-        return rendered_template
+    headers = {"Content-Type": "text/html"}
+    if "image" in request.query:
+        soup = BeautifulSoup(response_data, "html.parser")
+        pre = soup.find(class_="preamble")
+        assert isinstance(pre, Tag)
+        try:
+            pre.decompose()  # Remove from the containing page
+        except Exception:
+            pass
+        subset = str(soup)
 
-    soup = BeautifulSoup(response_text, "html.parser")
-    pre = soup.find(class_="preamble")
-    assert isinstance(pre, Tag)
-    try:
-        pre.decompose()  # Remove from the containing page
-    except Exception:
-        pass
-    subset = str(soup)
-
-    screenshot_buffer = imgkit.from_string(subset, None, options={"format": "png"})
+        response_data = imgkit.from_string(
+            subset,
+            None,
+            options={"format": "png"},
+        )
+        headers = {"Content-Type": "image/png"}
     return Response(
-        body=screenshot_buffer,
-        headers={"Content-Type": "image/png"},
+        body=response_data,
+        headers=headers,
     )
 
 
