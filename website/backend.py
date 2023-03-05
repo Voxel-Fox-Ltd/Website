@@ -107,6 +107,8 @@ async def discord_handler(request: Request):
     page = await browser.new_page()
     await page.set_content(subset)
     screenshot_buffer = await page.screenshot(type="png")
+    await browser.close()
+    playwright.stop()
     return Response(
         body=screenshot_buffer,
         headers={"Content-Type": "image/png"},
