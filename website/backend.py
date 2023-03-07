@@ -14,6 +14,7 @@ from PIL import Image
 from discord.ext import vbu
 from bs4 import BeautifulSoup, Tag
 import imgkit
+import markdown2
 
 
 routes = RouteTableDef()
@@ -238,12 +239,16 @@ async def send_email(request: Request):
     msg["To"] = "kae@voxelfox.co.uk"
     msg["From"] = "commissions.voxelfox.co.uk"
     msg["Reply-To"] = data['from']
+    data_content_raw = data['content']
+    data_content_str = data_content_raw.replace("\n", "\n\n")
+    data_content_markdown = markdown2.markdown(data_content_str)
+    data_content = html.escape(data_content_markdown)
     content: str = (
         f'''<html><body>'''
         f'''<div style="font-family: 'Century Gothic', 'Helvetica', sans-serif;">'''
         f'''<p>Commission type: <b>{data['type']}</b><br />'''
         f'''Reply to: <b>{data['from']}</b></p>'''
-        f'''{html.escape(data['content'])}'''
+        f'''<div id="user-content">{data_content}</div>'''
         f'''</div>'''
         f'''</body></html>'''
     )
