@@ -243,13 +243,24 @@ async def send_email(request: Request):
     data_content_str = data_content_raw.replace("\n", "\n\n")
     data_content = markdown2.markdown(data_content_str)
     content: str = (
-        f'''<html><body>'''
-        f'''<div style="font-family: 'Century Gothic', 'Helvetica', sans-serif;">'''
-        f'''<p>Commission type: <b>{data['type']}</b><br />'''
-        f'''Reply to: <b>{data['from']}</b></p>'''
-        f'''<div id="user-content">{data_content}</div>'''
-        f'''</div>'''
-        f'''</body></html>'''
+        f'''<html>'''
+        f'''<head>'''
+        f'''  <style>'''
+         '''    body {font-family: 'Century Gothic', 'Helvetica', sans-serif;}'''
+         '''    #c {margin-left: 1em; padding-left: 1em; border-left: 2px solid black;}'''
+         '''    #c p {margin: 0;}'''
+         '''    #c blockquote {margin-left: 0; font-style: italic;}'''
+         '''    #c blockquote:before {content: ">"; float: left; margin-right: 0.5em;}'''
+        f'''  </style>'''
+        f'''</head>'''
+        f'''<body>'''
+        f'''  <p>'''
+        f'''    Commission type: <b>{data['type']}</b><br />'''
+        f'''    Reply to: <b>{data['from']}</b>'''
+        f'''  </p>'''
+        f'''  <div id="c">{data_content}</div>'''
+        f'''</body>'''
+        f'''</html>'''
     )
     part1 = MIMEText(content, "plain")
     part2 = MIMEText(content, "html")
