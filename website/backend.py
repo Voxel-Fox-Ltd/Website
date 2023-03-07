@@ -241,8 +241,7 @@ async def send_email(request: Request):
     msg["Reply-To"] = data['from']
     data_content_raw = data['content']
     data_content_str = data_content_raw.replace("\n", "\n\n")
-    data_content_markdown = markdown2.markdown(data_content_str)
-    data_content = html.escape(data_content_markdown)
+    data_content = markdown2.markdown(data_content_str)
     content: str = (
         f'''<html><body>'''
         f'''<div style="font-family: 'Century Gothic', 'Helvetica', sans-serif;">'''
