@@ -268,6 +268,7 @@ class CheckoutItem:
             kwargs['product_name'] = product_name
 
         # Fetch from db
+        paypal_id, stripe_id = None, None  # Fuck it
         if [paypal_id, stripe_id] == [None, None]:
             item_rows = await db.call(
                 """
