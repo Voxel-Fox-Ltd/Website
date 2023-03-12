@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waves</title>
+<style type="text/css">
+body {
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+}
+
+svg {
+    display: block;
+    float: left;
+}
+
+.waves {
+    width: 200vw;
+    position: absolute;
+    filter:
+        drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4))
+        drop-shadow(3px -5px 2px rgb(0 0 0 / 0.4))
+    ;
+}
+
+body {
+    background: repeating-linear-gradient(
+        30deg, rgb(251, 107, 107), rgb(172, 0, 145), rgb(79, 153, 249)
+    );
+    overflow: hidden;
+}
+
+#top {
+    top: 0;
+    left: 0;
+    fill: url(#top-gradient);
+
+    -webkit-animation:120s left-scroll infinite linear;
+    -moz-animation:120s left-scroll infinite linear;
+    -o-animation:120s left-scroll infinite linear;
+    -ms-animation:120s left-scroll infinite linear;
+    animation:120s left-scroll infinite linear;
+}
+
+#bottom {
+    bottom: 0;
+    right: 0;
+    fill: url(#bottom-gradient);
+
+    -webkit-animation: 100s right-scroll infinite linear;
+    -moz-animation: 100s right-scroll infinite linear;
+    -o-animation: 100s right-scroll infinite linear;
+    -ms-animation: 100s right-scroll infinite linear;
+    animation: 100s right-scroll infinite linear;
+}
+@keyframes left-scroll {100% {left: -100vw;}}
+@-moz-keyframes left-scroll {100% {left: -100vw;}}
+@-webkit-keyframes left-scroll {100% {left: -100vw;}}
+
+@keyframes right-scroll {100% {right: -100vw;}}
+@-moz-keyframes right-scroll {100% {right: -100vw;}}
+@-webkit-keyframes right-scroll {100% {right: -100vw;}}
+</style>
+</head>
+<body>
+<svg style="visibility: hidden;">
+    <defs>
+        <linearGradient id="top-gradient">
+            <stop offset="0%" stop-color="rgba(255,175,68,1)" />
+            <stop offset="50%" stop-color="rgba(251,71,76,1)" />
+            <stop offset="100%" stop-color="rgba(192,70,173,1)" />
+        </linearGradient>
+        <linearGradient id="bottom-gradient">
+            <stop offset="0%" stop-color="rgba(251,71,76,1)" />
+            <stop offset="50%" stop-color="rgba(192,70,173,1)" />
+            <stop offset="100%" stop-color="rgba(255,175,68,1)" />
+        </linearGradient>
+    </defs>
+</svg>
+<svg id="top" class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+    <path fill-opacity="1" d="M0,96L15,85.3C30,75,60,53,90,58.7C120,64,150,96,180,122.7C210,149,240,171,270,176C300,181,330,171,360,149.3C390,128,420,96,450,117.3C480,139,510,213,540,208C570,203,600,117,630,74.7C660,32,690,32,720,48C750,64,780,96,810,133.3C840,171,870,213,900,234.7C930,256,960,256,990,266.7C1020,277,1050,299,1080,288C1110,277,1140,235,1170,208C1200,181,1230,171,1260,154.7C1290,139,1320,117,1350,96C1380,75,1410,53,1425,42.7L1440,32L1440,0L1425,0C1410,0,1380,0,1350,0C1320,0,1290,0,1260,0C1230,0,1200,0,1170,0C1140,0,1110,0,1080,0C1050,0,1020,0,990,0C960,0,930,0,900,0C870,0,840,0,810,0C780,0,750,0,720,0C690,0,660,0,630,0C600,0,570,0,540,0C510,0,480,0,450,0C420,0,390,0,360,0C330,0,300,0,270,0C240,0,210,0,180,0C150,0,120,0,90,0C60,0,30,0,15,0L0,0Z"></path>
+</svg>
+<svg id="bottom" class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+    <path fill-opacity="1" d="M0,192L15,181.3C30,171,60,149,90,133.3C120,117,150,107,180,128C210,149,240,203,270,224C300,245,330,235,360,245.3C390,256,420,288,450,272C480,256,510,192,540,176C570,160,600,192,630,202.7C660,213,690,203,720,170.7C750,139,780,85,810,85.3C840,85,870,139,900,170.7C930,203,960,213,990,208C1020,203,1050,181,1080,149.3C1110,117,1140,75,1170,96C1200,117,1230,203,1260,213.3C1290,224,1320,160,1350,133.3C1380,107,1410,117,1425,122.7L1440,128L1440,320L1425,320C1410,320,1380,320,1350,320C1320,320,1290,320,1260,320C1230,320,1200,320,1170,320C1140,320,1110,320,1080,320C1050,320,1020,320,990,320C960,320,930,320,900,320C870,320,840,320,810,320C780,320,750,320,720,320C690,320,660,320,630,320C600,320,570,320,540,320C510,320,480,320,450,320C420,320,390,320,360,320C330,320,300,320,270,320C240,320,210,320,180,320C150,320,120,320,90,320C60,320,30,320,15,320L0,320Z"></path>
+</svg>
+</body>
+</html>
