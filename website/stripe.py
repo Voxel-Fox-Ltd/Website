@@ -375,12 +375,16 @@ async def checkout_processor(
             if refunded:
 
                 # See if we've already stored it
-                current = await fetch_purchase(
-                    db,
-                    all_metadata.get('user_id') or all_metadata.get('discord_user_id'),  # pyright: ignore
-                    i.name,
-                    guild_id=all_metadata.get('discord_guild_id'),
-                    stripe_id=stripe_account_id,
+                # current = await fetch_purchase(
+                #     db,
+                #     all_metadata.get('user_id') or all_metadata.get('discord_user_id'),  # pyright: ignore
+                #     i.name,
+                #     guild_id=all_metadata.get('discord_guild_id'),
+                #     stripe_id=stripe_account_id,
+                # )
+                current = await db.call(
+                    "SELECT * FROM purchases WHERE identifier = $1",
+                    data['_refund']['refunds']['data'][0]['charge'],
                 )
 
                 # If not, we're done
