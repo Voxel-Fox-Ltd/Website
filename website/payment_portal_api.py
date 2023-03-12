@@ -299,7 +299,7 @@ async def portal_check(request: Request):
         ON
             login_users.id = purchases.user_id
         WHERE
-            checkout_items.id = $1
+            {0} = $1
         AND
             expiry_time IS NULL
         AND
