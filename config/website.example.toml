@@ -18,11 +18,11 @@ stripe_webhook_signing_secret = ""
 [oauth.discord]
     client_id = ""
     client_secret = ""
+    redirect_uri = ""
 [oauth.google]
     client_id = ""
     client_secret = ""
-[oauth.everlasting]
-    api_key = ""
+    redirect_uri = ""
 
 
 [database]
