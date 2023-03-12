@@ -1,4 +1,4 @@
-from typing import Awaitable, Callable, Optional
+from typing import Awaitable, Callable, Optional, Any
 from typing_extensions import Self
 from datetime import datetime as dt, timedelta
 from functools import wraps
@@ -204,15 +204,9 @@ async def portal_check(request: Request):
             status=400,
         ), True
 
-    # Check what they got
-    result: list[dict] | None = None
-    identify_column = (
-        "checkout_items.id"
-        if product_id
-        else "checkout_items.product_name"
-    )
-    user_column: str
-    identity: str | int
+    # Work out what identity to use
+    user_column: str  # The column that the user identifies with (X_user_id)
+    identity: str | int  # The given identity (X_user_id = Y)
     for k, i in any_id:
         if i:
             identity = i
@@ -222,14 +216,17 @@ async def portal_check(request: Request):
             elif k == "vfl":
                 user_column = "login_users.user_id"
             else:
-                # if k ==  "discord":
-                #     identity = int(i)
                 user_column = f"login_users.{k}_user_id"
             break
     else:
         raise ValueError("Could not find identity")
-    async with vbu.Database() as db:
-        base_product = await db.call(
+
+    # It is time to open our database connection
+    db = await vbu.Database.get_connection()
+
+    # Get the product we want to check for
+    if product_id:
+        base_products = await db.call(
             """
             SELECT
                 id,
@@ -239,55 +236,87 @@ async def portal_check(request: Request):
             FROM
                 checkout_items
             WHERE
-                {0} = $1
-            """.format(identify_column),
-            product_id or product_name,
+                checkout_items.id = $1
+            OR
+                checkout_items.base_product = $1
+            """,
+            product_id,
             type=dict,
         )
-        if not base_product:
-            return json_response(
-                {
-                    "error": "Product doesn't exist.",
-                    "success": False,
-                    "result": False,
-                    "generated": dt.utcnow().isoformat(),
-                },
-                status=400,
-            )
-        result = await db.call(
+        possible_base_product = [i for i in base_products if i['id'] == product_id]
+    else:
+        base_products = await db.call(
             """
             SELECT
-                purchases.id,
-                purchases.user_id,
-                purchases.discord_guild_id,
-                purchases.expiry_time,
-                purchases.timestamp,
-                purchases.quantity
+                id,
+                product_name,
+                subscription,
+                description
             FROM
-                purchases
-            LEFT JOIN
                 checkout_items
-            ON
-                purchases.product_id = checkout_items.id
-            LEFT JOIN
-                login_users
-            ON
-                login_users.id = purchases.user_id
             WHERE
-                {0} = $1
-            AND
-                expiry_time IS NULL
-            AND
-                (
-                        purchases.product_id = $2
-                    OR
-                        checkout_items.base_product = $2
-                )
-            """.format(user_column, identify_column),
-            identity,
-            base_product[0]['id'],
+                checkout_items.product_name = $1
+            """,
+            product_name,
             type=dict,
         )
+        try:
+            possible_base_product = base_products[0]
+        except IndexError:
+            possible_base_product = []
+
+    # We didn't get a product
+    if not possible_base_product:
+        await db.disconnect()
+        return json_response(
+            {
+                "error": "Product doesn't exist.",
+                "success": False,
+                "result": False,
+                "generated": dt.utcnow().isoformat(),
+            },
+            status=400,
+        )
+    recursive_base_product: dict[str, Any] = possible_base_product[0]
+
+    # Try and get the user's purchases
+    result: list[dict] | None = await db.call(
+        """
+        SELECT
+            purchases.id,
+            purchases.user_id,
+            purchases.discord_guild_id,
+            purchases.expiry_time,
+            purchases.timestamp,
+            purchases.quantity,
+            purchases.product_id,
+            purchases.base_product_id
+        FROM
+            purchases
+        LEFT JOIN
+            checkout_items
+        ON
+            purchases.product_id = checkout_items.id
+        LEFT JOIN
+            login_users
+        ON
+            login_users.id = purchases.user_id
+        WHERE
+            checkout_items.product_id = $1
+        AND
+            expiry_time IS NULL
+        AND
+            (
+                    purchases.product_id = $2
+                OR
+                    checkout_items.base_product = $2
+            )
+        """.format(user_column),
+        identity,
+        recursive_base_product['id'],
+        type=dict,
+    )
+    await db.disconnect()
 
     # Return the result
     if result:
@@ -295,7 +324,11 @@ async def portal_check(request: Request):
             {
                 "success": True,
                 "result": True,
-                "product": serialize(base_product[0]),
+                "product": serialize(recursive_base_product),
+                "products": serialize({
+                    i['id']: serialize(i)
+                    for i in base_products
+                }),
                 "purchases": [serialize(i) for i in result],
                 "generated": dt.utcnow().isoformat(),
             },
