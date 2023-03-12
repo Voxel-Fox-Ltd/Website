@@ -287,7 +287,7 @@ async def portal_check(request: Request):
             purchases.timestamp,
             purchases.quantity,
             purchases.product_id,
-            purchases.base_product AS base_product_id
+            checkout_items.base_product AS base_product_id
         FROM
             purchases
         LEFT JOIN
