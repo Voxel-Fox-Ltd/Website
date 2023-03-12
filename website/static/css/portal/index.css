@@ -44,20 +44,22 @@ body {
     width: 25em;
     max-width: calc(100vw - 40px);
     background: #222222;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .name {
     font-weight: bold;
     font-size: 1.4rem;
-    margin-bottom: 5px;
-}
-
-.description {
-    margin-bottom: 5px;
 }
 
 .price {
-    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.price, .name, .description, .button {
+    margin: 0.2em 0;
 }
 
 .price span {
@@ -70,4 +72,14 @@ body {
     height: 55px;
     font-size: 1.2em;
     text-align: center;
+}
+
+strong {
+    color: inherit;
+}
+
+ul {
+    list-style: disc outside;
+    margin-left: 2em;
+    margin-top: 0.5em;
 }
