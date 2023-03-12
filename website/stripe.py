@@ -522,7 +522,7 @@ async def subscription_deleted(
     async with vbu.Database() as db:
         item = await CheckoutItem.fetch(
             db,
-            (product_name := subscription_item['price']['product']),
+            stripe_product_id=(product_name := subscription_item['price']['product']),
             stripe_id=stripe_account_id,
         )
     if item is None:
