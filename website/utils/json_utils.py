@@ -5,6 +5,8 @@ from datetime import datetime as dt
 def serialize(d: dict) -> dict:
     updated = {}
     for key, value in d.items():
+        if isinstance(key, uuid.UUID):
+            key = str(key)
         if isinstance(value, dict):
             updated[key] = serialize(value)
         elif isinstance(value, list):

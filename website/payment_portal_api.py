@@ -323,7 +323,7 @@ async def portal_check(request: Request):
                 "result": True,
                 "product": serialize(recursive_base_product),
                 "products": serialize({
-                    i['id']: serialize(i)
+                    str(i['id']): serialize(i)
                     for i in base_products
                 }),
                 "purchases": [serialize(i) for i in result],
