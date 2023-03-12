@@ -260,10 +260,7 @@ async def portal_check(request: Request):
             product_name,
             type=dict,
         )
-        try:
-            possible_base_product = base_products[0]
-        except IndexError:
-            possible_base_product = []
+        possible_base_product = base_products
 
     # We didn't get a product
     if not possible_base_product:
