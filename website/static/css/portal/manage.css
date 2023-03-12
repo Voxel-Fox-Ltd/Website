@@ -49,3 +49,10 @@ body > .content {
     border-color: gray;
     color: #222;
 }
+
+.price {
+    font-weight: bold;
+}
+strong {
+    color: inherit;
+}
