@@ -5,6 +5,7 @@ routes = [
     "backend",
     "stripe",
     "paypal",
+    "upgradechat",
     "logins",
     "cancel_subscription",
     "payment_portal",
