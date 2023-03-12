@@ -236,14 +236,14 @@ async def portal_check(request: Request):
             FROM
                 checkout_items
             WHERE
-                checkout_items.id = $1
+                id = $1
             OR
-                checkout_items.base_product = $1
+                base_product = $1
             """,
             product_id,
             type=dict,
         )
-        possible_base_product = [i for i in base_products if i['id'] == product_id]
+        possible_base_product = [i for i in base_products if str(i['id']) == product_id]
     else:
         base_products = await db.call(
             """
