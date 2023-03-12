@@ -55,8 +55,10 @@ class UpgradeChatWebhookEvent(TypedDict):
     id: str
     webhook_id: str
     type: Literal["order.created", "order.updated", "order.deleted"]
-    body: UpgradeChatOrder
     attempts: int
+
+    body: UpgradeChatOrder
+    data: UpgradeChatOrder
 
 
 class UpgradeChatValidation(TypedDict):
@@ -139,9 +141,11 @@ async def purchase_webhook(request: Request) -> StreamResponse:
 
     # Make sure the product name is valid
     # We are hardcoding product names because I don't want to use UpgradeChat again
+    body = data.get("data", data.get("body"))
+    assert body is not None
     uc_product_names = [
         i['product']['name']
-        for i in data['body']['order_items']
+        for i in body['order_items']
     ]
     if len(uc_product_names) > 1:
         log.info(f"UpgradeChat event references multiple products - {uc_product_names}")
@@ -161,20 +165,20 @@ async def purchase_webhook(request: Request) -> StreamResponse:
             await create_purchase(
                 db,
                 user_id=None,
-                discord_user_id=int(data['body']['user']['discord_id'] or 0),
+                discord_user_id=int(body['user']['discord_id'] or 0),
                 product_name=product_name,
-                identifier=data['body']['payment_processor_record_id'],
+                identifier=body['payment_processor_record_id'],
             )
         elif data['type'] in ["order_updated", "order.deleted"]:
             # Get the user ID
             user_rows: list[dict] = await db.call(
                 "SELECT * FROM login_users WHERE discord_user_id = $1",
-                int(data['body']['user']['discord_id'])  # pyright: ignore
+                int(body['user']['discord_id'])  # pyright: ignore
             )
             if not user_rows:
                 user_rows: list[dict] = await db.call(
                     "INSERT INTO login_users (discord_user_id) VALUES ($1)",
-                    int(data['body']['user']['discord_id'])  # pyright: ignore
+                    int(body['user']['discord_id'])  # pyright: ignore
                 )
             user = user_rows[0]
 
@@ -188,10 +192,10 @@ async def purchase_webhook(request: Request) -> StreamResponse:
                     "deleted": True,
                 }
             else:
-                assert data['body']['cancelled_at']
+                assert body['cancelled_at']
                 params = {
                     "expiry_time": dt.strptime(
-                        data['body']['cancelled_at'],
+                        body['cancelled_at'],
                         "%Y-%m-%dT%H:%M:%S.%fZ",
                     ),
                 }
