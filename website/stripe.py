@@ -169,7 +169,10 @@ async def stripe_purchase_complete(request: Request):
         for i in request.headers['Stripe-Signature'].split(",")
     ])
     signed_payload = signature['t'] + '.' + stripe_data_string.decode()
-    signing_secret = request.app['config']['stripe_webhook_signing_secret']
+    if stripe_data.get("account") is None:
+        signing_secret = request.app['config']['stripe_account_webhook_signing_secret']
+    else:
+        signing_secret = request.app['config']['stripe_webhook_signing_secret']
     mac = hmac.new(signing_secret.encode(), signed_payload.encode(), sha256)
     hashed = mac.hexdigest()
     if not hmac.compare_digest(hashed.encode(), signature['v1'].encode()):
