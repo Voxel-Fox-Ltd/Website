@@ -68,3 +68,11 @@ body {
     --col: red;
     margin-top: 20px;
 }
+
+.price {
+    font-weight: bold;
+}
+
+strong {
+    color: inherit;
+}
