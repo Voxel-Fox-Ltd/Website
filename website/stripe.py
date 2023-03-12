@@ -388,8 +388,9 @@ async def checkout_processor(
                 )
 
                 # If not, we're done
-                if current is None:
+                if not current:
                     continue
+                current = current[0]
 
                 # If so, delete
                 await update_purchase(db, current['id'], delete=True)
