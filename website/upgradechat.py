@@ -1,13 +1,13 @@
 import logging
-from typing import Any, Literal, TypedDict
 import asyncio
 from base64 import b64encode
 from datetime import datetime as dt
 
 import aiohttp
-from aiohttp.web import Response, RouteTableDef, Request, json_response, StreamResponse
+from aiohttp.web import Response, RouteTableDef, Request, StreamResponse
 from discord.ext import vbu
 
+from .utils import types
 from .utils.db_util import create_purchase, fetch_purchase, update_purchase
 
 
@@ -17,52 +17,6 @@ access_token_refresh_task: asyncio.Task | None = None
 
 
 log = logging.getLogger("vbu.voxelfox.upgradechat")
-
-
-class UpgradeChatUser(TypedDict):
-    discord_id: str | None
-    username: str | None
-
-
-class UpgradeChatProduct(TypedDict):
-    uuid: str
-    name: str
-
-
-class UpgradeChatOrderItem(TypedDict):
-    product: UpgradeChatProduct
-
-
-class UpgradeChatOrder(TypedDict):
-    uuid: str
-    purchased_at: str
-    payment_processor: Literal["PAYPAL", "STRIPE"]
-    payment_processor_record_id: str
-    user: UpgradeChatUser
-    subtotal: float
-    discount: float
-    total: float
-    coupon_code: str | None
-    coupon: dict[str, Any]
-    type: Literal["UPGRADE", "SHOP"]
-    is_subscription: bool
-    cancelled_at: str | None
-    deleted: str | None
-    order_items: list[UpgradeChatOrderItem]
-
-
-class UpgradeChatWebhookEvent(TypedDict):
-    id: str
-    webhook_id: str
-    type: Literal["order.created", "order.updated", "order.deleted"]
-    attempts: int
-
-    body: UpgradeChatOrder
-    data: UpgradeChatOrder
-
-
-class UpgradeChatValidation(TypedDict):
-    valid: bool
 
 
 async def get_access_token(
@@ -121,7 +75,7 @@ async def purchase_webhook(request: Request) -> StreamResponse:
     """
 
     # Get the data
-    data: UpgradeChatWebhookEvent = await request.json()
+    data: types.UpgradeChatWebhookEvent = await request.json()
 
     # Validate
     access_token = await get_access_token(request)
@@ -133,7 +87,7 @@ async def purchase_webhook(request: Request) -> StreamResponse:
     url = "https://api.upgrade.chat/v1/webhook-events/{0}/validate"
     async with aiohttp.ClientSession() as session:
         async with session.get(url.format(data['id']), headers=headers) as r:
-            validated: UpgradeChatValidation = await r.json()
+            validated: types.UpgradeChatValidation = await r.json()
     if validated['valid'] is False:
         log.info("Received invalid UpgradeChat event")
         return Response(status=201)  # Valid code, invalid body

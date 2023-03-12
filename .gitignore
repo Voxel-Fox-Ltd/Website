@@ -4,6 +4,8 @@ config/website.toml
 config/test.toml
 research/
 _*
+!__init__.py
+!__main__.py
 !_/*
 !_voxelfox/
 app.py
