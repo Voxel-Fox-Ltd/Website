@@ -3,6 +3,7 @@ import hmac
 from hashlib import sha256
 import logging
 from typing import Optional
+from datetime import datetime as dt
 
 import aiohttp
 from aiohttp.web import Request, RouteTableDef, Response, json_response
@@ -568,5 +569,5 @@ async def subscription_deleted(
         await update_purchase(
             db,
             current['id'],
-            expiry_time=subscription_expiry_time,
+            expiry_time=dt.fromtimestamp(subscription_expiry_time),
         )
