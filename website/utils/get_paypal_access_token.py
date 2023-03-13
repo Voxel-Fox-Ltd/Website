@@ -4,6 +4,11 @@ import aiohttp
 from aiohttp.web import Request
 from discord.ext import vbu
 
+__all__ = (
+    'get_paypal_basicauth',
+    'get_paypal_access_token',
+)
+
 
 PAYPAL_TOKEN_CACHE = {}
 PAYPAL_BASE = "https://api-m.paypal.com"  # "https://api-m.sandbox.paypal.com"

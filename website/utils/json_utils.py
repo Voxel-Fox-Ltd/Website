@@ -1,6 +1,10 @@
 import uuid
 from datetime import datetime as dt
 
+__all__ = (
+    'serialize',
+)
+
 
 def serialize(d: dict) -> dict:
     updated = {}

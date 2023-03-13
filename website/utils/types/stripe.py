@@ -3,6 +3,22 @@ from __future__ import annotations
 from typing import Any, Generic, Literal, TypeAlias, TypeVar, TypedDict
 from typing_extensions import NotRequired
 
+__all__ = (
+    'EventTypeObject',
+    'Event',
+    'DataList',
+    'Plan',
+    'Price',
+    'PriceRecurring',
+    'SubscriptionItem',
+    'Subscription',
+    'Refund',
+    'Charge',
+    'CheckoutSession',
+    'InvoiceLineItem',
+    'CheckoutSessionLineItem',
+)
+
 
 Unused: TypeAlias = Any
 Timestamp: TypeAlias = int
@@ -22,11 +38,6 @@ class Event(TypedDict, Generic[ET]):
     data: EventTypeObject[ET]
     type: str
     created: Timestamp
-
-    api_version: Unused
-    livemode: Unused
-    pending_webhooks: Unused
-    request: Unused
 
 
 class DataList(TypedDict, Generic[DLI]):
@@ -54,13 +65,6 @@ class Plan(TypedDict):
     active: bool
     metadata: dict[str, Any]
 
-    aggregate_usage: Unused
-    livemode: Unused
-    tiers: Unused
-    tiers_mode: Unused
-    transform_usage: Unused
-    trial_period_days: Unused
-    usage_type: Unused
 
 
 class Price(TypedDict):
@@ -79,21 +83,12 @@ class Price(TypedDict):
     unit_amount_decimal: str
     metadata: dict[str, Any]
 
-    custom_unit_amount: Unused
-    livemode: Unused
-    lookup_key: Unused
-    tax_behavior: Unused
-    tiers_mode: Unused
-    transform_quantity: Unused
 
 
 class PriceRecurring(TypedDict):
     interval: str
     interval_count: int
 
-    aggregate_usage: Unused
-    trial_period_days: Unused
-    usage_type: Unused
 
 
 class SubscriptionItem(TypedDict):
@@ -107,8 +102,6 @@ class SubscriptionItem(TypedDict):
     subscription: str  # subscription ID
     metadata: dict[str, Any]
 
-    billing_thresholds: Unused
-    tax_rates: Unused
 
 
 class Subscription(TypedDict):
@@ -132,35 +125,6 @@ class Subscription(TypedDict):
     quantity: int
     start_date: Timestamp
 
-    application: Unused
-    application_fee_percent: Unused
-    automatic_tax: Unused
-    billing_cycle_anchor: Unused
-    billing_thresholds: Unused
-    cancellation_details: Unused
-    collection_method: Unused
-    days_until_due: Unused
-    default_payment_method: Unused
-    default_source: Unused
-    default_tax_rates: Unused
-    discount: Unused
-    livemode: Unused
-    next_pending_invoice_item_invoice: Unused
-    on_behalf_of: Unused
-    pause_collection: Unused
-    payment_settings: Unused
-    pending_invoice_item_interval: Unused
-    pending_setup_intent: Unused
-    pending_update: Unused
-    tax_percent: Unused
-    test_clock: Unused
-    transfer_data: Unused
-    schedule: Unused
-    status: Unused
-    trial_end: Unused
-    trial_settings: Unused
-    trial_start: Unused
-
 
 class Refund(TypedDict):
     id: str
@@ -173,10 +137,7 @@ class Refund(TypedDict):
     metadata: dict[str, Any]
     payment_intent: str  # payment intent ID
     reason: str | None
-    receipt_number: Unused
-    source_transfer_reversal: Unused
     status: str
-    transfer_reversal: Unused
 
 
 class Charge(TypedDict):
@@ -185,45 +146,72 @@ class Charge(TypedDict):
     amount: int
     amount_captured: int
     amount_refunded: int
-    application: Unused
-    application_fee: Unused
-    application_fee_amount: Unused
     balance_transaction: str  # transaction ID
-    billing_details: Unused  # address, name, etc
     calculated_statement_descriptor: str  # What shows up in a bank statement
     captured: bool
     created: Timestamp
     currency: str
     customer: str  # customer ID
     description: str
-    destination: Unused
-    dispute: Unused
-    disputed: Unused
-    failure_balance_transaction: Unused
-    failure_code: Unused
-    failure_message: Unused
-    fraud_details: Unused
     invoice: str  # invoice ID
     livemode: bool
     metadata: dict[str, Any]
-    on_behalf_of: Unused
-    order: Unused
-    outcome: Unused
     paid: bool
     payment_intent: str  # payment intent ID
     payment_method: str  # payment method ID
-    payment_method_details: Unused
     receipt_email: str | None  # the email the receipt goes to
-    receipt_number: Unused
     receipt_url: str
     refunded: bool
     refunds: DataList[Refund]
-    review: Unused
-    shipping: Unused
-    source: Unused
-    source_transfer: Unused
-    statement_descriptor: Unused
-    statement_descriptor_suffix: Unused
     status: str
-    transfer_data: Unused
-    transfer_group: Unused
+
+
+class CheckoutSession(TypedDict):
+    id: str
+    object: Literal["checkout.session"]
+    amount_subtotal: int
+    amount_total: int
+    cancel_url: str
+    created: Timestamp
+    currency: str
+    customer: str  # customer ID
+    expires_at: Timestamp
+    invoice: str  # invoice ID
+    livemode: bool
+    metadata: dict[str, Any]
+    mode: str
+    payment_intent: str  # payment intent ID
+    subscription: str | None  # subscription ID
+    success_url: str
+    url: str
+
+
+class InvoiceLineItem(TypedDict):
+    id: str
+    object: Literal["line_item"]
+    amount: int
+    amount_excluding_tax: int
+    currency: str
+    description: str
+    discountable: bool
+    invoice_item: str  # invoice item ID
+    livemode: bool
+    metadata: dict[str, Any]
+    price: Price
+    quantity: int
+    subscription: str | None  # subscription ID
+    type: Literal["invoiceitem"]
+    unit_amount_excluding_tax: str
+
+
+class CheckoutSessionLineItem(TypedDict):
+    id: str
+    object: Literal["item"]
+    amount_discount: int
+    amount_subtotal: int
+    amount_tax: int
+    amount_total: int
+    currency: str
+    description: str
+    price: Price
+    quantity: int
