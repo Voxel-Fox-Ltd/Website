@@ -14,50 +14,19 @@
     <meta name="theme-color" content="#f17824">
     <title>Voxel Fox</title>
 </head>
-
 <body>
-
-{# Set the main logo #}
-{% set index_logo_url = (
-    [
-        '/images/_voxelfox/gay.svg',
-        '/images/_voxelfox/trans.svg',
-        '/images/_voxelfox/bi.svg',
-    ] | random)
-%}
-{% set index_logo = static(index_logo_url) %}
 {% set logo = static('/images/_voxelfox/white.svg') %}
+{%- macro section(name, hidden = true) -%}
+    <div
+            id="{{ name }}"
+            class="content hidable"
+            data-hidden="{% if hidden %}1{% else %}0{% endif %}"
+            >
+        {% include "index/" + name + ".htm.j2" %}
+    </div>
+{%- endmacro -%}
 
-
-{# Index social links #}
-{% macro create_link(href, icon, kwargs=none) %}
-<li><a href="{{ href }}" target="_blank" {% for k, v in (kwargs or {}).items() %}{{ k }}="{{ v }}"{% endfor %}><span class="icon-{{ icon }}" /></a></li>
-{% endmacro %}
-
-
-{# Branding downloads #}
-{% macro create_download(fp, caption) %}
-<li><a href="{{ static(fp) }}" download>{{ caption }}</a></li>
-{% endmacro %}
-
-
-<div id="main" class="content hidable" data-hidden="0">
-    <img class="logo" src="{{ index_logo }}" />
-    <h1>Voxel Fox</h1>
-    <ul class="contact-links">
-        {{ create_link("mailto:kae@voxelfox.co.uk", "at") }}
-        {{ create_link("https://discord.gg/vfl", "discord") }}
-        {{ create_link("https://uwu.social/@kae", "mastodon", {"rel": "me"}) }}
-        {{ create_link("https://twitch.tv/VoxelFoxKae", "twitch") }}
-        {{ create_link("https://twitter.com/VoxelFoxKae", "twitter") }}
-        {{ create_link("https://www.youtube.com/c/kaevf", "youtube") }}
-        {{ create_link("https://github.com/4Kaylum", "github") }}
-        {{ create_link("https://github.com/Voxel-Fox-Ltd", "github") }}
-    </ul>
-    <p><a href="#projects">Projects</a></p>
-    <p><a href="#commissions">Commissions</a></p>
-    <p><a href="#branding">Branding</a></p>
-</div>  <!-- Main -->
+{{ section("main", false) }}
 
 
 <div id="commissions" class="content hidable" data-hidden="1">
@@ -165,6 +134,10 @@
 </div>  <!-- Commissions -->
 
 
+{# Branding downloads #}
+{% macro create_download(fp, caption) %}
+<li><a href="{{ static(fp) }}" download>{{ caption }}</a></li>
+{% endmacro %}
 <div id="branding" class="content hidable" data-hidden="1">
     <a href="#main"><img class="logo" src="{{ logo }}" /></a>
     <h1>Branding</h1>
