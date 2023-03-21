@@ -1,0 +1,101 @@
+<a href="#main"><img class="logo" src="{{ logo }}" /></a>
+<h1>Commissions</h1>
+<p>
+    If you have a bot or website in mind and you need some assistance to
+    bring your idea to life, you can come to us for a commission!
+</p>
+<p>
+    Commissions vary in price depending on how complex your idea is, and
+    how much assistance you'll need when it comes to building it, but if
+    you contact us and let us know your idea, we'd be happy to talk it
+    all through with you :)
+</p>
+<form id="commission-form" onsubmit="sendEmail(this); return false;">
+    <div class="commission-form-email-div">
+        <label for="commission-form-email">Email:</label>
+        <input id="commission-form-email" name="from" type="email" required />
+    </div>
+
+    <div class="commission-form-radio-div">
+    <p>Commission type:</p>
+    <div>
+        <div>
+            <label for="commission-form-type-db">Discord Bot</label>
+            <input id="commission-form-type-db" name="type" type="radio" value="Discord bot" required />
+        </div>
+        <div>
+            <label for="commission-form-type-s">Slack Bot</label>
+            <input id="commission-form-type-s" name="type" type="radio" value="Slack bot" required />
+        </div>
+        <div>
+            <label for="commission-form-type-ttv">Twitch Bot</label>
+            <input id="commission-form-type-ttv" name="type" type="radio" value="Twitch bot" required />
+        </div>
+        <div>
+            <label for="commission-form-type-w">Website</label>
+            <input id="commission-form-type-w" name="type" type="radio" value="Website" required />
+        </div>
+        <div>
+            <label for="commission-form-type-k">Kik Bot</label>
+            <input id="commission-form-type-k" name="type" type="radio" value="Kik bot" required />
+        </div>
+        <div>
+            <label for="commission-form-type-f">Facebook Bot</label>
+            <input id="commission-form-type-f" name="type" type="radio" value="Facebook bot" required />
+        </div>
+        <div>
+            <label for="commission-form-type-tbr">Tumblr Bot</label>
+            <input id="commission-form-type-tbr" name="type" type="radio" value="Tumblr bot" required />
+        </div>
+        <div>
+            <label for="commission-form-type-other">Other</label>
+            <input id="commission-form-type-other" name="type" type="radio" value="Other" required />
+        </div>
+    </div>
+    </div>
+
+    <div class="commission-form-content-div">
+        <label for="commission-form-content">Tell us about your idea:</label>
+        <textarea id="commission-form-content" name="content" minlength="350" required
+>&gt; What will it do? What's it to achieve?
+
+
+&gt; What will people be able to do with it?
+
+
+&gt; Who is your target audience? Who is this aimed at?
+
+
+&gt; What is your rough budget for this idea? Or, is this something you are pitching to us as a project?
+</textarea>
+    </div>
+
+    <div>
+        <button type="submit">Send Email</button>
+    </div>
+</form>
+
+<script type="text/javascript">
+    async function sendEmail(form) {
+        from = form.querySelector("[name='from']");
+        type = form.querySelector("[name='type']");
+        content = form.querySelector("[name='content']");
+        site = await fetch(
+            "/send_email/commission",
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    from: from.value,
+                    type: type.value,
+                    content: content.value,
+                }),
+            }
+        );
+        data = await site.json();
+        alert(data.message);
+        from.disabled = true;
+        type.disabled = true;
+        content.disabled = true;
+        form.querySelector("button").disabled = true;
+    }
+</script>
