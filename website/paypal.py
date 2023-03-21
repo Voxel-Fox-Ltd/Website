@@ -9,16 +9,15 @@ from aiohttp.web import Request, RouteTableDef, Response
 from discord.ext import vbu
 import pytz
 
-
-from .utils.get_paypal_access_token import get_paypal_access_token
-from .utils.db_util import (
+from .utils import (
+    send_webhook,
+    get_paypal_access_token,
     CheckoutItem,
     create_purchase,
     fetch_purchase,
-    log_transaction,
     update_purchase,
+    types,
 )
-from .utils.webhook_util import send_webhook
 
 
 routes = RouteTableDef()
@@ -82,14 +81,14 @@ async def paypal_ipn_complete(request: Request):
     # Get the data from the post request
     content_bytes: bytes = await request.content.read()
     paypal_data_string: str = content_bytes.decode()
-    paypal_data: dict
+    paypal_data: types.IPNMessage
     try:
         paypal_data = {
             i.strip(): o[0].strip()
             for i, o in parse_qs(paypal_data_string).items()
-        }
+        }  # pyright: ignore
     except Exception:
-        paypal_data = {'receiver_email': '@business.example.com'}
+        paypal_data = {'receiver_email': '@business.example.com'}  # pyright: ignore
 
     # Let's throw that into a logger
     log.info(f"Data from PayPal: {json.dumps(paypal_data)}")
@@ -110,8 +109,7 @@ async def paypal_ipn_complete(request: Request):
         resp = await session.post(paypal_url, data=data_send_back)
         site_data = await resp.read()
         if site_data.decode() != "VERIFIED":
-            # Fake data, but PayPal expects a 200
-            return Response(status=200)
+            return Response(status=200)  # Fake data, but PayPal expects a 200
 
     # Process the data
     event = paypal_data.get('txn_type')
@@ -291,21 +289,6 @@ async def charge_captured(request: Request, data: dict):
                 settle_currency = data['settle_currency']
             else:
                 settle_currency = data['mc_currency']
-            await log_transaction(
-                db,
-                product_id=i.id,
-                amount_gross=float(data['mc_gross']) * 100,
-                amount_net=float(data['mc_gross']) - float(data.get('mc_fee', 0)),
-                currency=data['mc_currency'],
-                settle_amount=settle_amount,
-                settle_currency=settle_currency,
-                identifier=data['txn_id'],
-                payment_processor="PayPal",
-                customer_email=data['payer_email'],
-                metadata={
-                    **metadata,
-                },
-            )
             if refunded:
                 current = await fetch_purchase(
                     db,
@@ -385,21 +368,6 @@ async def subscription_created(request: Request, data: dict):
                 settle_currency = data['settle_currency']
             else:
                 settle_currency = data['mc_currency']
-            await log_transaction(
-                db,
-                product_id=item.id,
-                amount_gross=float(data['mc_gross']) * 100,
-                amount_net=float(data['mc_gross']) - float(data.get('mc_fee', 0)),
-                currency=data['mc_currency'],
-                settle_amount=settle_amount,
-                settle_currency=settle_currency,
-                identifier=data['txn_id'],
-                payment_processor="PayPal",
-                customer_email=data['payer_email'],
-                metadata={
-                    **metadata,
-                },
-            )
             current = await fetch_purchase(
                 db,
                 metadata.get('user_id') or metadata.get('discord_user_id'),  # pyright: ignore

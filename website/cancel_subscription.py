@@ -39,8 +39,7 @@ async def cancel_subscription(request: Request):
                 checkout_items
             WHERE
                 product_name = $1
-            AND
-                transaction_webhook_authorization = $2
+                AND transaction_webhook_authorization = $2
             """,
             product_name, auth_header,
         )
@@ -55,9 +54,7 @@ async def cancel_subscription(request: Request):
         auth = await get_paypal_basicauth()
         method = "POST"
     elif "stripe.com" in cancel_url:
-        auth = aiohttp.BasicAuth(
-            request.app['config']['stripe_api_key'],
-        )
+        auth = aiohttp.BasicAuth(request.app['config']['stripe_api_key'])
         method = "DELETE"
     else:
         raise Exception()
