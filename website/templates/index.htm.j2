@@ -53,6 +53,16 @@ changeContentString(window.location.hash.slice(1));
 window.addEventListener('hashchange', function() {
     changeContentString(window.location.hash.slice(1));
 });
+
+
+function replaceIcons() {
+    let allIcons = document.querySelectorAll("icon");
+    for (let i of allIcons) {
+        let type = i.attributes[0].name;
+        i.outerHTML = `<span class="icon icon-${type}"></span>`;
+    }
+}
+replaceIcons();
 </script>
 
 </body>
