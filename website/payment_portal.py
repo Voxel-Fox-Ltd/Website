@@ -10,7 +10,7 @@ from aiohttp_jinja2 import render_template, template
 import aiohttp_session
 from discord.ext import vbu
 
-from .utils.db_util import CheckoutItem
+from .utils.db_models import CheckoutItem
 from .utils.login import requires_login, _require_login_wrapper, requires_manager_login
 
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime as dt
 import logging
 from typing import TYPE_CHECKING, Any
@@ -153,7 +155,7 @@ async def fetch_purchase(
             ON purchases.product_id = checkout_items.id
         WHERE
             {0} = $1
-            AND checkout_items.product_id = $2
+            AND checkout_items.id = $2
         ORDER BY
             timestamp DESC
         """.format(check),
