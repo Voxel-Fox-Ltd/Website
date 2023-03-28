@@ -109,7 +109,7 @@ async def create_purchase(
         discord_guild_id,  # discord_guild_id
         expiry_time,  # expiry_time
         cancel_url,  # cancel_url
-        timestamp,  # timestamp
+        timestamp or dt.utcnow(),  # timestamp
         identifier,  # identifier
         quantity,  # quantit
     )
