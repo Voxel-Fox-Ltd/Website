@@ -9,6 +9,7 @@ from discord.ext import vbu
 
 from .utils import types
 from .utils.db_util import create_purchase, fetch_purchase, update_purchase
+from .utils.db_models import CheckoutItem, LoginUser
 
 
 routes = RouteTableDef()
@@ -115,30 +116,28 @@ async def purchase_webhook(request: Request) -> StreamResponse:
 
     # Store data
     async with vbu.Database() as db:
+        product = await CheckoutItem.fetch_by_name(db, product_name)
+        assert product
+        user_rows: list[dict] = await db.call(
+            "SELECT * FROM login_users WHERE discord_user_id = $1",
+            body['user']['discord_id']  # pyright: ignore
+        )
+        if not user_rows:
+            user_rows: list[dict] = await db.call(
+                "INSERT INTO login_users (discord_user_id) VALUES ($1)",
+                body['user']['discord_id']  # pyright: ignore
+            )
+        user = LoginUser.from_row(user_rows[0])
         if data['type'] == "order.created":
             await create_purchase(
                 db,
-                user_id=None,
-                discord_user_id=int(body['user']['discord_id'] or 0),
-                product_name=product_name,
+                user,
+                product,
                 identifier=body['payment_processor_record_id'],
             )
         elif data['type'] in ["order_updated", "order.deleted"]:
-            # Get the user ID
-            user_rows: list[dict] = await db.call(
-                "SELECT * FROM login_users WHERE discord_user_id = $1",
-                int(body['user']['discord_id'])  # pyright: ignore
-            )
-            if not user_rows:
-                user_rows: list[dict] = await db.call(
-                    "INSERT INTO login_users (discord_user_id) VALUES ($1)",
-                    int(body['user']['discord_id'])  # pyright: ignore
-                )
-            user = user_rows[0]
-
-            # Get the purchase
-            purchase = await fetch_purchase(db, user['id'], product_name)
-            if purchase is None:
+            purchase = await fetch_purchase(db, user, product)
+            if not purchase:
                 log.info(f"UpgradeChat event does not have a purchase stored in the database already")
                 raise Exception()
             if data['type'] == "order.deleted":
@@ -155,7 +154,7 @@ async def purchase_webhook(request: Request) -> StreamResponse:
                 }
             await update_purchase(
                 db,
-                purchase['id'],
+                purchase[0].id,
                 **params,
             )
 
