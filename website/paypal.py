@@ -17,6 +17,7 @@ from .utils import (
     fetch_purchase,
     update_purchase,
     types,
+    LoginUser,
 )
 
 
@@ -223,7 +224,7 @@ def get_products_from_charge(data: dict) -> Generator[dict, None, None]:
     return
 
 
-async def charge_captured(request: Request, data: dict):
+async def charge_captured(request: Request, data: types.IPNMessage):
     """
     Pinged when a user purchases an object via checkout.
     """
@@ -236,7 +237,7 @@ async def charge_captured(request: Request, data: dict):
     metadata.update(json.loads(data.get("custom", "{}")))
 
     # See if it's a subscription refund
-    if data.get('recurring_payment_id'):
+    if "recurring_payment_id" in data:
         recurring_payment_info = await get_subscription_by_subscription_id(
             request,
             data['recurring_payment_id'],
@@ -248,7 +249,7 @@ async def charge_captured(request: Request, data: dict):
     products = get_products_from_charge(data)
     async with vbu.Database() as db:
         items = [
-            await CheckoutItem.fetch(
+            await CheckoutItem.fetch_by_name(
                 db,
                 product_name=i['name'],
                 paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
@@ -281,46 +282,47 @@ async def charge_captured(request: Request, data: dict):
     # Add these transactions to the database
     async with vbu.Database() as db:
         for i in items:
-            if 'settle_amount' in data:
-                settle_amount = float(data['settle_amount'])
-            else:
-                settle_amount = float(data['mc_gross']) - float(data.get('mc_fee', 0))
-            if 'settle_currency' in data:
-                settle_currency = data['settle_currency']
-            else:
-                settle_currency = data['mc_currency']
             if refunded:
                 current = await fetch_purchase(
                     db,
                     metadata.get('user_id', metadata['discord_user_id']),
-                    i.name,
+                    i,
                     # discord_user_id=metadata.get('discord_user_id'),
-                    guild_id=metadata.get('discord_guild_id'),
-                    paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
+                    discord_guild_id=metadata.get('discord_guild_id'),
                 )
-                if current is None:
+                if not current:
                     continue
-                await update_purchase(db, current['id'], delete=True)
+                await update_purchase(db, current[0].id, delete=True)
             else:
+                user = await LoginUser.fetch(
+                    db,
+                    id=metadata.get("user_id"),
+                    discord_user_id=metadata.get("discord_user_id"),
+                )
+                if user is None:
+                    user = await LoginUser.create(
+                        db,
+                        discord_user_id=metadata.get("discord_user_id"),
+                    )
                 await create_purchase(
                     db,
-                    metadata.get('user_id'),
-                    i.name,
-                    discord_user_id=metadata.get('discord_user_id'),
-                    guild_id=metadata.get('discord_guild_id'),
-                    paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
+                    user,
+                    i,
+                    discord_guild_id=metadata.get('discord_guild_id'),
                     identifier=data.get('txn_id')
                 )
 
 
-async def subscription_created(request: Request, data: dict):
+async def subscription_created(request: Request, data: types.IPNMessage):
     """
     Pigned when a user creates a new subscription purchase.
     """
 
     # Get the data from the subscription
-    product_name = data['product_name']
-    recurring_payment_id = data['recurring_payment_id']
+    product_name = data.get('product_name')
+    assert product_name
+    recurring_payment_id = data.get('recurring_payment_id')
+    assert recurring_payment_id
 
     # Get the recurring payment info
     recurring_payment_info = await get_subscription_by_subscription_id(
@@ -332,7 +334,7 @@ async def subscription_created(request: Request, data: dict):
 
     # Grab the data from the database
     async with vbu.Database() as db:
-        item = await CheckoutItem.fetch(
+        item = await CheckoutItem.fetch_by_name(
             db,
             product_name=product_name,
             paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
@@ -359,48 +361,50 @@ async def subscription_created(request: Request, data: dict):
 
     # And store in the database
     async with vbu.Database() as db:
+        user = await LoginUser.fetch(
+            db,
+            id=metadata.get("user_id"),
+            discord_user_id=metadata.get("discord_user_id"),
+        )
+        if user is None:
+            user = await LoginUser.create(
+                db,
+                discord_user_id=metadata.get("discord_user_id"),
+            )
         if data['txn_type'] == "recurring_payment":
-            if 'settle_amount' in data:
-                settle_amount = float(data['settle_amount'])
-            else:
-                settle_amount = float(data['mc_gross']) - float(data.get('mc_fee', 0))
-            if 'settle_currency' in data:
-                settle_currency = data['settle_currency']
-            else:
-                settle_currency = data['mc_currency']
+            assert user
             current = await fetch_purchase(
                 db,
-                metadata.get('user_id') or metadata.get('discord_user_id'),  # pyright: ignore
-                item.name,
-                guild_id=metadata.get('discord_guild_id'),
-                paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
+                user,
+                item,
+                discord_guild_id=metadata.get('discord_guild_id'),
             )
             if current:
                 return  # We only want to store the original subscription create
         await create_purchase(
             db,
-            metadata.get('user_id'),
-            item.name,
-            discord_user_id=metadata.get('discord_user_id'),
-            guild_id=metadata.get('discord_guild_id'),
+            user,
+            item,
+            discord_guild_id=metadata.get('discord_guild_id'),
             expiry_time=None,
             cancel_url=(
                 f"{PAYPAL_BASE}/v1/billing/subscriptions/"
                 f"{recurring_payment_id}/cancel"
             ),
-            paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
             identifier=data.get('txn_id'),
         )
 
 
-async def subscription_deleted(request: Request, data: dict):
+async def subscription_deleted(request: Request, data: types.IPNMessage):
     """
     Pinged when a user cancels their subscription.
     """
 
     # Get the data from the subscription
-    product_name = data['product_name']
-    recurring_payment_id = data['recurring_payment_id']
+    product_name = data.get('product_name')
+    assert product_name
+    recurring_payment_id = data.get('recurring_payment_id')
+    assert recurring_payment_id
 
     # Get the recurring payment info
     recurring_payment_info = await get_subscription_by_subscription_id(
@@ -412,7 +416,7 @@ async def subscription_deleted(request: Request, data: dict):
 
     # Grab the data from the database
     async with vbu.Database() as db:
-        item = await CheckoutItem.fetch(
+        item = await CheckoutItem.fetch_by_name(
             db,
             product_name=product_name,
             paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
@@ -441,17 +445,26 @@ async def subscription_deleted(request: Request, data: dict):
 
     # And update the database
     async with vbu.Database() as db:
+        user = await LoginUser.fetch(
+            db,
+            id=metadata.get("user_id"),
+            discord_user_id=metadata.get("discord_user_id"),
+        )
+        if user is None:
+            user = await LoginUser.create(
+                db,
+                discord_user_id=metadata.get("discord_user_id"),
+            )
         current = await fetch_purchase(
             db,
-            metadata.get('user_id') or metadata.get('discord_user_id'),  # pyright: ignore
-            item.name,
-            guild_id=metadata.get('discord_guild_id'),
-            paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
+            user,
+            item,
+            discord_guild_id=metadata.get('discord_guild_id'),
         )
-        if current is None:
+        if not current:
             return
         await update_purchase(
             db,
-            current['id'],
+            current[0].id,
             expiry_time=expiry_time,
         )

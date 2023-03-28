@@ -61,3 +61,4 @@ class IPNMessage(TypedDict):
     txn_id: str
     txn_type: str
     verify_sign: str
+    recurring_payment_id: NotRequired[str]

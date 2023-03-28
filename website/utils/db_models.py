@@ -146,6 +146,41 @@ class LoginUser:
             return None
         return cls.from_row(rows[0])
 
+    @classmethod
+    async def create(
+            cls,
+            db: vbu.Database,
+            *,
+            discord_user_id: str | None = None,
+            google_user_id: str | None = None,
+            facebook_user_id: str | None = None) -> Self:
+        """
+        Create a new user.
+        """
+
+        rows = await db.call(
+            """
+            INSERT INTO
+                login_users
+                (
+                    discord_user_id,
+                    google_user_id,
+                    facebook_user_id
+                )
+            VALUES
+                (
+                    $1,
+                    $2,
+                    $3
+                )
+            RETURNING *
+            """,
+            discord_user_id,
+            google_user_id,
+            facebook_user_id,
+        )
+        return cls.from_row(rows[0])
+
 
 class User:
     """
