@@ -82,7 +82,7 @@ async def create_checkout_session(request: Request):
     # Get the user's login details for metadata
     if "user_id" not in post_data:
         raise Exception("Missing user ID from POST request")
-    if "product_id" is None:
+    if product_id is None:
         raise Exception("Missing product ID from POST request")
 
     # Get the item data from the database
