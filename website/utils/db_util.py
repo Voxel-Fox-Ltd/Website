@@ -104,14 +104,14 @@ async def create_purchase(
         RETURNING
             *
         """,
-        user.id,
-        product.id,
-        quantity,
-        discord_guild_id,
-        expiry_time,
-        cancel_url,
-        timestamp,
-        identifier,
+        user.id,  # user_id
+        product.id,  # product_id
+        discord_guild_id,  # discord_guild_id
+        expiry_time,  # expiry_time
+        cancel_url,  # cancel_url
+        timestamp,  # timestamp
+        identifier,  # identifier
+        quantity,  # quantit
     )
     return Purchase.from_row(added_rows[0])
 
