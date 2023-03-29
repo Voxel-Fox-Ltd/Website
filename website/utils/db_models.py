@@ -179,9 +179,9 @@ class LoginUser:
                 )
             RETURNING *
             """,
-            discord_user_id,
-            google_user_id,
-            facebook_user_id,
+            str(discord_user_id) if discord_user_id is not None else None,
+            str(google_user_id) if google_user_id is not None else None,
+            str(facebook_user_id) if facebook_user_id is not None else None,
         )
         return cls.from_row(rows[0])
 
