@@ -116,8 +116,12 @@ class LoginUser:
                 google_user_id is None,
                 facebook_user_id is None)):
             return None
-        elif (id, discord_user_id, google_user_id, facebook_user_id).count(None) != 3:
-            raise ValueError("Cannot check by multiple keys.")
+        if discord_user_id is not None:
+            discord_user_id = str(discord_user_id)
+        if google_user_id is not None:
+            google_user_id = str(google_user_id)
+        if facebook_user_id is not None:
+            facebook_user_id = str(facebook_user_id)
 
         # Build our query
         query: str
