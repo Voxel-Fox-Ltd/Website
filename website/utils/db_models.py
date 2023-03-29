@@ -610,35 +610,36 @@ class CheckoutItem:
         """
 
         # Fetch the item from the database
-        if (paypal_id, stripe_id,) == (None, None,):
-            item_rows = await db.call(
-                """
-                SELECT
-                    *
-                FROM
-                    checkout_items
-                WHERE
-                    product_name = $1
-                """,
-                product_name,
-            )
-        else:
-            item_rows = await db.call(
-                """
-                SELECT
-                    checkout_items.*
-                FROM
-                    checkout_items
-                LEFT JOIN
-                    payment_users
-                ON
-                    checkout_items.creator_id = payment_users.id
-                WHERE
-                    {args}
-                    AND payment_users.{processor}_id = $1
-                """.format(processor="paypal" if paypal_id else "stripe"),
-                paypal_id or (stripe_id or 'VFL'),
-            )
+        # if (paypal_id, stripe_id,) == (None, None,):
+        item_rows = await db.call(
+            """
+            SELECT
+                *
+            FROM
+                checkout_items
+            WHERE
+                product_name = $1
+            """,
+            product_name,
+        )
+        # else:
+        #     item_rows = await db.call(
+        #         """
+        #         SELECT
+        #             checkout_items.*
+        #         FROM
+        #             checkout_items
+        #         LEFT JOIN
+        #             payment_users
+        #         ON
+        #             checkout_items.creator_id = payment_users.id
+        #         WHERE
+        #             checkout_items.product_name = $2
+        #             AND payment_users.{processor}_id = $1
+        #         """.format(processor="paypal" if paypal_id else "stripe"),
+        #         paypal_id or (stripe_id or 'VFL'),
+        #         product_name,
+        #     )
 
         # Return the fetched item
         if not item_rows:
