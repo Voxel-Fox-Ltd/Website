@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Background Page</title>
+</head>
+<body>
+
+<style type="text/css">
+body {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.one {
+    --duration: 30s;
+    background: linear-gradient(
+        145deg,
+        #ffffff,
+        #ff7400,
+        #eec6aa,
+        #ff7400,
+        #ffe4cc
+    );
+}
+
+.two {
+    --duration: 90s;
+/*    filter: opacity(60%);*/
+    background: radial-gradient(
+        #eec6aa,
+        #ff7400,
+        #ffffff,
+        #ffe4cc,
+        #ff7400
+    );
+    mask: url(mask.png);
+}
+
+.bg {
+    height: 200vh;
+    width: 200vw;
+    position: absolute;
+    left: -50%;
+    top: -50%;
+    background-size: 1000% 1000%;
+    -webkit-animation:
+        bg-animation var(--duration) ease infinite
+    ;
+    -moz-animation:
+        bg-animation var(--duration) ease infinite
+    ;
+    animation:
+        bg-animation var(--duration) ease infinite
+    ;
+}
+
+@-webkit-keyframes bg-animation {
+    0% {background-position: 0% 50%}
+    50% {background-position: 100% 50%}
+    100% {background-position: 0% 50%}
+}
+
+@-moz-keyframes bg-animation {
+    0% {background-position: 0% 50%}
+    50% {background-position: 100% 50%}
+    100% {background-position: 0% 50%}
+}
+
+@keyframes bg-animation {
+    0% {background-position: 0% 50%}
+    50% {background-position: 100% 50%}
+    100% {background-position: 0% 50%}
+}
+
+@-webkit-keyframes bg-spin {
+    0% {transform: rotate(0deg);}
+    100% {transform: rotate(360deg);}
+}
+
+@-moz-keyframes bg-spin {
+    0% {transform: rotate(0deg);}
+    100% {transform: rotate(360deg);}
+}
+
+@keyframes bg-spin {
+    0% {transform: rotate(0deg);}
+    100% {transform: rotate(360deg);}
+}
+</style>
+
+<div class="bg one"></div>
+<div class="bg two"></div>
+
+</body>
+</html>
