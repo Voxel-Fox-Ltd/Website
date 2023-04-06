@@ -234,8 +234,13 @@ function main() {
     loadInputs();
     saveInputs();
     let params = new URLSearchParams(location.search);
-    if(params.get("connect")) {
-        connectTTS();
+    if(params.get("connect") !== null) {
+        if(document.querySelector(`[name="at"]`).value) {
+            connectTTS();
+        }
+        else {
+            alert("Cannot autoconnect without access token.");
+        }
     }
 }
 main();

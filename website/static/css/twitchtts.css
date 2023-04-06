@@ -24,8 +24,13 @@ form div textarea {
     margin-top: 5px;
     font-size: 1em;
     font-family: inherit;
-    width: 80%;
+    width: 100%;
+    box-sizing: border-box;
     padding: 0.3em;
+}
+
+form button {
+    margin-top: 0.3em;
 }
 
 button {
