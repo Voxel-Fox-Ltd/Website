@@ -129,7 +129,7 @@ class TwitchIRC {
         // Send auth
         if(sendHello) {
             this.socket.send(`PASS oauth:${this.token}`);
-            this.socket.send(`NICK ${this.name}`);
+            this.socket.send(`NICK ${this.name.toLowerCase()}`);
         }
         if(loop >= 5) {
             console.log("Failed to connect to IRC after 5 loops.");
@@ -158,7 +158,7 @@ class TwitchIRC {
      * */
     async connectToChannel(channel) {
         if(this.socket === null) return;
-        this.socket.send(`JOIN #${channel}`);
+        this.socket.send(`JOIN #${channel.toLowerCase()}`);
     }
 
     async onTextMessage(message) {
@@ -244,3 +244,12 @@ function main() {
     }
 }
 main();
+
+
+// const LOGDOM = document.querySelector("#log");
+// function writeToLog(text) {
+//     LOGDOM.value += text + "\n";
+// }
+// console.log = writeToLog
+// console.error = writeToLog
+// console.debug = writeToLog
