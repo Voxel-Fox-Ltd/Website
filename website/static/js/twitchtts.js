@@ -187,7 +187,8 @@ async function sayMessage(twitchMessage) {
 
 
 function loadInputs() {
-    let givenToken = location.hash;
+    let params = new URLSearchParams(location.hash.slice(1));
+    let givenToken = params.get("access_token");
     let savedToken = localStorage.getItem(`twitchAccessToken`);
     let accessToken = givenToken || savedToken;
     document.querySelector(`[name="at"]`).value = accessToken;
@@ -209,10 +210,31 @@ function connectTTS() {
     let channelName = document.querySelector(`[name="channel"]`).value.trim();
     let connectChannels = document.querySelector(`[name="connect"]`).value.trim().split("\n");
     const irc = new TwitchIRC(accessToken, channelName, connectChannels);
-    document.querySelector(`button`).disabled = true;
+    document.querySelector(`#tts-connect`).disabled = true;
     irc.connect();
 }
 
 
-loadInputs();
-saveInputs();
+function redirectToLogin() {
+    let params = {
+        "client_id": "eatw6619xc67g5udj97dmx096vyxb7",
+        "redirect_uri": "https://voxelfox.co.uk/static/html/twitchtts.html",
+        "response_type": "token",
+        "scope": "openid",
+    }
+    let usp = new URLSearchParams(params);
+    window.location.href = (
+        `https://id.twitch.tv/oauth2/authorize?`
+        + usp.toString()
+    );
+}
+
+
+function main() {
+    loadInputs();
+    saveInputs();
+    let params = new URLSearchParams(location.search);
+    if(params.get("connect")) {
+        connectTTS();
+    }
+}

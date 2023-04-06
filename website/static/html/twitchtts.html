@@ -16,15 +16,14 @@
                     name="at"
                     onchange="javascript:saveInputs();"
                     type="password"
-                    required
                     />
+            <button onclick="redirectToLogin(); return false;">Login</button>
         </div>
         <div>
             <label for="channel">Channel Name:</label>
             <input
                     name="channel"
                     onchange="javascript:saveInputs();"
-                    required
                     />
         </div>
         <div>
@@ -35,7 +34,7 @@
                     >
             </textarea>
         </div>
-        <button onclick="connectTTS(); return false;">Connect TTS</button>
+        <button id="tts-connect" onclick="connectTTS(); return false;">Connect TTS</button>
     </form>
 </div>
 
