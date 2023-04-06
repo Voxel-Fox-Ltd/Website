@@ -15,47 +15,75 @@ body {
     margin: 0;
     justify-content: center;
     overflow: hidden;
+/*    background: #ff7400;*/
+    background: white;
 }
 
 .one {
     --duration: 30s;
-    background: linear-gradient(
+    /*background: linear-gradient(
         145deg,
         #ff7400,
         #eec6aa,
         #ff7400,
         #ffe4cc
+    );*/
+    background: linear-gradient(
+        145deg,
+        rgba(255, 116, 0, 1),
+        rgba(255, 116, 0, 0.8),
+        rgba(255, 116, 0, 0.6),
+        rgba(255, 116, 0, 0.9)
     );
 }
 
 .two {
     --duration: 90s;
-/*    filter: opacity(60%);*/
-    background: radial-gradient(
+    /*background: radial-gradient(
         #eec6aa,
         #ff7400,
         #ffe4cc,
         #ff7400
+    );*/
+    background: linear-gradient(
+        61deg,
+        rgba(255, 116, 0, 0.1),
+        rgba(255, 116, 0, 0.5),
+        rgba(255, 116, 0, 0),
+        rgba(255, 116, 0, 1)
     );
-    mask: url(mask.png);
+}
+
+.three {
+    --duration: 200s;
+    background: linear-gradient(
+        200deg,
+        rgba(255, 116, 0, 0.1),
+        rgba(255, 116, 0, 0.5),
+        rgba(255, 116, 0, 0.4),
+        rgba(255, 116, 0, 0)
+    );
+}
+
+.four {
+    --duration: 180s;
+    background-repeat: repeat;
+    background-image: url(https://voxelfox.co.uk/static/images/_voxelfox/white.svg);
+    background-size: 200px auto;
+    background-color: white;
+    animation: none;
+    width: 100%;
+    height: 100%;
 }
 
 .bg {
-    height: 200vh;
-    width: 200vw;
+    height: 100vh;
+    width: 100vw;
     position: absolute;
-    left: -50%;
-    top: -50%;
     background-size: 1000% 1000%;
-    -webkit-animation:
-        bg-animation var(--duration) ease infinite
-    ;
-    -moz-animation:
-        bg-animation var(--duration) ease infinite
-    ;
-    animation:
-        bg-animation var(--duration) ease infinite
-    ;
+    -webkit-animation: bg-animation var(--duration) ease infinite;
+    -moz-animation: bg-animation var(--duration) ease infinite;
+    animation: bg-animation var(--duration) ease infinite;
 }
 
 @-webkit-keyframes bg-animation {
@@ -94,6 +122,8 @@ body {
 
 <div class="bg one"></div>
 <div class="bg two"></div>
+<div class="bg three"></div>
+<div class="four"></div>
 
 </body>
 </html>
