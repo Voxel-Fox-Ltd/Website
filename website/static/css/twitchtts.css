@@ -1,0 +1,31 @@
+body {
+    font-family: "Century Gothic", "Helvetica", sans-serif;
+    font-size: 16px;
+    margin: 2em;
+}
+
+label {
+    display: block;
+}
+
+form div {
+    margin-bottom: 20px;
+    border: 1px solid #ffffff22;
+    border-radius: 0.3em;
+    padding: 1em;
+}
+
+form div input,
+form div textarea {
+    margin-top: 5px;
+    font-size: 1em;
+    font-family: inherit;
+    width: 80%;
+    padding: 0.3em;
+}
+
+button {
+    padding: 0.3em;
+    font-size: 1.2em;
+    width: 100%;
+}
