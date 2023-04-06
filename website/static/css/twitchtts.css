@@ -2,6 +2,10 @@ body {
     font-family: "Century Gothic", "Helvetica", sans-serif;
     font-size: 16px;
     margin: 2em;
+    width: calc(100vw - 4em);
+    box-sizing: border-box;
+    background: #333333;
+    color: white;
 }
 
 label {
