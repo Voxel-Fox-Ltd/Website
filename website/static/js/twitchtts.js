@@ -238,3 +238,4 @@ function main() {
         connectTTS();
     }
 }
+main();
