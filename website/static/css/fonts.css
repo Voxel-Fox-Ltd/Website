@@ -1,10 +1,10 @@
 @font-face {
     font-family: 'icomoon';
-    src:  url('/static/fonts/icomoon.eot?3jt8fs');
-    src:  url('/static/fonts/icomoon.eot?3jt8fs#iefix') format('embedded-opentype'),
-        url('/static/fonts/icomoon.ttf?3jt8fs') format('truetype'),
-        url('/static/fonts/icomoon.woff?3jt8fs') format('woff'),
-        url('/static/fonts/icomoon.svg?3jt8fs#icomoon') format('svg');
+    src:  url('/static/fonts/icomoon.eot?k3lfrf');
+    src:  url('/static/fonts/icomoon.eot?k3lfrf#iefix') format('embedded-opentype'),
+        url('/static/fonts/icomoon.ttf?k3lfrf') format('truetype'),
+        url('/static/fonts/icomoon.woff?k3lfrf') format('woff'),
+        url('/static/fonts/icomoon.svg?k3lfrf#icomoon') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: block;
@@ -25,39 +25,21 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-banknote:before {
-    content: "\e901";
-}
-.icon-mastodon:before {
-    content: "\e905";
-}
-.icon-discord:before {
-    content: "\e904";
-}
-.icon-at:before {
-    content: "\e900";
-}
-.icon-computer:before {
-    content: "\e956";
-}
-.icon-link:before {
-    content: "\e9cb";
-}
-.icon-terminal:before {
-    content: "\ea81";
-}
-.icon-twitter:before {
-    content: "\ea96";
-}
-.icon-youtube:before {
-    content: "\e906";
-}
-.icon-twitch:before {
-    content: "\e902";
-}
-.icon-github:before {
-    content: "\e903";
-}
-.icon-linkedin:before {
-    content: "\eaca";
-}
+.icon-node:before {content: "\e907";}
+.icon-css3:before {content: "\e908";}
+.icon-postgres:before {content: "\e909";}
+.icon-html5:before {content: "\e90a";}
+.icon-javascript:before {content: "\e90b";}
+.icon-python:before {content: "\e90c";}
+.icon-mastodon:before {content: "\e905";}
+.icon-discord:before {content: "\e904";}
+.icon-banknote:before {content: "\e901";}
+.icon-at:before {content: "\e900";}
+.icon-computer:before {content: "\e956";}
+.icon-link:before {content: "\e9cb";}
+.icon-terminal:before {content: "\ea81";}
+.icon-twitter:before {content: "\ea96";}
+.icon-youtube:before {content: "\e906";}
+.icon-twitch:before {content: "\e902";}
+.icon-github:before {content: "\e903";}
+.icon-linkedin:before {content: "\eaca";}
