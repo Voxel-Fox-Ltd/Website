@@ -220,7 +220,7 @@ function redirectToLogin() {
         "client_id": "eatw6619xc67g5udj97dmx096vyxb7",
         "redirect_uri": "https://voxelfox.co.uk/static/html/twitchtts.html",
         "response_type": "token",
-        "scope": "openid",
+        "scope": "openid chat:read",
     }
     let usp = new URLSearchParams(params);
     window.location.href = (
