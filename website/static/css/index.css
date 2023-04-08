@@ -91,6 +91,13 @@ ul {
     margin-top: 10px;
 }
 
+.project .technology {
+    font-size: 1.5em;
+    margin-top: 20px;
+    display: flex;
+    gap: 0.8em;
+}
+
 a,
 a:visited {
     padding: 0 10px;
