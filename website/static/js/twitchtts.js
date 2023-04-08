@@ -12,15 +12,6 @@ class TwitchMessage {
 }
 
 
-const VOICES = (
-    speechSynthesis
-    .getVoices()
-    .filter((voice) => {
-        return voice.lang.includes("en");
-    })
-);
-
-
 const TWITCH_IRC_URI = "wss://irc-ws.chat.twitch.tv:443";
 
 
@@ -168,6 +159,15 @@ class TwitchIRC {
 }
 
 
+function getVoices() {
+    return (
+        speechSynthesis
+        .getVoices()
+        .filter((voice) => {return voice.lang.includes("en")})
+    );
+}
+
+
 async function sayMessage(twitchMessage) {
     let voiceIndex = (
         twitchMessage
@@ -178,7 +178,7 @@ async function sayMessage(twitchMessage) {
             return (char.charCodeAt(0) + idx) % VOICES.length;
         }, 0)
     );
-    let voice = VOICES[voiceIndex];
+    let voice = getVoices()[voiceIndex];
     let msg = new SpeechSynthesisUtterance();
     msg.text = twitchMessage.message;
     msg.voice = voice;
