@@ -10,7 +10,7 @@
     font-display: block;
 }
 
-[class^="icon-"], [class*=" icon-"] {
+icon {
     /* use !important to prevent issues with browser extensions that change fonts */
     font-family: 'icomoon' !important;
     speak: never;
@@ -25,21 +25,21 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-node:before {content: "\e907";}
-.icon-css3:before {content: "\e908";}
-.icon-postgres:before {content: "\e909";}
-.icon-html5:before {content: "\e90a";}
-.icon-javascript:before {content: "\e90b";}
-.icon-python:before {content: "\e90c";}
-.icon-mastodon:before {content: "\e905";}
-.icon-discord:before {content: "\e904";}
-.icon-banknote:before {content: "\e901";}
-.icon-at:before {content: "\e900";}
-.icon-computer:before {content: "\e956";}
-.icon-link:before {content: "\e9cb";}
-.icon-terminal:before {content: "\ea81";}
-.icon-twitter:before {content: "\ea96";}
-.icon-youtube:before {content: "\e906";}
-.icon-twitch:before {content: "\e902";}
-.icon-github:before {content: "\e903";}
-.icon-linkedin:before {content: "\eaca";}
+icon[node]:before {content: "\e907";}
+icon[css3]:before {content: "\e908";}
+icon[postgres]:before {content: "\e909";}
+icon[html5]:before {content: "\e90a";}
+icon[javascript]:before {content: "\e90b";}
+icon[python]:before {content: "\e90c";}
+icon[mastodon]:before {content: "\e905";}
+icon[discord]:before {content: "\e904";}
+icon[banknote]:before {content: "\e901";}
+icon[at]:before {content: "\e900";}
+icon[computer]:before {content: "\e956";}
+icon[link]:before {content: "\e9cb";}
+icon[terminal]:before {content: "\ea81";}
+icon[twitter]:before {content: "\ea96";}
+icon[youtube]:before {content: "\e906";}
+icon[twitch]:before {content: "\e902";}
+icon[github]:before {content: "\e903";}
+icon[linkedin]:before {content: "\eaca";}

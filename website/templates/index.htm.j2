@@ -55,14 +55,16 @@ window.addEventListener('hashchange', function() {
 });
 
 
-function replaceIcons() {
-    let allIcons = document.querySelectorAll("icon");
-    for (let i of allIcons) {
-        let type = i.attributes[0].name;
-        i.outerHTML = `<span class="icon icon-${type}"></span>`;
+// function replaceIcons() {
+//     let allIcons = document.querySelectorAll("icon");
+//     for (let i of allIcons) {
+//         let type = i.attributes[0].name;
+//         i.outerHTML = `<span class="icon icon-${type}"></span>`;
+//     }
+// }
+// replaceIcons();
     }
 }
-replaceIcons();
 </script>
 
 </body>
