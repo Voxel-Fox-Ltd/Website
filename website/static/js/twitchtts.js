@@ -191,6 +191,9 @@ function filterMessage(text) {
         if(i.length >= 10) {
             continue;
         }
+
+        // We good
+        newTextSplit.push(i);
     }
     return newTextSplit.join(" ");
 }
