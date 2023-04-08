@@ -44,7 +44,9 @@ class TwitchIRC {
         let site = await fetch(
             "https://id.twitch.tv/oauth2/userinfo",
             {
-                authorization: this.token
+                headers: {
+                    "Authorization": this.token,
+                },
             },
         );
         let data = await site.json();
