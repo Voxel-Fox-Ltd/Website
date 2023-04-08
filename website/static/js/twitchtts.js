@@ -182,9 +182,9 @@ function filterMessage(text) {
         // Filter URLs
         try {
             new URL(i);
+            continue;
         }
         catch (e) {
-            continue;
         }
 
         // Filter messages that are too long
