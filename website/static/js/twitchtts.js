@@ -45,6 +45,7 @@ class TwitchIRC {
             "https://id.twitch.tv/oauth2/userinfo",
             {
                 headers: {
+                    "Content-Type": "application/json",
                     "Authorization": this.token,
                 },
             },
@@ -248,11 +249,12 @@ function saveInputs() {
 }
 
 
+var irc;
 function connectTTS() {
     saveInputs();
     let accessToken = document.querySelector(`[name="at"]`).value.trim();
     let connectChannels = document.querySelector(`[name="connect"]`).value.trim().split("\n");
-    const irc = new TwitchIRC(accessToken, connectChannels);
+    irc = new TwitchIRC(accessToken, connectChannels);
     document.querySelector(`#tts-connect`).disabled = true;
     irc.connect();
 }
