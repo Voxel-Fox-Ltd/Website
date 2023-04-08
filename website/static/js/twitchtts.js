@@ -22,9 +22,9 @@ const TWITCH_IRC_URI = "wss://irc-ws.chat.twitch.tv:443";
 
 
 class TwitchIRC {
-    constructor(accessToken, name, channels) {
+    constructor(accessToken, channels) {
         this.token = accessToken;
-        this.name = name;
+        this.name = null;
         this.channels = channels;
         this.socket = null;
         this.socketHavingFun = false;
@@ -39,6 +39,16 @@ class TwitchIRC {
             log.error("There is already a connected websocket.");
             return;
         }
+
+        // Work out who the access token belongs to
+        let site = await fetch(
+            "https://id.twitch.tv/oauth2/userinfo",
+            {
+                authorization: this.token
+            },
+        );
+        let data = await site.json();
+        this.name = data["preferred_username"];
 
         // Create a new socket instance
         this.socketHavingFun = false;
@@ -188,7 +198,7 @@ function filterMessage(text) {
         }
 
         // Filter messages that are too long
-        if(i.length >= 10) {
+        if(i.length >= 15) {
             continue;
         }
 
@@ -226,14 +236,12 @@ function loadInputs() {
     let savedToken = localStorage.getItem(`twitchAccessToken`);
     let accessToken = givenToken || savedToken;
     document.querySelector(`[name="at"]`).value = accessToken;
-    document.querySelector(`[name="channel"]`).value = localStorage.getItem(`channelName`);
     document.querySelector(`[name="connect"]`).value = localStorage.getItem(`ttsChannels`);
 }
 
 
 function saveInputs() {
     localStorage.setItem(`twitchAccessToken`, document.querySelector(`[name="at"]`).value);
-    localStorage.setItem(`channelName`, document.querySelector(`[name="channel"]`).value);
     localStorage.setItem(`ttsChannels`, document.querySelector(`[name="connect"]`).value);
 }
 
@@ -241,9 +249,8 @@ function saveInputs() {
 function connectTTS() {
     saveInputs();
     let accessToken = document.querySelector(`[name="at"]`).value.trim();
-    let channelName = document.querySelector(`[name="channel"]`).value.trim();
     let connectChannels = document.querySelector(`[name="connect"]`).value.trim().split("\n");
-    const irc = new TwitchIRC(accessToken, channelName, connectChannels);
+    const irc = new TwitchIRC(accessToken, connectChannels);
     document.querySelector(`#tts-connect`).disabled = true;
     irc.connect();
 }
@@ -255,6 +262,7 @@ function redirectToLogin() {
         "redirect_uri": "https://voxelfox.co.uk/static/html/twitchtts.html",
         "response_type": "token",
         "scope": "openid chat:read",
+        "claims": JSON.stringify({"userinfo": {"preferred_username": null}}),
     }
     let usp = new URLSearchParams(params);
     window.location.href = (
