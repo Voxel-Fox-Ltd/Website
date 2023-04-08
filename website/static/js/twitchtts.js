@@ -250,14 +250,24 @@ function saveInputs() {
 }
 
 
-var irc;
+var irc = null;
 function connectTTS() {
-    saveInputs();
-    let accessToken = document.querySelector(`[name="at"]`).value.trim();
-    let connectChannels = document.querySelector(`[name="connect"]`).value.trim().split("\n");
-    irc = new TwitchIRC(accessToken, connectChannels);
-    document.querySelector(`#tts-connect`).disabled = true;
-    irc.connect();
+    if(irc === null) {
+        saveInputs();
+        document.querySelector(`[name="at"]`).disabled = true;
+        document.querySelector(`[name="connect"]`).disabled = true;
+        let accessToken = document.querySelector(`[name="at"]`).value.trim();
+        let connectChannels = document.querySelector(`[name="connect"]`).value.trim().split("\n");
+        irc = new TwitchIRC(accessToken, connectChannels);
+        irc.connect();
+    }
+    else {
+        irc.close();
+        irc = null;
+    }
+    document.querySelector("#tts-connect").innerHTML = (
+        irc === null ? "Connect TTS" : "Disconnect TTS"
+    );
 }
 
 
