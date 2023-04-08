@@ -256,6 +256,7 @@ function connectTTS() {
         saveInputs();
         document.querySelector(`[name="at"]`).disabled = true;
         document.querySelector(`[name="connect"]`).disabled = true;
+        document.querySelector(`#login-button`).disabled = true;
         let accessToken = document.querySelector(`[name="at"]`).value.trim();
         let connectChannels = document.querySelector(`[name="connect"]`).value.trim().split("\n");
         irc = new TwitchIRC(accessToken, connectChannels);
@@ -263,6 +264,7 @@ function connectTTS() {
     }
     else {
         irc.close();
+        document.querySelector(`#login-button`).disabled = false;
         irc = null;
     }
     document.querySelector("#tts-connect").innerHTML = (

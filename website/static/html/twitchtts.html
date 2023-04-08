@@ -18,8 +18,9 @@
           onchange="javascript:saveInputs();"
           type="password"
           title="Your Twitch chat access token."
+          disabled
           />
-      <button onclick="redirectToLogin(); return false;">Login</button>
+      <button id="login-button" onclick="redirectToLogin(); return false;">Login</button>
     </div>
     <!-- <div>
       <label for="channel">Channel Name:</label>
