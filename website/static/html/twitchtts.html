@@ -1,45 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Twitch TTS Streamlink</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/twitchtts.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Twitch TTS Streamlink</title>
+  <link rel="stylesheet" type="text/css" href="/static/css/twitchtts.css" />
 </head>
 <body>
 
 <div>
-    <form>
-        <div>
-            <label for="at">Access Token:</label>
-            <input
-                    name="at"
-                    onchange="javascript:saveInputs();"
-                    type="password"
-                    title="Your Twitch chat access token."
-                    />
-            <button onclick="redirectToLogin(); return false;">Login</button>
-        </div>
-        <div>
-            <label for="channel">Channel Name:</label>
-            <input
-                    name="channel"
-                    onchange="javascript:saveInputs();"
-                    title="The name of the channel that is connecting."
-                    />
-        </div>
-        <div>
-            <label for="connect">TTS channels:</label>
-            <textarea
-                    name="connect"
-                    onchange="javascript:saveInputs();"
-                    title="A list of Twitch channels that you want to connect to."
-                    >
-            </textarea>
-        </div>
-        <button id="tts-connect" onclick="connectTTS(); return false;">Connect TTS</button>
-    </form>
-    <!-- <textarea id="log"></textarea> -->
+  <form>
+    <div>
+      <label for="at">Access Token:</label>
+      <input
+          name="at"
+          onchange="javascript:saveInputs();"
+          type="password"
+          title="Your Twitch chat access token."
+          />
+      <button onclick="redirectToLogin(); return false;">Login</button>
+    </div>
+    <div>
+      <label for="channel">Channel Name:</label>
+      <input
+          name="channel"
+          onchange="javascript:saveInputs();"
+          title="The name of the channel that is connecting."
+          />
+    </div>
+    <div>
+      <label for="connect">TTS channels:</label>
+      <textarea
+          name="connect"
+          onchange="javascript:saveInputs();"
+          title="A list of Twitch channels that you want to connect to."
+          >
+      </textarea>
+    </div>
+    <button id="tts-connect" onclick="connectTTS(); return false;">Connect TTS</button>
+  </form>
+  <!-- <textarea id="log"></textarea> -->
 </div>
 
 <script type="text/javascript" src="/static/js/twitchtts.js"></script>

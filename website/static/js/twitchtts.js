@@ -4,7 +4,13 @@ const TWITCH_MESSAGE_REGEX = /(?:@(?<tags>.+?) )?:(?<username>.+?)!.+?@.+?\.tmi\
 class TwitchMessage {
     constructor(message) {
         let matches = TWITCH_MESSAGE_REGEX.exec(message).groups;
-        this.tags = matches.tags;
+        let unsplitTags = matches.tags.split(";");
+        this.tags = {}
+        for(let i of unsplitTags) {
+            let k = i.split("=")[0];
+            let v = i.split("=")[1];
+            this.tags[k] = v;
+        }
         this.username = matches.username;
         this.channel = matches.channel;
         this.message = matches.message;
@@ -168,19 +174,44 @@ function getVoices() {
 }
 
 
+function filterMessage(text) {
+    let textSplit = text.split(" ");
+    let newTextSplit = [];
+    for(let i of textSplit) {
+
+        // Filter URLs
+        try {
+            new URL(i);
+        }
+        catch (e) {
+            continue;
+        }
+
+        // Filter messages that are too long
+        if(i.length >= 10) {
+            continue;
+        }
+    }
+    return newTextSplit.join(" ");
+}
+
+
 async function sayMessage(twitchMessage) {
+    if(twitchMessage.tags["emote-only"]) {
+        return;
+    }
     let voiceIndex = (
         twitchMessage
         .username
         .toLowerCase()
         .split("")
         .reduce((idx, char) => {
-            return (char.charCodeAt(0) + idx) % VOICES.length;
+            return (char.charCodeAt(0) + idx) % getVoices().length;
         }, 0)
     );
     let voice = getVoices()[voiceIndex];
     let msg = new SpeechSynthesisUtterance();
-    msg.text = twitchMessage.message;
+    msg.text = filterMessage(twitchMessage.message);
     msg.voice = voice;
     window.speechSynthesis.speak(msg);
 }
@@ -244,12 +275,3 @@ function main() {
     }
 }
 main();
-
-
-// const LOGDOM = document.querySelector("#log");
-// function writeToLog(text) {
-//     LOGDOM.value += text + "\n";
-// }
-// console.log = writeToLog
-// console.error = writeToLog
-// console.debug = writeToLog
