@@ -4,8 +4,26 @@
       src="{{ static('/images/cerberus/Cerberus.png') }}"
       />
 </a>
+
 <h1>Cerberus</h1>
-<p>An activity tracking bot for Discord users.</p>
+<h2>An activity tracking bot for Discord users.</h2>
+<p>
+  Cerberus is a bot designed to listen for chat messages and activity and - basically - count them.
+</p>
+<p>
+  There's a couple of caveats built into that though: there's an inbuilt spam filter, and there are blacklists for different channels, but for the most part the bot just counts messages.
+</p>
+<p>
+  In terms of other activity, the bot will also keep track of user activity in voice channels, allowing you to have a more accurate gague of the total activity of a user in your guild.
+</p>
+<p>
+  Unlike many other acitvity bots, Cerberus takes a hard stance that acivity is something that decays rather than a permanent attribute of your user. Thus, activity points decay from a user over [a configurable amount of] time. In addition to this decay feature, <span data-hover-image="{{ static('/images/cerberus/7-day-graph.png') }}">you're able to see how many points a user has at any given point in time</span>.
+</p>
+<ul class="technology">
+  <icon postgres />
+  <icon python />
+</ul>
+
 <ul class="links">
   <li>
     <a

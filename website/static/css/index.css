@@ -57,7 +57,8 @@ code {
 .content p {
     margin: 0;
     text-align: center;
-    padding: 2px 0;
+    padding: 0.2em 0;
+    line-height: 25px;
 }
 
 .contact-links,
@@ -99,6 +100,22 @@ a:visited {
 
 #projects .project-list .icon {
     margin-left: 6px;
+}
+
+span[data-hover-image] {
+    text-decoration: underline dotted;
+}
+
+#mouse-over-image {
+    border-radius: 20px;
+    position: fixed;
+    border: 1px solid white;
+}
+
+@media (hover: none) {
+    #mouse-over-image {
+        display: none !important;
+    }
 }
 
 .brand {

@@ -63,7 +63,38 @@ window.addEventListener('hashchange', function() {
 //     }
 // }
 // replaceIcons();
+
+
+function createImageOver(image) {
+    let selected = document.querySelector("#mouse-over-image");
+    if(selected) {
+        selected.src = image;
+        return selected;
     }
+    let created = document.createElement("img");
+    created.id = "mouse-over-image";
+    created.src = image;
+    document.body.append(created);
+    return created;
+}
+
+
+function destroyImageOver() {
+    let selected = document.querySelector("#mouse-over-image");
+    if(!selected) return;
+    selected.remove();
+}
+
+
+for(let node of document.querySelectorAll("span[data-hover-image]")) {
+    node.addEventListener("mousemove", (event) => {
+        let image = createImageOver(node.dataset.hoverImage);
+        image.style.left = `${event.pageX - (image.width / 2)}px`;
+        image.style.top = `${event.pageY - image.height - 20}px`;
+    });
+    node.addEventListener("mouseout", (event) => {
+        destroyImageOver();
+    });
 }
 </script>
 
