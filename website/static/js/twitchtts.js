@@ -465,7 +465,7 @@ document.querySelector("#voice-container audio").addEventListener("ended", () =>
     if(audioQueue.length > 0) {
         let url = audioQueue.shift();
         let audio = document.querySelector("#voice-container audio");
-        audio.querySelector("source").src = url;
+        audio.src = url;
         audio.play();
     }
 });
