@@ -438,23 +438,37 @@ async function sayMessageSE(twitchMessage) {
         + usp.toString()
     );
 
-    // Create element
-    let audio = document.createElement("audio");
-    audio.autoplay = true;
-    let source = document.createElement("source");
-    source.src = voiceUrl;
-    audio.appendChild(source);
+    // // Create element
+    // let audio = document.createElement("audio");
+    // audio.autoplay = true;
+    // let source = document.createElement("source");
+    // source.src = voiceUrl;
+    // audio.appendChild(source);
 
-    // Apply filters
-    // let context = new AudioContext();
-    // let source = context.createMediaElementSource(audio);
-    // filter = context.createBiquadFilter();
-    // source.connect(filter);
-    // filter.connect(context.destination);
-
-    // Add to page
-    document.querySelector("#voice-container").appendChild(audio);
+    // Add to queue
+    queueAudio(voiceURL)
 }
+
+
+var audioQueue = [];
+function queueAudio(url) {
+    let audio = document.querySelector("#voice-container audio");
+    if(audio.ended) {
+        audio.querySelector("source").src = url;
+        audio.play();
+    }
+    else {
+        audioQueue.push(url);
+    }
+}
+document.querySelector("#voice-container audio").addEventListener("ended", () => {
+    if(audioQueue.length > 0) {
+        let url = audioQueue.shift();
+        let audio = document.querySelector("#voice-container audio");
+        audio.querySelector("source").src = url;
+        audio.play();
+    }
+});
 
 
 function loadInputs() {
