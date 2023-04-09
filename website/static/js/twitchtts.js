@@ -292,12 +292,13 @@ async function sayMessageSE(twitchMessage) {
         "Salli",
         "Raveena",
     ][voiceIndex];
+    let usp = new URLSearchParams({
+        "voice": voice,
+        "text": twitchMessage.filteredMessage,
+    });
     let voiceUrl = (
         "https://api.streamelements.com/kappa/v2/speech?"
-        + URLSearchParams({
-            "voice": voice,
-            "text": twitchMessage.filteredMessage,
-        })
+        + usp.toString()
     );
     let audio = document.createElement("audio");
     audio.autoplay = "";
