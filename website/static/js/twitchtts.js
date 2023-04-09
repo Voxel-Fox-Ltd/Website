@@ -305,7 +305,7 @@ async function sayMessageSE(twitchMessage) {
     let source = document.createElement("source");
     source.src = voiceUrl;
     audio.appendChild(source);
-    document.querySelector("voice-container").appendChild(audio);
+    document.querySelector("#voice-container").appendChild(audio);
 }
 
 
