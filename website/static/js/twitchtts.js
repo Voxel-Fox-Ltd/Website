@@ -231,7 +231,8 @@ class TwitchIRC {
 
     async onTextMessage(message) {
         console.log(`${message.username} said ${message.message}`);
-        sayMessage(message);
+        // sayMessage(message);
+        sayMessageSE(message)
     }
 }
 
@@ -261,6 +262,49 @@ async function sayMessage(twitchMessage) {
     msg.text = twitchMessage.filteredMessage;
     msg.voice = voice;
     window.speechSynthesis.speak(msg);
+}
+
+
+async function sayMessageSE(twitchMessage) {
+    if(!twitchMessage.filteredMessage) return;
+    let voiceIndex = (
+        twitchMessage
+        .username
+        .toLowerCase()
+        .split("")
+        .reduce((idx, char) => {
+            return (char.charCodeAt(0) + idx) % getVoices().length;
+        }, 0)
+    );
+    let voice = [
+        "Brian",
+        "Amy",
+        "Emma",
+        "Geraint",
+        "Russell",
+        "Nicole",
+        "Joey",
+        "Justin",
+        "Matthew",
+        "Joanna",
+        "Kendra",
+        "Kimberly",
+        "Salli",
+        "Raveena",
+    ][voiceIndex];
+    let voiceUrl = (
+        "https://api.streamelements.com/kappa/v2/speech?"
+        + URLSearchParams({
+            "voice": voice,
+            "text": twitchMessage.filteredMessage,
+        })
+    );
+    let audio = document.createElement("audio");
+    audio.autoplay = "";
+    let source = document.createElement("source");
+    soruce.src = voiceUrl;
+    audio.appendChild(source);
+    document.querySelector("voice-container").appendChild(audio);
 }
 
 
