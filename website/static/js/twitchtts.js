@@ -105,6 +105,7 @@ const WORD_REPLACEMENTS = [
     [`tn`, "tonight"],
     [`henlowo`, "hen-low-woah"],
     [`hellowo`, "hell-oh-woah"],
+    [`nyah?`, "nia"],
     [`fml`, "frick my life"],
     [`tos`, "toss"],
     [`ttyl`, "talk to you later"],
