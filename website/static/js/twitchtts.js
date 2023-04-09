@@ -15,6 +15,63 @@ class TwitchMessage {
         this.channel = matches.channel;
         this.message = matches.message;
     }
+
+    get filteredMessage() {
+
+        // Filter emote only messages
+        if(this.tags["emote-only"]) return "";
+        let workingMessage = this.message;
+
+        // Remove emotes from message
+        let toRemoveSlices = []; // list[list[int, int]]
+        let emoteLocations = this.tags["emotes"]
+        if(emoteLocations) {
+            let emotesIncluded = emoteLocations.split("/");
+            for(let emoteInfo of emotesIncluded) {
+                let emoteLocations = emoteInfo.split(":")[1].split(",");
+                for(let emoteLocation of emoteLocations) {
+                    toRemoveSlices.push([
+                        parseInt(emoteLocation.split("-")[0]),
+                        parseInt(emoteLocation.split("-")[1])
+                    ])
+                }
+            }
+        }
+        toRemoveSlices.sort();
+        while(toRemoveSlices.length > 0) {
+            let currentSlice = toRemoveSlices.pop();
+            workingMessage = (
+                workingMessage.slice(0, currentSlice[0])
+                + workingMessage.slice(currentSlice[1] + 1)
+            )
+        }
+
+        // Remove certain words/slices
+        let textSplit = workingMessage.split(" ");
+        let newTextSplit = [];
+        for(let i of textSplit) {
+
+            // Filter URLs
+            try {
+                new URL(i);
+                continue;
+            }
+            catch (e) {
+            }
+
+            // Filter words that are too long
+            if(i.length >= 15) {
+                continue;
+            }
+
+            // We good
+            newTextSplit.push(i);
+        }
+        workingMessage = newTextSplit.join(" ");
+
+        // And done
+        return workingMessage;
+    }
 }
 
 
@@ -188,35 +245,8 @@ function getVoices() {
 }
 
 
-function filterMessage(text) {
-    let textSplit = text.split(" ");
-    let newTextSplit = [];
-    for(let i of textSplit) {
-
-        // Filter URLs
-        try {
-            new URL(i);
-            continue;
-        }
-        catch (e) {
-        }
-
-        // Filter messages that are too long
-        if(i.length >= 15) {
-            continue;
-        }
-
-        // We good
-        newTextSplit.push(i);
-    }
-    return newTextSplit.join(" ");
-}
-
-
 async function sayMessage(twitchMessage) {
-    if(twitchMessage.tags["emote-only"]) {
-        return;
-    }
+    if(!twitchMessage.filteredMessage) return;
     let voiceIndex = (
         twitchMessage
         .username
@@ -228,7 +258,7 @@ async function sayMessage(twitchMessage) {
     );
     let voice = getVoices()[voiceIndex];
     let msg = new SpeechSynthesisUtterance();
-    msg.text = filterMessage(twitchMessage.message);
+    msg.text = twitchMessage.filteredMessage;
     msg.voice = voice;
     window.speechSynthesis.speak(msg);
 }
