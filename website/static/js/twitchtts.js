@@ -446,7 +446,7 @@ async function sayMessageSE(twitchMessage) {
     // audio.appendChild(source);
 
     // Add to queue
-    queueAudio(voiceURL)
+    queueAudio(voiceUrl)
 }
 
 
