@@ -301,7 +301,7 @@ async function sayMessageSE(twitchMessage) {
         + usp.toString()
     );
     let audio = document.createElement("audio");
-    audio.autoplay = "";
+    audio.autoplay = true;
     let source = document.createElement("source");
     source.src = voiceUrl;
     audio.appendChild(source);
