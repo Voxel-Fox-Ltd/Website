@@ -303,7 +303,7 @@ async function sayMessageSE(twitchMessage) {
     let audio = document.createElement("audio");
     audio.autoplay = "";
     let source = document.createElement("source");
-    soruce.src = voiceUrl;
+    source.src = voiceUrl;
     audio.appendChild(source);
     document.querySelector("voice-container").appendChild(audio);
 }
