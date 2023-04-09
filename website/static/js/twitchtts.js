@@ -453,7 +453,7 @@ async function sayMessageSE(twitchMessage) {
 var audioQueue = [];
 function queueAudio(url) {
     let audio = document.querySelector("#voice-container audio");
-    if(audio.ended || audio.src = "") {
+    if(audio.ended || audio.src == "") {
         audio.src = url;
         audio.play();
     }
