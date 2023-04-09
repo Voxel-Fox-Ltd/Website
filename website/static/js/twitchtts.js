@@ -361,8 +361,8 @@ class TwitchIRC {
     }
 
     async onTextMessage(message) {
-        console.log(`${message.username} said ${message.message}`);
-        // sayMessage(message);
+        console.log(`${message.username} said ${message.message} (${message.filteredMessage})`);
+        // sayMessageOS(message);
         sayMessageSE(message)
     }
 }
@@ -377,7 +377,7 @@ function getVoices() {
 }
 
 
-async function sayMessage(twitchMessage) {
+async function sayMessageOS(twitchMessage) {
     if(!twitchMessage.filteredMessage) return;
     let voiceIndex = (
         twitchMessage
@@ -397,7 +397,11 @@ async function sayMessage(twitchMessage) {
 
 
 async function sayMessageSE(twitchMessage) {
+
+    // Make sure we have something to say
     if(!twitchMessage.filteredMessage) return;
+
+    // Get a voice
     let voiceIndex = (
         twitchMessage
         .username
@@ -423,6 +427,8 @@ async function sayMessageSE(twitchMessage) {
         "Salli",
         "Raveena",
     ][voiceIndex];
+
+    // Get TTS URL
     let usp = new URLSearchParams({
         "voice": voice,
         "text": twitchMessage.filteredMessage,
@@ -431,11 +437,22 @@ async function sayMessageSE(twitchMessage) {
         "https://api.streamelements.com/kappa/v2/speech?"
         + usp.toString()
     );
+
+    // Create element
     let audio = document.createElement("audio");
     audio.autoplay = true;
     let source = document.createElement("source");
     source.src = voiceUrl;
     audio.appendChild(source);
+
+    // Apply filters
+    // let context = new AudioContext();
+    // let source = context.createMediaElementSource(audio);
+    // filter = context.createBiquadFilter();
+    // source.connect(filter);
+    // filter.connect(context.destination);
+
+    // Add to page
     document.querySelector("#voice-container").appendChild(audio);
 }
 
