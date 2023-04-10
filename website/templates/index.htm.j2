@@ -31,6 +31,7 @@
 {{ section("branding") }}
 {{ section("projects") }}
 
+{{ section("project-novus", "project") }}
 {{ section("project-marriagebot", "project") }}
 {{ section("project-flower", "project") }}
 {{ section("project-age", "project") }}
@@ -53,16 +54,6 @@ changeContentString(window.location.hash.slice(1));
 window.addEventListener('hashchange', function() {
     changeContentString(window.location.hash.slice(1));
 });
-
-
-// function replaceIcons() {
-//     let allIcons = document.querySelectorAll("icon");
-//     for (let i of allIcons) {
-//         let type = i.attributes[0].name;
-//         i.outerHTML = `<span class="icon icon-${type}"></span>`;
-//     }
-// }
-// replaceIcons();
 
 
 function createImageOver(image) {
