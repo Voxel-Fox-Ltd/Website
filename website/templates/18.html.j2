@@ -44,20 +44,22 @@
 function parseAge() {
     let newAge = location.hash;
     if(!newAge) {
-        document.querySelector("#age-number").innerHTML = "18";
+        document.querySelector("#age-number").textContent = "18";
+        document.querySelector("#age-section").textContent = "Loading...";
         return;
     }
     newAge = newAge.replace("#", "");
-    document.querySelector("#age-number").innerHTML = newAge;
+    document.querySelector("#age-number").textContent = newAge;
+    document.querySelector("#age-section").textContent = "Loading...";
 }
 window.addEventListener('hashchange', parseAge);
 
 
 function updateDate() {
     d = new Date()
-    let selectedAge = parseInt(document.querySelector("#age-number").innerHTML);
+    let selectedAge = parseInt(document.querySelector("#age-number").textContent);
     d.setFullYear(d.getFullYear() - selectedAge)
-    document.getElementById("age-section").textContent = d.toLocaleDateString();
+    document.querySelector("#age-section").textContent = d.toLocaleDateString();
     setTimeout(updateDate, 1_000);
 }
 updateDate();
