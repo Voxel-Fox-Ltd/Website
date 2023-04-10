@@ -17,6 +17,7 @@ const REGEX_REPLACEMENTS = [
     ["XD+", "XD"],
     ["u(?:wu)+", "uwu"],
     ["^\\^+$", "Yeah, agreed!"],
+    ["^</3$", ""],
 ]
 const WORD_REPLACEMENTS = [
     [`kae`, "Kay"],

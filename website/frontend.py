@@ -105,7 +105,7 @@ async def over_18(_: Request):
 
 
 @routes.get("/tts")
-@template("tts.html.j2")
+@template("tts.htm.j2")
 async def twitch_tts(_: Request):
     """
     Twitch TTS moment.
