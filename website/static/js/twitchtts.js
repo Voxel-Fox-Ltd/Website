@@ -514,9 +514,9 @@ function connectTTS() {
 
 
 function changeOutput() {
-    navigator.mediaDevices.selectAudioOutput().then((sinkId) => {
+    navigator.mediaDevices.selectAudioOutput().then((sink) => {
         let audio = document.querySelector("#voice-container audio");
-        audio.setSinkId(sinkId)
+        audio.setSinkId(sink.deviceId)
     }) ;
 }
 
