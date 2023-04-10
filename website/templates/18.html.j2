@@ -36,18 +36,31 @@
 </style>
 
 <div id="container">
-    <p>To be 18, you must have been born on</p>
+    <p>To be <span id="age-number">18</span>, you must have been born on</p>
     <span id="age-section">Loading...</span>
 </div>
 
 <script type="text/javascript">
-    function updateDate() {
-        d = new Date()
-        d.setFullYear(d.getFullYear() - 18)
-        document.getElementById("age-section").textContent = d.toLocaleDateString();
-        setTimeout(updateDate, 1_000);
+function parseAge() {
+    let newAge = location.hash;
+    if(!newAge) {
+        document.querySelector("#age-number").innerHTML = "18";
+        return;
     }
-    updateDate();
+    newAge = newAge.replace("#", "");
+    document.querySelector("#age-number").innerHTML = newAge;
+}
+window.addEventListener('hashchange', parseAge);
+
+
+function updateDate() {
+    d = new Date()
+    let selectedAge = parseInt(document.querySelector("#age-number").innerHTML);
+    d.setFullYear(d.getFullYear() - selectedAge)
+    document.getElementById("age-section").textContent = d.toLocaleDateString();
+    setTimeout(updateDate, 1_000);
+}
+updateDate();
 </script>
 
 </body>
