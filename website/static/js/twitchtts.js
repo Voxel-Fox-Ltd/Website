@@ -430,6 +430,7 @@ async function sayMessageSE(twitchMessage) {
         "Salli",
         "Raveena",
     ][voiceIndex];
+    if(voice === undefined) voice = "Brian";
 
     // Get TTS URL
     let usp = new URLSearchParams({
