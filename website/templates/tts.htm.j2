@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Twitch TTS Streamlink</title>
-  <link rel="stylesheet" type="text/css" href="/static/css/twitchtts.css" />
-  <link rel="icon" href="/static/images/_voxelfox/logo.png" />
+  <link rel="stylesheet" type="text/css" href="{{ static('/css/twitchtts.css') }}" />
+  <link rel="icon" href="{{ static('/images/_voxelfox/logo.png') }}" />
 </head>
 <body>
 
@@ -32,15 +32,14 @@
       </textarea>
     </div>
     <button id="tts-connect" onclick="connectTTS(); return false;">Connect TTS</button>
+    <button id="change-output" onclick="changeOutput(); return false;" style="margin-top: 1em;">Change Audio Output</button>
   </form>
-  <!-- <textarea id="log"></textarea> -->
 </div>
 <div id="voice-container" style="display: none;">
   <audio>
     <source />
   </audio>
 </div>
-
-<script type="text/javascript" src="/static/js/twitchtts.js"></script>
+<script type="text/javascript" src="{{ static('/js/twitchtts.js')}}"></script>
 </body>
 </html>

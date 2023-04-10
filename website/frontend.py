@@ -104,6 +104,16 @@ async def over_18(_: Request):
     return {}
 
 
+@routes.get("/tts")
+@template("tts.html.j2")
+async def twitch_tts(_: Request):
+    """
+    Twitch TTS moment.
+    """
+
+    return {}
+
+
 @routes.get("/md/{filename:.+}")
 @template("markdown.htm.j2")
 async def markdown(request: Request):

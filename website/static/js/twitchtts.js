@@ -511,10 +511,18 @@ function connectTTS() {
 }
 
 
+function changeOutput() {
+    navigator.mediaDevices.selectAudioOutput().then((sinkId) => {
+        let audio = document.querySelector("#voice-container audio");
+        audio.setSinkId(sinkId)
+    }) ;
+}
+
+
 function redirectToLogin() {
     let params = {
         "client_id": "eatw6619xc67g5udj97dmx096vyxb7",
-        "redirect_uri": "https://voxelfox.co.uk/static/html/twitchtts.html",
+        "redirect_uri": "https://voxelfox.co.uk/tts",
         "response_type": "token",
         "scope": "openid chat:read",
         "claims": JSON.stringify({"userinfo": {"preferred_username": null}}),
