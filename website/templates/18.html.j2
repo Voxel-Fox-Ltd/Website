@@ -52,6 +52,7 @@ function parseAge() {
     document.querySelector("#age-number").textContent = newAge;
     document.querySelector("#age-section").textContent = "Loading...";
 }
+parseAge();
 window.addEventListener('hashchange', parseAge);
 
 
