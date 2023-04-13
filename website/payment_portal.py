@@ -94,6 +94,7 @@ async def index(request: Request):
     if "login" in request.query:
         if (x := await _require_login_wrapper(request)):
             return x
+    session = await aiohttp_session.get_session(request)
 
     # Get the items to be shown on the page
     async with vbu.Database() as db:
@@ -114,6 +115,22 @@ async def index(request: Request):
         ]
         for i in items:
             await i.fetch_user(db)
+        current_subscriptions = []
+        # if session.get("id") is not None:
+        #     current_subscriptions = await db.call(
+        #         """
+        #         SELECT
+        #             *
+        #         FROM
+        #             purchases
+        #         WHERE
+        #             product_id = ANY($1::UUID[])
+        #             AND user_id = $2
+        #             AND expiry_time IS NULL
+        #         """,
+        #         [i.id for i in items if i.subscription],
+        #         session["id"],
+        #     )
     for i in items:
         await i.fetch_price(request.app['config']['stripe_api_key'])
 
@@ -122,7 +139,6 @@ async def index(request: Request):
         return HTTPFound("/")
 
     # Render the template
-    session = await aiohttp_session.get_session(request)
     return {
         "logged_in": session.get('id') is not None,
         "guild_items": [
@@ -135,6 +151,7 @@ async def index(request: Request):
             for i in items
             if not i.per_guild
         ],
+        "current_subscriptions": current_subscriptions,
     }
 
 
