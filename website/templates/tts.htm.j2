@@ -31,6 +31,20 @@
           >
       </textarea>
     </div>
+    <div>
+      <div id="voice-buttons">
+        <label>Voice Overrides:</label>
+        <button type="button" onclick="addNewVoiceOverride(null, null);">+</button>
+      </div>
+      <div id="voices">
+        <div class="template">
+          <select class="username" placeholder="Twitch Username" onchange="javascript:saveInputs();">
+            <option value="" selected></option>
+          </select>
+          <select class="voices" placeholder="Voice" onchange="javascript:saveInputs();"></select>
+        </div>
+      </div>
+    </div>
     <button id="tts-connect" type="button" onclick="connectTTS()">Connect TTS</button>
     <button id="change-output" type="button" onclick="changeOutput()" style="margin-top: 1em;">Change Audio Output</button>
   </form>

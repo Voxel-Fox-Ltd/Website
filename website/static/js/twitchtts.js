@@ -120,6 +120,22 @@ const WORD_REPLACEMENTS = [
     [`lmfao`, "teehee"],
     [`google`, "gog-lay"],
 ]
+const VOICES = [
+    "Brian",
+    "Amy",
+    "Emma",
+    "Geraint",
+    "Russell",
+    "Nicole",
+    "Joey",
+    "Justin",
+    "Matthew",
+    "Joanna",
+    "Kendra",
+    "Kimberly",
+    "Salli",
+    "Raveena",
+]
 
 
 class TwitchMessage {
@@ -365,71 +381,45 @@ class TwitchIRC {
 
     async onTextMessage(message) {
         console.log(`${message.username} said ${message.message} (${message.filteredMessage})`);
-        // sayMessageOS(message);
         sayMessageSE(message)
     }
 }
 
 
-function getVoices() {
-    return (
-        speechSynthesis
-        .getVoices()
-        .filter((voice) => {return voice.lang.includes("en")})
-    );
-}
-
-
-async function sayMessageOS(twitchMessage) {
-    if(!twitchMessage.filteredMessage) return;
-    let voiceIndex = (
-        twitchMessage
-        .username
-        .toLowerCase()
-        .split("")
-        .reduce((idx, char) => {
-            return (char.charCodeAt(0) + idx) % getVoices().length;
-        }, 0)
-    );
-    let voice = getVoices()[voiceIndex];
-    let msg = new SpeechSynthesisUtterance();
-    msg.text = twitchMessage.filteredMessage;
-    msg.voice = voice;
-    window.speechSynthesis.speak(msg);
-}
-
-
 async function sayMessageSE(twitchMessage) {
+
+    // Log username
+    if(!chatUsers.includes(twitchMessage.username)) {
+        chatUsers.push(twitchMessage.username.toLowerCase());
+        updateVoiceUsernames();
+    }
 
     // Make sure we have something to say
     if(!twitchMessage.filteredMessage) return;
 
     // Get a voice
-    let voiceIndex = (
-        twitchMessage
-        .username
-        .toLowerCase()
-        .split("")
-        .reduce((idx, char) => {
-            return (char.charCodeAt(0) + idx) % getVoices().length;
-        }, 0)
-    );
-    let voice = [
-        "Brian",
-        "Amy",
-        "Emma",
-        "Geraint",
-        "Russell",
-        "Nicole",
-        "Joey",
-        "Justin",
-        "Matthew",
-        "Joanna",
-        "Kendra",
-        "Kimberly",
-        "Salli",
-        "Raveena",
-    ][voiceIndex];
+    let voice = undefined;
+    let voiceOverride = "";
+    for(let v of document.querySelectorAll("#voices div")) {
+        if(v.querySelector(".username").value != twitchMessage.username.toLowerCase()) continue;
+        voiceOverride = v.querySelector(".voices").value;
+        break;
+    }
+    if(voiceOverride == "") {
+        let voiceIndex = (
+            twitchMessage
+            .username
+            .toLowerCase()
+            .split("")
+            .reduce((idx, char) => {
+                return (char.charCodeAt(0) + idx) % VOICES.length;
+            }, 0)
+        );
+        let voice = VOICES[voiceIndex];
+    }
+    else {
+        voice = voiceOverride;
+    }
     if(voice === undefined) voice = "Brian";
 
     // Get TTS URL
@@ -475,6 +465,52 @@ document.querySelector("#voice-container audio").addEventListener("ended", () =>
 });
 
 
+var chatUsers = [];
+function updateVoiceUsernames() {
+    let voiceSelect = document.querySelector("#voices .template .voices");
+    if(voiceSelect.length == 0) {
+        for(let v of VOICES) {
+            let vOpt = document.createElement("option");
+            vOpt.value = v;
+            vOpt.innerText = v;
+            voiceSelect.appendChild(vOpt);
+        }
+    }
+    let allUserSelect = document.querySelectorAll("#voices .username");
+    for(let userSelect of allUserSelect) {
+        for(let user of chatUsers) {
+            if(userSelect.querySelector(`option[value="${user}"]`) === null) {
+                let uOpt = document.createElement("option");
+                uOpt.value = user;
+                uOpt.innerText = user;
+                userSelect.appendChild(uOpt);
+            }
+        }
+    }
+}
+updateVoiceUsernames();
+
+
+function addNewVoiceOverride(twitchUsername, voice) {
+    if(twitchUsername !== null) {
+        if(document.querySelector(`#voices .template .username option[value="${twitchUsername}"]`) === null) {
+            chatUsers.push(twitchUsername);
+            updateVoiceUsernames();
+        }
+    }
+    let newVoice = document.querySelector("#voices .template").cloneNode(true);
+    newVoice.classList = [];
+    for(let opt of newVoice.querySelectorAll("option")) opt.selected = false;
+    if(twitchUsername !== null) {
+        newVoice.querySelector(`.username option[value="${twitchUsername}"]`).selected = true;
+    }
+    if(voice !== null) {
+        newVoice.querySelector(`.voices option[value="${voice}"]`).selected = true;
+    }
+    document.querySelector("#voices").appendChild(newVoice);
+}
+
+
 function loadInputs() {
     let params = new URLSearchParams(location.hash.slice(1));
     let givenToken = params.get("access_token");
@@ -482,12 +518,34 @@ function loadInputs() {
     let accessToken = givenToken || savedToken;
     document.querySelector(`[name="at"]`).value = accessToken;
     document.querySelector(`[name="connect"]`).value = localStorage.getItem(`ttsChannels`);
+    let voices = JSON.parse(localStorage.getItem(`voiceOverrides`));
+    let voiceDom = document.querySelector("#voices");
+    for(let vdo of voiceDom.children) {
+        if(!vdo.classList.contains("template")) vdo.remove();
+    }
+    for(let u in voices) {
+        addNewVoiceOverride(u, voices[u]);
+    }
+}
+
+
+function serializeVoiceOverrides() {
+    let voices = document.querySelectorAll("#voices div");
+    let selected = {};
+    for(let voiceNode of voices) {
+        let user = voiceNode.querySelector(".username").value;
+        let voiceName = voiceNode.querySelector(".voices").value;
+        if(user == "" || voiceName == "") continue;
+        selected[user] = voiceName;
+    }
+    return JSON.stringify(selected);
 }
 
 
 function saveInputs() {
     localStorage.setItem(`twitchAccessToken`, document.querySelector(`[name="at"]`).value);
     localStorage.setItem(`ttsChannels`, document.querySelector(`[name="connect"]`).value);
+    localStorage.setItem(`voiceOverrides`, serializeVoiceOverrides());
 }
 
 
@@ -495,7 +553,6 @@ var irc = null;
 function connectTTS() {
     if(irc === null) {
         saveInputs();
-        document.querySelector(`[name="at"]`).disabled = true;
         document.querySelector(`[name="connect"]`).disabled = true;
         document.querySelector(`#login-button`).disabled = true;
         let accessToken = document.querySelector(`[name="at"]`).value.trim();
@@ -505,6 +562,7 @@ function connectTTS() {
     }
     else {
         irc.close();
+        document.querySelector(`[name="connect"]`).disabled = false;
         document.querySelector(`#login-button`).disabled = false;
         irc = null;
     }

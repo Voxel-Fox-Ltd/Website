@@ -12,15 +12,18 @@ label {
     display: block;
 }
 
-form div {
+form > div,
+#voices > div {
     margin-bottom: 20px;
     border: 1px solid #ffffff22;
     border-radius: 0.3em;
     padding: 1em;
 }
 
-form div input,
-form div textarea {
+form > div input,
+form > div textarea,
+form > div select,
+form > div option {
     margin-top: 5px;
     font-size: 1em;
     font-family: inherit;
@@ -37,4 +40,31 @@ button {
     padding: 0.3em;
     font-size: 1.2em;
     width: 100%;
+}
+
+.template {
+    display: none;
+}
+
+#voices > div:last-child {
+    margin-bottom: 0;
+}
+
+#voice-buttons {
+    display: flex;
+    margin-bottom: 5px;
+}
+
+#voice-buttons .username {
+    margin-top: 0;
+}
+
+#voice-buttons button {
+    display: flex;
+    width: 1.2em;
+    margin: 0 0 0 0.4em;
+    height:1.2em;
+    box-sizing: border-box;
+    padding: 0 0 0 0.2rem;
+    line-height: 1rem;
 }
