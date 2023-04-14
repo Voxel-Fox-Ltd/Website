@@ -50,16 +50,16 @@ button {
     margin-bottom: 0;
 }
 
-#voice-buttons {
+.control-buttons {
     display: flex;
     margin-bottom: 5px;
 }
 
-#voice-buttons .username {
+.control-buttons .username {
     margin-top: 0;
 }
 
-#voice-buttons button {
+.control-buttons button {
     display: flex;
     width: 1.2em;
     margin: 0 0 0 0.4em;

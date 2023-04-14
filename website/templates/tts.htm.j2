@@ -23,7 +23,7 @@
       <button id="login-button" onclick="redirectToLogin(); return false;">Login</button>
     </div>
     <div>
-      <label for="connect">TTS channels:</label>
+      <label for="connect">TTS Channels:</label>
       <textarea
           name="connect"
           onchange="javascript:saveInputs();"
@@ -31,8 +31,32 @@
           >
       </textarea>
     </div>
+    <!-- <div>
+      <div class="control-buttons">
+        <label>Word Overrides:</label>
+        <button type="button" onclick="addNewWordOverride(null, null);">+</button>
+      </div>
+      <div id="words">
+        <div class="template">
+          <input
+              name="at"
+              onchange="javascript:saveInputs();"
+              type="text"
+              title="Your Twitch chat access token."
+              disabled
+              />
+          <input
+              name="at"
+              onchange="javascript:saveInputs();"
+              type="text"
+              title="Your Twitch chat access token."
+              disabled
+              />
+        </div>
+      </div>
+    </div> -->
     <div>
-      <div id="voice-buttons">
+      <div class="control-buttons">
         <label>Voice Overrides:</label>
         <button type="button" onclick="addNewVoiceOverride(null, null);">+</button>
       </div>
