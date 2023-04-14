@@ -11,6 +11,8 @@
 
 <div>
   <form>
+    <button id="tts-connect" type="button" onclick="connectTTS()" style="margin: 0;">Connect TTS</button>
+    <button id="change-output" type="button" onclick="changeOutput()" style="margin: 1em 0;">Change Audio Output</button>
     <div>
       <label for="at">Access Token:</label>
       <input
@@ -69,8 +71,6 @@
         </div>
       </div>
     </div>
-    <button id="tts-connect" type="button" onclick="connectTTS()">Connect TTS</button>
-    <button id="change-output" type="button" onclick="changeOutput()" style="margin-top: 1em;">Change Audio Output</button>
   </form>
 </div>
 <div id="voice-container" style="display: none;">
