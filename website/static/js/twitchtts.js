@@ -461,6 +461,7 @@ document.querySelector("#voice-container audio").addEventListener("ended", () =>
         let audio = document.querySelector("#voice-container audio");
         audio.src = url;
         audio.play();
+        setAllSinks()
     }
 });
 
@@ -572,11 +573,17 @@ function connectTTS() {
 }
 
 
+var deviceId = null;
 function changeOutput() {
     navigator.mediaDevices.selectAudioOutput().then((sink) => {
-        let audio = document.querySelector("#voice-container audio");
-        audio.setSinkId(sink.deviceId)
-    }) ;
+        deviceId = sink.deviceId;
+        setAllSinks();
+    });
+}
+function setAllSinks() {
+    if(deviceId === null) return;
+    let audio = document.querySelector("#voice-container audio");
+    audio.setSinkId(deviceId)
 }
 
 
