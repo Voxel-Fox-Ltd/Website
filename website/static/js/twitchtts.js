@@ -576,6 +576,8 @@ function changeOutput() {
     navigator.mediaDevices.selectAudioOutput().then((sink) => {
         let audio = document.querySelector("#voice-container audio");
         audio.setSinkId(sink.deviceId)
+        console.log(`Setting audio tag to sink ${sink.deviceId}`);
+        console.log(audio);
     }) ;
 }
 
