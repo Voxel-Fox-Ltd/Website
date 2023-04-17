@@ -447,8 +447,9 @@ async function sayMessageSE(twitchMessage) {
 var audioQueue = [];
 function queueAudio(url) {
     let audio = document.querySelector("#voice-container audio");
+    let source = document.querySelector("#voice-container audio source");
     if(audio.ended || audio.src == "") {
-        audio.src = url;
+        source.src = url;
         audio.play();
     }
     else {
@@ -459,9 +460,9 @@ document.querySelector("#voice-container audio").addEventListener("ended", () =>
     if(audioQueue.length > 0) {
         let url = audioQueue.shift();
         let audio = document.querySelector("#voice-container audio");
-        audio.src = url;
+        let source = document.querySelector("#voice-container audio source");
+        source.src = url;
         audio.play();
-        setAllSinks()
     }
 });
 
