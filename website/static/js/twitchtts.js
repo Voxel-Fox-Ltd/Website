@@ -159,6 +159,9 @@ class TwitchMessage {
         if(this.tags["emote-only"]) return "";
         let workingMessage = this.message;
 
+        // Filter commands
+        if(workingMessage.startsWith("!")) return "";
+
         // Remove emotes from message
         let toRemoveSlices = []; // list[list[int, int]]
         let emoteLocations = this.tags["emotes"]
@@ -386,7 +389,14 @@ class TwitchIRC {
 }
 
 
+var filterUsers = [
+    "cloudbot",
+    "streamlabs"
+]
 async function sayMessageSE(twitchMessage) {
+
+    // Filter by username
+    if(filterUsers.includes(twitchMessage.username.toLowerCase())) return;
 
     // Log username
     if(!chatUsers.includes(twitchMessage.username)) {
