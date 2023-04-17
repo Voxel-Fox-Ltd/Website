@@ -447,9 +447,8 @@ async function sayMessageSE(twitchMessage) {
 var audioQueue = [];
 function queueAudio(url) {
     let audio = document.querySelector("#voice-container audio");
-    let source = document.querySelector("#voice-container audio source");
     if(audio.ended || audio.src == "") {
-        source.src = url;
+        audio.src = url;
         audio.play();
     }
     else {
@@ -460,8 +459,7 @@ document.querySelector("#voice-container audio").addEventListener("ended", () =>
     if(audioQueue.length > 0) {
         let url = audioQueue.shift();
         let audio = document.querySelector("#voice-container audio");
-        let source = document.querySelector("#voice-container audio source");
-        source.src = url;
+        audio.src = url;
         audio.play();
     }
 });
@@ -574,17 +572,11 @@ function connectTTS() {
 }
 
 
-var deviceId = null;
 function changeOutput() {
     navigator.mediaDevices.selectAudioOutput().then((sink) => {
-        deviceId = sink.deviceId;
-        setAllSinks();
-    });
-}
-function setAllSinks() {
-    if(deviceId === null) return;
-    let audio = document.querySelector("#voice-container audio");
-    audio.setSinkId(deviceId)
+        let audio = document.querySelector("#voice-container audio");
+        audio.setSinkId(sink.deviceId)
+    }) ;
 }
 
 
