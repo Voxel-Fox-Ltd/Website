@@ -425,7 +425,7 @@ async function sayMessageSE(twitchMessage) {
                 return (char.charCodeAt(0) + idx) % VOICES.length;
             }, 0)
         );
-        let voice = VOICES[voiceIndex];
+        voice = VOICES[voiceIndex];
     }
     else {
         voice = voiceOverride;
