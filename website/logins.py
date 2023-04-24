@@ -27,6 +27,7 @@ User Session
         "id": str,
         "refresh_token": str,
         "access_token?": str,
+        "username": str,
     },
     "google?": {
         "id": str,
@@ -243,6 +244,7 @@ async def discord(request: Request):
         f"{token_json['expires_in'] + int(time.time() - 60)}:"
         f"{token_json['access_token']}"
     )
+    storage['discord']['username'] = f"{user_json['username']}#{user_json['discriminator']}"
 
 
 @routes.get('/login/google')

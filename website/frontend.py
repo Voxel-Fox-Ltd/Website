@@ -81,15 +81,16 @@ async def gforms(request: Request):
     # Redirect them
     uif = session["discord"]
     params = {
-        # **{
-        #     f"entry.{u}": f"{uif['username']}#{uif['discriminator']}"
-        #     for u in username
-        # },
         **{
             f"entry.{i}": f"{uif['id']}"
             for i in user_id
         },
     }
+    if "username" in uif:
+        params.update({
+            f"entry.{u}": uif['username']
+            for u in username
+        })
     return HTTPFound(
         f"https://docs.google.com/forms/d/e/{form_id}"
         f"/viewform?{urlencode(params)}"
