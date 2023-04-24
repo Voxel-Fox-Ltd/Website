@@ -40,6 +40,9 @@ async def gforms(request: Request):
 
     # Get our login info
     session = await aiohttp_session.get_session(request)
+    if "discord" not in session:
+        session["login_message"] = "Discord login is required."
+        return HTTPFound("/login")
 
     # Get the form info
     alias = request.query.get('a')
@@ -76,14 +79,14 @@ async def gforms(request: Request):
         )
 
     # Redirect them
-    uif = session['user_info']
+    uif = session["discord"]
     params = {
+        # **{
+        #     f"entry.{u}": f"{uif['username']}#{uif['discriminator']}"
+        #     for u in username
+        # },
         **{
-            f"entry.{u}": f"{uif['username']}#{uif['discriminator']}"
-            for u in username
-        },
-        **{
-            f"entry.{i}": f"{session['user_id']}"
+            f"entry.{i}": f"{uif['id']}"
             for i in user_id
         },
     }
