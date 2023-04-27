@@ -380,14 +380,16 @@ async def checkout_processor(
             if event_type != "charge.refunded":
                 user_id: str = all_metadata["user_id"]
                 user = LoginUser(user_id)
+                current = None
                 if subscription_id:
-                    current = Purchase.fetch_by_identifier(db, subscription_id)
+                    current = await Purchase.fetch_by_identifier(db, subscription_id)
+                else:
                     current = await fetch_purchase(
                         db, user, i,
                         discord_guild_id=all_metadata.get("discord_guild_id"),
                     )
-                    if current:
-                        continue  # Subscription already stored
+                if current:
+                    continue  # Subscription already stored
                 await create_purchase(
                     db,
                     user=user,
