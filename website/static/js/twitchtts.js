@@ -18,9 +18,9 @@ const REGEX_REPLACEMENTS = [
     ["u(?:wu)+", "uwu"],
     ["^\\^+$", "Yeah, agreed!"],
     ["^</3$", ""],
+    [`kae`, "Kay"],
 ]
 const WORD_REPLACEMENTS = [
-    [`kae`, "Kay"],
     [`twat`, "twaaat"],
     [`cmon`, "come on"],
     [`epicer`, "epic er"],
@@ -119,6 +119,9 @@ const WORD_REPLACEMENTS = [
     [`lmafo`, "teehee"],
     [`lmfao`, "teehee"],
     [`google`, "gog-lay"],
+    ["smth", "something"],
+    ["ily2", "i love you too"],
+    ["wha", "what"],
 ]
 const VOICES = [
     "Brian",
