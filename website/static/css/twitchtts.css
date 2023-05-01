@@ -68,3 +68,16 @@ button {
     padding: 0 0 0 0.2rem;
     line-height: 1rem;
 }
+
+#voices div {
+    width: 100%;
+    max-width: 30%;
+    min-width: 400px;
+}
+
+#voices {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: -10px;
+}
