@@ -263,4 +263,4 @@ function playNextTTSTrack() {
     }
 }
 document.querySelector("audio.tts").addEventListener("ended", playNextTTSTrack);
-document.querySelector("audio.tts").addEventListener("paused", playNextTTSTrack);
+document.querySelector("audio.tts").addEventListener("pause", playNextTTSTrack);
