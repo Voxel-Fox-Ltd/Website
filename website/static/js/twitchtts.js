@@ -123,22 +123,43 @@ const WORD_REPLACEMENTS = [
     ["ily2", "i love you too"],
     ["wha", "what"],
 ]
+
+
+class Voice {
+    constructor(displayName, language=null) {
+        this.name = displayName;
+        this.language = language === null ? "en" : language;
+    }
+
+    get display() {
+        if(this.language == "en") return this.name;
+        return `${this.name} (${this.language})`;
+    }
+}
+
+
 const VOICES = [
-    "Brian",
-    "Amy",
-    "Emma",
-    "Geraint",
-    "Russell",
-    "Nicole",
-    "Joey",
-    "Justin",
-    "Matthew",
-    "Joanna",
-    "Kendra",
-    "Kimberly",
-    "Salli",
-    "Raveena",
-]
+    new Voice("Brian"),
+    new Voice("Amy"),
+    new Voice("Emma"),
+    new Voice("Geraint"),
+    new Voice("Russell"),
+    new Voice("Nicole"),
+    new Voice("Joey"),
+    new Voice("Justin"),
+    new Voice("Matthew"),
+    new Voice("Joanna"),
+    new Voice("Kendra"),
+    new Voice("Kimberly"),
+    new Voice("Salli"),
+    new Voice("Raveena"),
+    new Voice("Enrique", "es"),
+    new Voice("Conchita", "es"),
+    new Voice("Lucia", "es"),
+    new Voice("Mia", "es"),
+    new Voice("Miguel", "es"),
+    new Voice("Penelope", "es"),
+];
 
 
 class TwitchMessage {
@@ -419,16 +440,17 @@ async function sayMessageSE(twitchMessage) {
         break;
     }
     if(voiceOverride == "") {
+        let englishVoices = VOICES.filter(x => x.language == "en");
         let voiceIndex = (
             twitchMessage
             .username
             .toLowerCase()
             .split("")
             .reduce((idx, char) => {
-                return (char.charCodeAt(0) + idx) % VOICES.length;
+                return (char.charCodeAt(0) + idx) % englishVoices.length;
             }, 0)
         );
-        voice = VOICES[voiceIndex];
+        voice = englishVoices[voiceIndex];
     }
     else {
         voice = voiceOverride;
@@ -437,7 +459,7 @@ async function sayMessageSE(twitchMessage) {
 
     // Get TTS URL
     let usp = new URLSearchParams({
-        "voice": voice,
+        "voice": voice.name,
         "text": twitchMessage.filteredMessage,
     });
     let voiceUrl = (
@@ -483,10 +505,10 @@ function updateVoiceUsernames() {
     let voiceSelect = document.querySelector("#voices .template .voices");
     if(voiceSelect.length == 0) {
         for(let v of VOICES) {
-            let vOpt = document.createElement("option");
-            vOpt.value = v;
-            vOpt.innerText = v;
-            voiceSelect.appendChild(vOpt);
+            let voiceOption = document.createElement("option");
+            voiceOption.innerText = v.display;
+            voiceOption.value = v.name;
+            voiceSelect.appendChild(voiceOption);
         }
     }
     let allUserSelect = document.querySelectorAll("#voices .username");
