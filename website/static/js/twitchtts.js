@@ -126,14 +126,16 @@ const WORD_REPLACEMENTS = [
 
 
 class Voice {
-    constructor(displayName, language=null) {
-        this.name = displayName;
+    constructor(apiName, language=null, displayName=null) {
+        this.name = apiName;
         this.language = language === null ? "en" : language;
+        this._displayName = displayName;
     }
 
     get display() {
-        if(this.language == "en") return this.name;
-        return `${this.name} (${this.language})`;
+        let builder = this._displayName === null ? this.name : this._displayName;
+        if(this.language == "en") return builder;
+        return `${builder} (${this.language})`;
     }
 }
 
@@ -155,7 +157,7 @@ const VOICES = [
     new Voice("Raveena"),
     new Voice("Enrique", "es"),
     new Voice("Conchita", "es"),
-    new Voice("Lucia", "es"),
+    new Voice("es-ES-Standard-A", "es", "Lucia"),
     new Voice("Mia", "es"),
     new Voice("Miguel", "es"),
     new Voice("Penelope", "es"),
