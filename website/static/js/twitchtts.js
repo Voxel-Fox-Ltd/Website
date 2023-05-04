@@ -567,7 +567,7 @@ function loadInputs() {
 
 
 function serializeVoiceOverrides() {
-    let voices = document.querySelectorAll("#voices div");
+    let voices = document.querySelectorAll("#voices > div");
     let selected = {};
     for(let voiceNode of voices) {
         let user = voiceNode.querySelector(".username").value;
