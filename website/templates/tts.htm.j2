@@ -47,11 +47,11 @@
     <div class="control-buttons">
       <label>Voice Overrides:</label>
       <button type="button" onclick="addNewVoiceOverride(null, null);">+</button>
-      <button type="button" class="expand" data-target="#voices" onclick="javascript:expandItem(this)">&uarr;</button>
+      <button type="button" class="expand" data-target="#voices" onclick="javascript:expandItem(this)">&darr;</button>
     </div>
 
     <!-- Container for the voices -->
-    <div id="voices">
+    <div id="voices" data-hidden="1">
 
       <!-- Template voice -->
       <div class="template">

@@ -48,8 +48,11 @@ button {
 
 .control-buttons {
     display: flex;
-    margin-bottom: 0.8em;
     align-items: center;
+}
+
+.control-buttons + * {
+    margin-top: 0.8em;
 }
 
 .control-buttons .username {
@@ -93,5 +96,5 @@ button {
 }
 
 [data-hidden="1"] {
-    display: none;
+    display: none !important;
 }
