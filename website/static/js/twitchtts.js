@@ -591,8 +591,9 @@ function switchSelect(usernameHolder) {
     let select = usernameHolder.querySelector("select");
     if(select === null) {
         let input = usernameHolder.querySelector("input");
-        select = document.querySelector("#voices .template .username");
-        usernameHolder.replaceChild(select.cloneNode(true), input);
+        select = document.querySelector("#voices .template .username").cloneNode(true);
+        select.value = input.value;
+        usernameHolder.replaceChild(select, input);
     }
     else {
         input = document.createElement("input");
