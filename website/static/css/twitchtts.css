@@ -100,3 +100,7 @@ button {
 [data-hidden="1"] {
     display: none !important;
 }
+
+audio {
+    width: 100%;
+}
