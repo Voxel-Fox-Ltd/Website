@@ -252,9 +252,9 @@ function queueAudio(url) {
     }
 }
 function playNextTTSTrack() {
+    let audio = document.querySelector("audio.tts");
     if(audioQueue.length > 0) {
         let url = audioQueue.shift();
-        let audio = document.querySelector("audio.tts");
         audio.src = url;
         audio.play();
     }
