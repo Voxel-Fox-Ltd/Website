@@ -12,8 +12,7 @@ label {
     display: block;
 }
 
-#content > div,
-#voices > div {
+.mb {
     margin-bottom: 20px;
 }
 

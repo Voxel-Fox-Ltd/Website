@@ -17,7 +17,7 @@
   <button id="change-output" type="button" onclick="changeOutput()" style="margin: 1em 0;">Change Audio Output</button>
 
   <!-- Box our access token and login buttons -->
-  <div id="access-token-box" class="boxed">
+  <div id="access-token-box" class="boxed mb">
     <label for="at">Access Token:</label>
     <input
         name="at"
@@ -32,12 +32,12 @@
   <div class="boxed">
 
     <!-- A container for the played audio -->
-    <div>
+    <div class="mb">
       <audio class="tts" controls></audio>
     </div>
 
     <!-- Box our connected TTS channels -->
-    <div id="tts-channels-box" class="boxed">
+    <div id="tts-channels-box" class="boxed mb">
       <label for="connect">TTS Channels:</label>
       <textarea
           name="connect"
@@ -48,7 +48,7 @@
     </div>
 
     <!-- Box our voice overrides -->
-    <div id="voice-overrides-box" class="boxed">
+    <div id="voice-overrides-box" class="boxed mb">
 
       <!-- Button to add new voices -->
       <div class="control-buttons">
@@ -58,7 +58,7 @@
       </div>
 
       <!-- Container for the voices -->
-      <div id="voices" data-hidden="1">
+      <div id="voices" class="mb" data-hidden="1">
 
         <!-- Template voice -->
         <div class="template" class="boxed">
