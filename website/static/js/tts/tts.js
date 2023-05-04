@@ -220,9 +220,9 @@ async function sayMessageSE(twitchMessage) {
         voice = englishVoices[voiceIndex];
     }
     else {
-        voice = voiceOverride;
+        voice = VOICES.filter(x => x.name == voiceOverride)[0];
     }
-    if(voice === undefined) voice = "Brian";
+    if(voice === undefined) voice = VOICES[0];
 
     // Get TTS URL
     let usp = new URLSearchParams({
