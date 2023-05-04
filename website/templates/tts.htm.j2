@@ -9,81 +9,83 @@
 </head>
 <body>
 
-<div>
-  <form>
-    <button id="tts-connect" type="button" onclick="connectTTS()" style="margin: 0;">Connect TTS</button>
-    <button id="change-output" type="button" onclick="changeOutput()" style="margin: 1em 0;">Change Audio Output</button>
-    <div>
-      <label for="at">Access Token:</label>
-      <input
-          name="at"
-          onchange="javascript:saveInputs();"
-          type="password"
-          title="Your Twitch chat access token."
-          disabled
-          />
-      <button id="login-button" onclick="redirectToLogin(); return false;">Login</button>
+<!-- Everything you can see on the page -->
+<div id="content">
+
+  <!-- Add our toplevel buttons -->
+  <button id="tts-connect" type="button" onclick="connectTTS()" style="margin: 0;">Connect TTS</button>
+  <button id="change-output" type="button" onclick="changeOutput()" style="margin: 1em 0;">Change Audio Output</button>
+
+  <!-- Box our access token and login buttons -->
+  <div id="access-token-box">
+    <label for="at">Access Token:</label>
+    <input
+        name="at"
+        onchange="javascript:saveInputs();"
+        type="password"
+        title="Your Twitch chat access token."
+        disabled
+        />
+    <button id="login-button" onclick="redirectToLogin(); return false;">Login</button>
+  </div>
+
+  <!-- Box our connected TTS channels -->
+  <div id="tts-channels-box">
+    <label for="connect">TTS Channels:</label>
+    <textarea
+        name="connect"
+        onchange="javascript:saveInputs();"
+        title="A list of Twitch channels that you want to connect to."
+        >
+    </textarea>
+  </div>
+
+  <!-- Box our voice overrides -->
+  <div id="voice-overrides-box">
+
+    <!-- Button to add new voices -->
+    <div class="control-buttons">
+      <label>Voice Overrides:</label>
+      <button type="button" onclick="addNewVoiceOverride(null, null);">+</button>
     </div>
-    <div>
-      <label for="connect">TTS Channels:</label>
-      <textarea
-          name="connect"
-          onchange="javascript:saveInputs();"
-          title="A list of Twitch channels that you want to connect to."
-          >
-      </textarea>
-    </div>
-    <!-- <div>
-      <div class="control-buttons">
-        <label>Word Overrides:</label>
-        <button type="button" onclick="addNewWordOverride(null, null);">+</button>
-      </div>
-      <div id="words">
-        <div class="template">
-          <input
-              name="at"
-              onchange="javascript:saveInputs();"
-              type="text"
-              title="Your Twitch chat access token."
-              disabled
-              />
-          <input
-              name="at"
-              onchange="javascript:saveInputs();"
-              type="text"
-              title="Your Twitch chat access token."
-              disabled
-              />
+
+    <!-- Container for the voices -->
+    <div id="voices">
+
+      <!-- Template voice -->
+      <div class="template">
+
+        <!-- Username holder and button to change from dropdown to input -->
+        <div class="username-holder">
+          <select class="username" placeholder="Twitch Username" onchange="javascript:saveInputs();">
+            <option value="" selected></option>
+          </select>
+          <button type="button" onclick="javascript:switchSelect(this.parentNode);">+</button>
         </div>
+
+        <!-- Voice dropdown -->
+        <select class="voices" placeholder="Voice" onchange="javascript:saveInputs();"></select>
       </div>
-    </div> -->
-    <div>
-      <div class="control-buttons">
-        <label>Voice Overrides:</label>
-        <button type="button" onclick="addNewVoiceOverride(null, null);">+</button>
-      </div>
-      <div id="voices">
-        <div class="template">
-          <div class="username-holder">
-            <select class="username" placeholder="Twitch Username" onchange="javascript:saveInputs();">
-              <option value="" selected></option>
-            </select>
-            <button type="button" onclick="javascript:switchSelect(this.parentNode);">+</button>
-          </div>
-          <select class="voices" placeholder="Voice" onchange="javascript:saveInputs();"></select>
-        </div>
-      </div>
+
     </div>
-  </form>
+  </div>
+
 </div>
+
+
+<!-- Invisible audio container -->
 <div id="voice-container" style="display: none;">
   <audio>
     <source />
   </audio>
 </div>
+
+
 <script type="text/javascript" src="{{ static('/js/tts/tts.js')}}"></script>
 <script type="text/javascript" src="{{ static('/js/tts/twitch.js')}}"></script>
 <script type="text/javascript" src="{{ static('/js/tts/dom.js')}}"></script>
 <script type="text/javascript" src="{{ static('/js/tts/main.js')}}"></script>
+
+
 </body>
 </html>
