@@ -64,9 +64,12 @@
       </div>
       <div id="voices">
         <div class="template">
-          <select class="username" placeholder="Twitch Username" onchange="javascript:saveInputs();">
-            <option value="" selected></option>
-          </select>
+          <div class="username-holder">
+            <select class="username" placeholder="Twitch Username" onchange="javascript:saveInputs();">
+              <option value="" selected></option>
+            </select>
+            <button type="button" onclick="javascript:switchSelect(this);">+</button>
+          </div>
           <select class="voices" placeholder="Voice" onchange="javascript:saveInputs();"></select>
         </div>
       </div>

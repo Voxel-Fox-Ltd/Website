@@ -23,6 +23,8 @@ form > div,
 form > div input,
 form > div textarea,
 form > div select,
+form > div div select,
+form > div div button,
 form > div option {
     margin-top: 5px;
     font-size: 1em;
@@ -69,7 +71,7 @@ button {
     line-height: 1rem;
 }
 
-#voices div {
+#voices > div {
     width: 100%;
     max-width: 30%;
     min-width: 400px;
@@ -80,4 +82,13 @@ button {
     flex-wrap: wrap;
     justify-content: space-between;
     margin-bottom: -10px;
+}
+
+#voices .username-holder {
+    display: flex;
+}
+
+#voices .username-holder button {
+    width: 2em;
+    margin-left: 0.25em;
 }

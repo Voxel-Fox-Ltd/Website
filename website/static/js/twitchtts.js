@@ -586,6 +586,25 @@ function saveInputs() {
 }
 
 
+function switchSelect(usernameHolder) {
+    let input;
+    let select = usernameHolder.querySelector("select option");
+    if(select === null) {
+        let input = usernameHolder.querySelector("input");
+        select = document.querySelector("#voices .template .username");
+        usernameHolder.replaceChild(select.cloneNode(true), input);
+    }
+    else {
+        input = document.createElement("input");
+        input.classList.add("username");
+        input.placeholder = "Twitch Username";
+        input.onchange = saveInputs;
+        input.value = select.value;
+        usernameHolder.replaceChild(input, select);
+    }
+}
+
+
 var irc = null;
 function connectTTS() {
     if(irc === null) {
