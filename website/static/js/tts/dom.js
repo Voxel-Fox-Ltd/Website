@@ -15,8 +15,12 @@ function updateVoiceUsernames() {
 
     // Generate if none exist
     if(voiceSelect.length == 0) {
+        let voiceOption = document.createElement("option");
+        voiceOption.innerText = "";
+        voiceOption.value = "";
+        voiceSelect.appendChild(voiceOption);
         for(let v of VOICES) {
-            let voiceOption = document.createElement("option");
+            voiceOption = document.createElement("option");
             voiceOption.innerText = v.display;
             voiceOption.value = v.name;
             voiceSelect.appendChild(voiceOption);
@@ -50,7 +54,7 @@ function addNewVoiceOverride(twitchUsername, voice) {
         }
     }
     let newVoice = document.querySelector("#voices .template").cloneNode(true);
-    newVoice.classList = [];
+    newVoice.classList.remove("template");
     for(let opt of newVoice.querySelectorAll("option")) opt.selected = false;
     if(twitchUsername !== null) {
         newVoice.querySelector(`.username option[value="${twitchUsername}"]`).selected = true;

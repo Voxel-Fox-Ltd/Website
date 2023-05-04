@@ -204,6 +204,7 @@ async function sayMessageSE(twitchMessage) {
     for(let v of document.querySelectorAll("#voices div")) {
         if(v.querySelector(".username").value != twitchMessage.username.toLowerCase()) continue;
         voiceOverride = v.querySelector(".voices").value;
+        if(voiceOverride == "") return;
         break;
     }
     if(voiceOverride == "") {
@@ -241,7 +242,7 @@ async function sayMessageSE(twitchMessage) {
 
 var audioQueue = [];
 function queueAudio(url) {
-    let audio = document.querySelector("#voice-container audio");
+    let audio = document.querySelector("audio.tts");
     if(audio.ended || audio.src == "") {
         audio.src = url;
         audio.play();
@@ -250,11 +251,16 @@ function queueAudio(url) {
         audioQueue.push(url);
     }
 }
-document.querySelector("#voice-container audio").addEventListener("ended", () => {
+function playNextTTSTrack() {
     if(audioQueue.length > 0) {
         let url = audioQueue.shift();
-        let audio = document.querySelector("#voice-container audio");
+        let audio = document.querySelector("audio.tts");
         audio.src = url;
         audio.play();
     }
-});
+    else {
+        audio.src = "";
+    }
+}
+document.querySelector("audio.tts").addEventListener("ended", playNextTTSTrack);
+document.querySelector("audio.tts").addEventListener("paused", playNextTTSTrack);

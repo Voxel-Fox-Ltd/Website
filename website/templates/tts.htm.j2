@@ -17,7 +17,7 @@
   <button id="change-output" type="button" onclick="changeOutput()" style="margin: 1em 0;">Change Audio Output</button>
 
   <!-- Box our access token and login buttons -->
-  <div id="access-token-box">
+  <div id="access-token-box" class="boxed">
     <label for="at">Access Token:</label>
     <input
         name="at"
@@ -29,56 +29,56 @@
     <button id="login-button" onclick="redirectToLogin(); return false;">Login</button>
   </div>
 
-  <!-- Box our connected TTS channels -->
-  <div id="tts-channels-box">
-    <label for="connect">TTS Channels:</label>
-    <textarea
-        name="connect"
-        onchange="javascript:saveInputs();"
-        title="A list of Twitch channels that you want to connect to."
-        >
-    </textarea>
-  </div>
+  <div class="boxed">
 
-  <!-- Box our voice overrides -->
-  <div id="voice-overrides-box">
-
-    <!-- Button to add new voices -->
-    <div class="control-buttons">
-      <label>Voice Overrides:</label>
-      <button type="button" onclick="addNewVoiceOverride(null, null);">+</button>
-      <button type="button" class="expand" data-target="#voices" onclick="javascript:expandItem(this)">&darr;</button>
+    <!-- A container for the played audio -->
+    <div>
+      <audio class="tts" controls></audio>
     </div>
 
-    <!-- Container for the voices -->
-    <div id="voices" data-hidden="1">
+    <!-- Box our connected TTS channels -->
+    <div id="tts-channels-box" class="boxed">
+      <label for="connect">TTS Channels:</label>
+      <textarea
+          name="connect"
+          onchange="javascript:saveInputs();"
+          title="A list of Twitch channels that you want to connect to."
+          >
+      </textarea>
+    </div>
 
-      <!-- Template voice -->
-      <div class="template">
+    <!-- Box our voice overrides -->
+    <div id="voice-overrides-box" class="boxed">
 
-        <!-- Username holder and button to change from dropdown to input -->
-        <div class="username-holder">
-          <select class="username" placeholder="Twitch Username" onchange="javascript:saveInputs();">
-            <option value="" selected></option>
-          </select>
-          <button type="button" onclick="javascript:switchSelect(this.parentNode);">+</button>
-        </div>
-
-        <!-- Voice dropdown -->
-        <select class="voices" placeholder="Voice" onchange="javascript:saveInputs();"></select>
+      <!-- Button to add new voices -->
+      <div class="control-buttons">
+        <label>Voice Overrides:</label>
+        <button type="button" onclick="addNewVoiceOverride(null, null);">+</button>
+        <button type="button" class="expand" data-target="#voices" onclick="javascript:expandItem(this)">&darr;</button>
       </div>
 
+      <!-- Container for the voices -->
+      <div id="voices" data-hidden="1">
+
+        <!-- Template voice -->
+        <div class="template" class="boxed">
+
+          <!-- Username holder and button to change from dropdown to input -->
+          <div class="username-holder">
+            <select class="username" placeholder="Twitch Username" onchange="javascript:saveInputs();">
+              <option value="" selected></option>
+            </select>
+            <button type="button" onclick="javascript:switchSelect(this.parentNode);">+</button>
+          </div>
+
+          <!-- Voice dropdown -->
+          <select class="voices" placeholder="Voice" onchange="javascript:saveInputs();"></select>
+        </div>
+      </div>
     </div>
+
   </div>
 
-</div>
-
-
-<!-- Invisible audio container -->
-<div id="voice-container" style="display: none;">
-  <audio>
-    <source />
-  </audio>
 </div>
 
 
