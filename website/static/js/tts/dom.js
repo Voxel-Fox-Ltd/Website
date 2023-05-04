@@ -145,3 +145,17 @@ function changeOutput() {
         }
     }) ;
 }
+
+
+function expandItem(button) {
+    let target = document.querySelector(button.dataset.target)
+    let current = target.dataset.hidden || "0"
+    if(current == "0") {
+        target.dataset.hidden = "1";
+        button.innerHTML = "\u2193"  // down arrow
+    }
+    else {
+        target.dataset.hidden = "0";
+        button.innerHTML = "\u2191"  // up arrow
+    }
+}

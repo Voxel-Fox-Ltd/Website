@@ -48,7 +48,7 @@ button {
 
 .control-buttons {
     display: flex;
-    margin-bottom: 5px;
+    margin-bottom: 0.8em;
     align-items: center;
 }
 
@@ -64,6 +64,10 @@ button {
     box-sizing: border-box;
     padding: 0 0 0 0.2rem;
     line-height: 1rem;
+}
+
+.control-buttons button.expand {
+    margin-left: auto !important;
 }
 
 #voices > div {
@@ -86,4 +90,8 @@ button {
 #voices .username-holder button {
     width: 2em;
     margin-left: 0.25em;
+}
+
+[data-hidden="1"] {
+    display: none;
 }
