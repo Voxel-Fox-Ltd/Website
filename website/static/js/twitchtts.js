@@ -588,7 +588,7 @@ function saveInputs() {
 
 function switchSelect(usernameHolder) {
     let input;
-    let select = usernameHolder.querySelector("select option");
+    let select = usernameHolder.querySelector("select");
     if(select === null) {
         let input = usernameHolder.querySelector("input");
         select = document.querySelector("#voices .template .username");
