@@ -243,12 +243,9 @@ async function sayMessageSE(twitchMessage) {
 var audioQueue = [];
 function queueAudio(url) {
     let audio = document.querySelector("audio.tts");
+    audioQueue.push(url);
     if(audio.ended || audio.src == "") {
-        audio.src = url;
-        audio.play();
-    }
-    else {
-        audioQueue.push(url);
+        playNextTTSTrack();
     }
 }
 function playNextTTSTrack() {
