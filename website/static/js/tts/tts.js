@@ -244,7 +244,7 @@ var audioQueue = [];
 function queueAudio(url) {
     let audio = document.querySelector("audio.tts");
     audioQueue.push(url);
-    if(audio.ended || audio.src == "") {
+    if(audio.ended || audio.src == "" || (audio.error && audio.error.code == 4)) {
         playNextTTSTrack();
     }
 }
@@ -256,7 +256,7 @@ function playNextTTSTrack() {
         audio.play();
     }
     else {
-        audio.src = "";
+        audio.src = null;
     }
 }
 document.querySelector("audio.tts").addEventListener("ended", playNextTTSTrack);
