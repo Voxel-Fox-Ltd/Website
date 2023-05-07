@@ -256,7 +256,7 @@ function playNextTTSTrack() {
         audio.play();
     }
     else {
-        audio.src = null;
+        audio.removeAttribute("src");
     }
 }
 document.querySelector("audio.tts").addEventListener("ended", playNextTTSTrack);
