@@ -45,7 +45,7 @@
                         {% endif %}
                     </p>
                     <select class="select guild-select" onchange="javascript:guildSelectChange('{{ item.id }}')">
-                        <option value="">Purchase for Guild</option>
+                        <option value="">{% if item.subscription %}Subscribe{% else %}Purchase{% endif %} for Guild</option>
                     </select>
                 </div>
             {% endfor %}
@@ -71,7 +71,7 @@
                             (<span>{{ item.currency_symbol }}{{ "%.2f" | format(item.price_number * item.quantity / 100)}}</span>)
                         {% endif %}
                     </p>
-                    <a href="/portal/item/{{ item.id }}" class="button">Purchase</a>
+                    <a href="/portal/item/{{ item.id }}" class="button">{% if item.subscription %}Subscribe{% else %}Purchase{% endif %}</a>
                 </div>
             {% endfor %}
         </div>
