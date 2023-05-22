@@ -15,9 +15,7 @@ from website.utils.db_models import LoginUser, Purchase
 from .utils import (
     types,
     CheckoutItem,
-    fetch_purchase,
-    create_purchase,
-    update_purchase,
+    Purchase,
     send_webhook,
 )
 
@@ -384,13 +382,13 @@ async def checkout_processor(
                 if subscription_id:
                     current = await Purchase.fetch_by_identifier(db, subscription_id)
                 else:
-                    current = await fetch_purchase(
+                    current = await Purchase.fetch_by_user(
                         db, user, i,
                         discord_guild_id=all_metadata.get("discord_guild_id"),
                     )
                 if current:
                     continue  # Subscription already stored
-                await create_purchase(
+                await Purchase.create(
                     db,
                     user=user,
                     product=i,
@@ -504,7 +502,7 @@ async def subscription_deleted(
 
     # And log the transaction
     async with vbu.Database() as db:
-        current = await fetch_purchase(
+        current = await Purchase.fetch_by_user(
             db,
             user,
             item,
@@ -512,9 +510,7 @@ async def subscription_deleted(
         )
         if not current:
             return
-        current = current[0]
-        await update_purchase(
+        await current[0].update(
             db,
-            current.id,
             expiry_time=dt.fromtimestamp(subscription_expiry_time),
         )

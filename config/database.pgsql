@@ -83,38 +83,6 @@ CREATE TABLE IF NOT EXISTS checkout_items(
 );
 
 
--- A transaction log for purchases made through the website. Doesn't check
--- validity, but rather just a log of income.
-CREATE TABLE IF NOT EXISTS transactions(
-    id UUID NOT NULL DEFAULT uuid_generate_v4(),
-
-    -- The item that was purchased
-    product_id UUID NOT NULL REFERENCES checkout_items(id),
-
-    -- The amount of the purchase
-    amount_gross INTEGER NOT NULL,
-    amount_net INTEGER,
-    currency VARCHAR(3) NOT NULL,
-
-    -- The amount that actually goes into the user's account
-    settle_amount INTEGER NOT NULL,
-    settle_currency VARCHAR(3) NOT NULL,
-
-    -- The transaction ID from the payment processor
-    identifier TEXT NOT NULL,
-
-    -- The payment processor that was used
-    payment_processor TEXT NOT NULL,
-
-    -- Timestamp of purchase
-    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    -- Information about the purchase and the purchaser
-    customer_email CITEXT,
-    metadata TEXT
-);
-
-
 -- A table holding references to the products that a user has purchased.
 -- Only contains ACTIVE purchases - non-refunded purchases, active
 -- subscriptions, etc. This table should not be used as a reference for
@@ -128,8 +96,7 @@ CREATE TABLE IF NOT EXISTS purchases(
     product_id UUID NOT NULL REFERENCES checkout_items(id),
 
     -- The user who purchased the item
-    user_id UUID,  -- technically not null, but I can't promise everyone has an account
-    discord_user_id BIGINT,
+    user_id UUID NOT NULL REFERENCES login_users(id),
     discord_guild_id BIGINT,
 
     -- If the item is a subscription, cancel metadata
@@ -139,9 +106,6 @@ CREATE TABLE IF NOT EXISTS purchases(
     -- Timestamp of purchase
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
-
--- Create some indexes for easier searching
 CREATE INDEX IF NOT EXISTS
     purchases_user_id_product_name_expiry_time_idx
     ON purchases

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime as dt
 import logging
-from typing import Any, Optional
+from typing import Any, Optional, overload
 from typing_extensions import Self
 import uuid
 
@@ -14,10 +14,14 @@ from .flags import RequiredLogins
 __all__ = (
     'LoginUser',
     'CheckoutItem',
+    'Purchase',
 )
 
 
 log = logging.getLogger("vbu.voxelfox.db_models")
+
+
+MISSING: Any = object()
 
 
 class LoginUser:
@@ -589,10 +593,7 @@ class CheckoutItem:
     async def fetch_by_name(
             cls,
             db: vbu.Database,
-            product_name: str,
-            *,
-            paypal_id: str | None = None,
-            stripe_id: str | None = None) -> Self | None:
+            product_name: str) -> Self | None:
         """
         Fetch a checkout item from the database via its name.
 
@@ -626,24 +627,6 @@ class CheckoutItem:
             """,
             product_name,
         )
-        # else:
-        #     item_rows = await db.call(
-        #         """
-        #         SELECT
-        #             checkout_items.*
-        #         FROM
-        #             checkout_items
-        #         LEFT JOIN
-        #             payment_users
-        #         ON
-        #             checkout_items.creator_id = payment_users.id
-        #         WHERE
-        #             checkout_items.product_name = $2
-        #             AND payment_users.{processor}_id = $1
-        #         """.format(processor="paypal" if paypal_id else "stripe"),
-        #         paypal_id or (stripe_id or 'VFL'),
-        #         product_name,
-        #     )
 
         # Return the fetched item
         if not item_rows:
@@ -782,9 +765,254 @@ class Purchase:
             return cls.from_row(rows[0])
         return None
 
+    @overload
+    @classmethod
+    async def fetch_by_user(
+            cls,
+            db: vbu.Database,
+            user: LoginUser,
+            product: CheckoutItem,
+            *,
+            discord_guild_id: None) -> list[Purchase]:
+        ...
+
+    @overload
+    @classmethod
+    async def fetch_by_user(
+            cls,
+            db: vbu.Database,
+            user: None,
+            product: CheckoutItem,
+            *,
+            discord_guild_id: int) -> list[Purchase]:
+        ...
+
+    @classmethod
+    async def fetch_by_user(
+            cls,
+            db: vbu.Database,
+            user: LoginUser | None,
+            product: CheckoutItem,
+            *,
+            discord_guild_id: int | None = MISSING) -> list[Purchase]:
+        """
+        Fetch a purchase from the database.
+
+        Parameters
+        ----------
+        db : vbu.Database
+            An open database connection.
+        user : LoginUser | None
+            The user who purchased the item.
+            This can only be ``None`` if a guild ID is provided.
+        product : CheckoutItem
+            The item that was purchased.
+        discord_guild_id : int | None
+            The guild that the item was purchased for. If this is given,
+            the user parameter is ignored.
+        """
+
+        # Work out what we're searching by
+        if discord_guild_id is not MISSING:
+            check = "purchases.discord_guild_id"
+        else:
+            assert user
+            check = "purchases.user_id"
+
+        # Call the database
+        rows = await db.call(
+            """
+            SELECT
+                purchases.*
+            FROM
+                purchases
+            LEFT JOIN
+                checkout_items
+                ON purchases.product_id = checkout_items.id
+            WHERE
+                {0} = $1
+                AND checkout_items.id = $2
+            ORDER BY
+                timestamp DESC
+            """.format(check),
+            int(discord_guild_id) if discord_guild_id else user.id,  # pyright: ignore
+            product.id,
+        )
+
+        # Return rows
+        return [
+            cls.from_row(r)
+            for r in rows
+        ]
+
     async def delete(self, db: vbu.Database) -> None:
         """
         Delete this purchase from the database.
         """
 
-        await db.call("DELETE FROM purchases WHERE id = $1", self.id)
+        await self.update_by_id(db, self.id, delete=True)
+
+    @staticmethod
+    async def update_by_id(
+            db: vbu.Database,
+            id: uuid.UUID | str,
+            *,
+            delete: bool = False,
+            discord_guild_id: int | None = MISSING,
+            expiry_time: dt | None = MISSING,
+            cancel_url: str | None = MISSING) -> Purchase | None:
+        """
+        Update (or delete) a purchase via its ID.
+
+        Parameters
+        ----------
+        id : uuid.UUID | str
+            The ID of the purchase.
+        delete : bool
+            Whether or not you want to delete the purchase.
+        discord_guild_id : int | None
+            The new ID for the guild associated with the purchase.
+        expiry_time : datetime.datetime | None
+            The expiry time associated with the purchase
+        cancel_url : str | None
+            The URL associated with cancelling the purchase.
+        """
+
+        if delete:
+            log.info("Deleting purchase with ID %s" % id)
+            await db.call("DELETE FROM purchases WHERE id = $1", id)
+            return
+
+    async def update(
+            self,
+            db: vbu.Database,
+            *,
+            discord_guild_id: int | None = MISSING,
+            expiry_time: dt | None = MISSING,
+            cancel_url: str | None = MISSING):
+        """
+        Update a purchase in the database.
+
+        Parameters
+        ----------
+        db : vbu.Database
+            An open database connection.
+        """
+
+        log.info("Updating purchase with ID %s" % id)
+        kwargs = {
+            "discord_guild_id": discord_guild_id,
+            "expiry_time": expiry_time,
+            "cancel_url": cancel_url,
+        }
+        kwargs = {i: o for i, o in kwargs.items() if o is not MISSING}
+        await db.call(
+            """
+            UPDATE
+                purchases
+            SET
+                {0}
+            WHERE
+                id = $1
+            """.format(
+                ", ".join(
+                    f"{key} = ${i + 2}"
+                    for i, key in enumerate(kwargs)
+                )
+            ),
+            id,
+            *kwargs.values(),
+        )
+
+    @classmethod
+    async def create(
+            cls,
+            db: vbu.Database,
+            user: LoginUser,
+            product: CheckoutItem,
+            *,
+            quantity: int = 1,
+            discord_guild_id: int | None = None,
+            expiry_time: dt | None = None,
+            cancel_url: str | None = None,
+            timestamp: dt | None = None,
+            identifier: str) -> Self:
+        """
+        Store a created purchase in the database.
+
+        Parameters
+        ----------
+        db : vbu.Database
+            An open database connection.
+        user: LoginUser
+            The user who you want to store the purchase for.
+        product: CheckoutItem
+            The item that the user is purchasing.
+        quantity: int
+            The quantity of the purchased item.
+        discord_guild_id: int | None
+            The ID of the guild associated with the purchase, if there is one.
+        expiry_time: dt | None
+            The expiry time for the purchase, should it be time limited.
+        cancel_url: str | None
+            The URL that needs to be POSTed to in order to cancel the subscription.
+        timestamp: dt | None
+            The timestamp that the transaction took place. Defaults to the current
+            time.
+        identifier: str
+            An identifier for the purchase.
+            For Stripe, this should be either the subscription ID (sub_XXX) for
+            subscriptions, or a checkout session (cs_XXX) for single items.
+            For PayPal, this should be the plan ID for subscriptions, or the
+            transaction ID for single items.
+        """
+
+        added_rows = await db.call(
+            """
+            INSERT INTO
+                purchases
+                (
+                    user_id,
+                    product_id,
+                    discord_guild_id,
+                    expiry_time,
+                    cancel_url,
+                    timestamp,
+                    identifier,
+                    quantity
+                )
+            VALUES
+                (
+                    $1,
+                    $2,
+                    $3,
+                    $4,
+                    $5,
+                    $6,
+                    $7,
+                    $8
+                )
+            ON CONFLICT
+                (identifier)
+            DO UPDATE
+            SET
+                user_id = excluded.user_id,
+                product_id = excluded.product_id,
+                discord_guild_id = excluded.discord_guild_id,
+                expiry_time = excluded.expiry_time,
+                cancel_url = excluded.cancel_url,
+                timestamp = excluded.timestamp,
+                quantity = excluded.quantity
+            RETURNING
+                *
+            """,
+            user.id,  # user_id
+            product.id,  # product_id
+            int(discord_guild_id) if discord_guild_id is not None else discord_guild_id,  # discord_guild_id
+            expiry_time,  # expiry_time
+            cancel_url,  # cancel_url
+            timestamp or dt.utcnow(),  # timestamp
+            identifier,  # identifier
+            quantity,  # quantit
+        )
+        return Purchase.from_row(added_rows[0])

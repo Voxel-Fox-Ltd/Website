@@ -13,11 +13,9 @@ from .utils import (
     send_webhook,
     get_paypal_access_token,
     CheckoutItem,
-    create_purchase,
-    fetch_purchase,
-    update_purchase,
     types,
     LoginUser,
+    Purchase,
 )
 
 
@@ -199,7 +197,7 @@ async def get_subscription_by_subscription_id(
         return await resp.json()
 
 
-def get_products_from_charge(data: dict) -> Generator[dict, None, None]:
+def get_products_from_charge(data: types.IPNMessage) -> Generator[dict, None, None]:
     """
     Get the products from a given charge object.
     """
@@ -211,7 +209,7 @@ def get_products_from_charge(data: dict) -> Generator[dict, None, None]:
         }
     if "product_name" in data:
         yield {
-            "name": data['product_name'],
+            "name": data["product_name"],
             "quantity": 1,
         }
     index = 1
@@ -249,11 +247,7 @@ async def charge_captured(request: Request, data: types.IPNMessage):
     products = get_products_from_charge(data)
     async with vbu.Database() as db:
         items = [
-            await CheckoutItem.fetch_by_name(
-                db,
-                product_name=i['name'],
-                paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
-            )
+            await CheckoutItem.fetch_by_name(db, product_name=i['name'])
             for i in products
         ]
     items = [i for i in items if i]
@@ -282,34 +276,29 @@ async def charge_captured(request: Request, data: types.IPNMessage):
     # Add these transactions to the database
     async with vbu.Database() as db:
         for i in items:
-            if refunded:
-                current = await fetch_purchase(
+            user = await LoginUser.fetch(
+                db,
+                id=metadata.get("user_id"),
+                discord_user_id=metadata.get("discord_user_id"),
+            )
+            if user is None:
+                user = await LoginUser.create(
                     db,
-                    metadata.get('user_id', metadata['discord_user_id']),
-                    i,
-                    # discord_user_id=metadata.get('discord_user_id'),
+                    discord_user_id=metadata.get("discord_user_id"),
+                )
+            if refunded:
+                current = await Purchase.fetch_by_user(
+                    db, user, i,
                     discord_guild_id=metadata.get('discord_guild_id'),
                 )
                 if not current:
                     continue
-                await update_purchase(db, current[0].id, delete=True)
+                await current[0].delete(db)
             else:
-                user = await LoginUser.fetch(
-                    db,
-                    id=metadata.get("user_id"),
-                    discord_user_id=metadata.get("discord_user_id"),
-                )
-                if user is None:
-                    user = await LoginUser.create(
-                        db,
-                        discord_user_id=metadata.get("discord_user_id"),
-                    )
-                await create_purchase(
-                    db,
-                    user,
-                    i,
+                await Purchase.create(
+                    db, user, i,
                     discord_guild_id=metadata.get('discord_guild_id'),
-                    identifier=data.get('txn_id')
+                    identifier=data.get('txn_id'),
                 )
 
 
@@ -334,11 +323,7 @@ async def subscription_created(request: Request, data: types.IPNMessage):
 
     # Grab the data from the database
     async with vbu.Database() as db:
-        item = await CheckoutItem.fetch_by_name(
-            db,
-            product_name=product_name,
-            paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
-        )
+        item = await CheckoutItem.fetch_by_name(db, product_name=product_name)
     if item is None:
         log.info(f"Missing item {product_name} from database.")
         return
@@ -373,18 +358,14 @@ async def subscription_created(request: Request, data: types.IPNMessage):
             )
         if data['txn_type'] == "recurring_payment":
             assert user
-            current = await fetch_purchase(
-                db,
-                user,
-                item,
+            current = await Purchase.fetch_by_user(
+                db, user, item,
                 discord_guild_id=metadata.get('discord_guild_id'),
             )
             if current:
                 return  # We only want to store the original subscription create
-        await create_purchase(
-            db,
-            user,
-            item,
+        await Purchase.create(
+            db, user, item,
             discord_guild_id=metadata.get('discord_guild_id'),
             expiry_time=None,
             cancel_url=(
@@ -416,11 +397,7 @@ async def subscription_deleted(request: Request, data: types.IPNMessage):
 
     # Grab the data from the database
     async with vbu.Database() as db:
-        item = await CheckoutItem.fetch_by_name(
-            db,
-            product_name=product_name,
-            paypal_id=data.get('receiver_id', 'DPTBWT8A9HZSN'),
-        )
+        item = await CheckoutItem.fetch_by_name(db, product_name=product_name)
     if item is None:
         log.info(f"Missing item {product_name} from database")
         return
@@ -455,16 +432,10 @@ async def subscription_deleted(request: Request, data: types.IPNMessage):
                 db,
                 discord_user_id=metadata.get("discord_user_id"),
             )
-        current = await fetch_purchase(
-            db,
-            user,
-            item,
+        current = await Purchase.fetch_by_user(
+            db, user, item,
             discord_guild_id=metadata.get('discord_guild_id'),
         )
         if not current:
             return
-        await update_purchase(
-            db,
-            current[0].id,
-            expiry_time=expiry_time,
-        )
+        await current[0].update(db, expiry_time=expiry_time)

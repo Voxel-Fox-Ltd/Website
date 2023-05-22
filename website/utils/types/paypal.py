@@ -25,7 +25,8 @@ class IPNMessage(TypedDict):
     insurance_amount: str
     invoice: NotRequired[str]
     ipn_track_id: str
-    item_name: str
+    item_name: NotRequired["str"]
+    product_name: NotRequired["str"]
     item_number: NotRequired[str]
     last_name: str
     mc_currency: str
