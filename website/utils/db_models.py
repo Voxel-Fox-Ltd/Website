@@ -689,6 +689,7 @@ class Purchase:
         'cancel_url',
         'expiry_time',
         'timestamp',
+        '_item',
     )
 
     def __init__(
@@ -713,6 +714,7 @@ class Purchase:
         self.cancel_url = cancel_url
         self.expiry_time = expiry_time
         self.timestamp = timestamp
+        self._item: CheckoutItem | None = None
 
     @property
     def id(self) -> str:
@@ -771,9 +773,9 @@ class Purchase:
             cls,
             db: vbu.Database,
             user: LoginUser,
-            product: CheckoutItem,
+            product: CheckoutItem | None = None,
             *,
-            discord_guild_id: None) -> list[Purchase]:
+            discord_guild_id: None = ...) -> list[Purchase]:
         ...
 
     @overload
@@ -782,9 +784,9 @@ class Purchase:
             cls,
             db: vbu.Database,
             user: None,
-            product: CheckoutItem,
+            product: CheckoutItem | None = None,
             *,
-            discord_guild_id: int) -> list[Purchase]:
+            discord_guild_id: int = ...) -> list[Purchase]:
         ...
 
     @classmethod
@@ -792,7 +794,7 @@ class Purchase:
             cls,
             db: vbu.Database,
             user: LoginUser | None,
-            product: CheckoutItem,
+            product: CheckoutItem | None = None,
             *,
             discord_guild_id: int | None = MISSING) -> list[Purchase]:
         """
@@ -805,7 +807,7 @@ class Purchase:
         user : LoginUser | None
             The user who purchased the item.
             This can only be ``None`` if a guild ID is provided.
-        product : CheckoutItem
+        product : CheckoutItem | None
             The item that was purchased.
         discord_guild_id : int | None
             The guild that the item was purchased for. If this is given,
@@ -820,24 +822,42 @@ class Purchase:
             check = "purchases.user_id"
 
         # Call the database
-        rows = await db.call(
-            """
-            SELECT
-                purchases.*
-            FROM
-                purchases
-            LEFT JOIN
-                checkout_items
-                ON purchases.product_id = checkout_items.id
-            WHERE
-                {0} = $1
-                AND checkout_items.id = $2
-            ORDER BY
-                timestamp DESC
-            """.format(check),
-            int(discord_guild_id) if discord_guild_id else user.id,  # pyright: ignore
-            product.id,
-        )
+        if product:
+            rows = await db.call(
+                """
+                SELECT
+                    purchases.*
+                FROM
+                    purchases
+                LEFT JOIN
+                    checkout_items
+                    ON purchases.product_id = checkout_items.id
+                WHERE
+                    {0} = $1
+                    AND checkout_items.id = $2
+                ORDER BY
+                    timestamp DESC
+                """.format(check),
+                int(discord_guild_id) if discord_guild_id else user.id,  # pyright: ignore
+                product.id,
+            )
+        else:
+            rows = await db.call(
+                """
+                SELECT
+                    purchases.*
+                FROM
+                    purchases
+                LEFT JOIN
+                    checkout_items
+                    ON purchases.product_id = checkout_items.id
+                WHERE
+                    {0} = $1
+                ORDER BY
+                    timestamp DESC
+                """.format(check),
+                int(discord_guild_id) if discord_guild_id else user.id,  # pyright: ignore
+            )
 
         # Return rows
         return [
@@ -1016,3 +1036,12 @@ class Purchase:
             quantity,  # quantit
         )
         return Purchase.from_row(added_rows[0])
+
+    async def fetch_product(self, db: vbu.Database) -> CheckoutItem:
+        """
+        Fetch the product associated with the purchase.
+        """
+
+        v = await CheckoutItem.fetch_by_product_id(db, self.product_id)
+        assert v
+        return v

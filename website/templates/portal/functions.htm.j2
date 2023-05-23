@@ -1,0 +1,18 @@
+{% macro display_item(item) %}
+  <div class="item" data-id="{{ item.id }}">
+    <p class="name">{{ item.name }}</p>
+    {% if item.description %}
+      <div class="description">{{ item.description | markdown | safe }}</div>
+    {% endif %}
+    <p class="price">
+      Price: <span>{{ item.currency_symbol }}{{ item.price }}</span>
+    </p>
+    {% if item.per_guild %}
+      <select class="guild-select" onchange="javascript:guildSelectChange('{{ item.id }}')">
+        <option value="">{% if item.subscription %}Subscribe{% else %}Purchase{% endif %} for Guild</option>
+      </select>
+    {% else %}
+      <a href="/portal/item/{{ item.id }}" class="button">{% if item.subscription %}Subscribe{% else %}Purchase{% endif %}</a>
+    {% endif %}
+  </div>
+{% endmacro %}

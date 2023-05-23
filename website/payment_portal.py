@@ -10,77 +10,11 @@ from aiohttp_jinja2 import render_template, template
 import aiohttp_session
 from discord.ext import vbu
 
-from .utils.db_models import CheckoutItem
-from .utils.login import requires_login, _require_login_wrapper, requires_manager_login
+from .utils.db_models import CheckoutItem, LoginUser, Purchase
+from .utils.login import requires_login, _require_login_wrapper
 
 
 routes = RouteTableDef()
-
-
-@routes.get("/portal/manage")
-@template("portal/manage.htm.j2")
-@requires_manager_login()
-async def portal_management(request: Request):
-    """
-    A management page for payment items.
-    """
-
-    session = await aiohttp_session.get_session(request)
-    async with vbu.Database() as db:
-        user_data_rows = await db.call(
-            """
-            SELECT
-                id,
-                manager,
-                stripe_id,
-                paypal_id,
-                paypal_client_id,
-                paypal_client_secret
-            FROM
-                payment_users
-            WHERE
-                login_id = $1
-            """,
-            session["id"],
-        )
-        user_data = user_data_rows[0]
-        override = ""
-        if user_data['manager']:
-            override = "OR 1 = 1"
-        items = await db.call(
-            """
-            SELECT
-                id,
-                product_name,
-                subscription,
-                success_url,
-                cancel_url,
-                required_logins,
-                stripe_product_id,
-                stripe_price_id,
-                paypal_plan_id,
-                -- transaction_webhook,
-                -- transaction_webhook_authorization,
-                product_group,
-                per_guild,
-                multiple,
-                description
-                -- quantity,
-                -- min_quantity,
-                -- max_quantity,
-                -- base_product
-            FROM
-                checkout_items
-            WHERE
-                creator_id = $1
-                {0}
-            """.format(override),
-            user_data["id"],
-        )
-    return {
-        "user_data": user_data,
-        "items": items,
-    }
 
 
 @routes.get("/portal/{group}")
@@ -98,6 +32,8 @@ async def index(request: Request):
 
     # Get the items to be shown on the page
     async with vbu.Database() as db:
+
+        # Get the items from the database
         item_rows = await db.call(
             """
             SELECT
@@ -115,22 +51,19 @@ async def index(request: Request):
         ]
         for i in items:
             await i.fetch_user(db)
-        current_subscriptions = []
-        # if session.get("id") is not None:
-        #     current_subscriptions = await db.call(
-        #         """
-        #         SELECT
-        #             *
-        #         FROM
-        #             purchases
-        #         WHERE
-        #             product_id = ANY($1::UUID[])
-        #             AND user_id = $2
-        #             AND expiry_time IS NULL
-        #         """,
-        #         [i.id for i in items if i.subscription],
-        #         session["id"],
-        #     )
+
+        # Get the user's purchase history
+        user = await LoginUser.fetch(db, id=session["id"])
+        assert user
+        item_ids = {i.id: i for i in items}
+        current_items = [
+            i for i in await Purchase.fetch_by_user(db, user)
+            if i.product_id in item_ids
+        ]
+        for i in current_items:
+            i._item = item_ids[i.product_id]
+
+    # Get the prices for all available items
     for i in items:
         await i.fetch_price(request.app['config']['stripe_api_key'])
 
@@ -141,17 +74,8 @@ async def index(request: Request):
     # Render the template
     return {
         "logged_in": session.get('id') is not None,
-        "guild_items": [
-            i
-            for i in items
-            if i.per_guild
-        ],
-        "user_items": [
-            i
-            for i in items
-            if not i.per_guild
-        ],
-        "current_subscriptions": current_subscriptions,
+        "purchase_items": items,
+        "current_items": current_items,
     }
 
 
@@ -230,7 +154,6 @@ async def purchase(request: Request):
                     int(session['discord']['id']),
                     guild_id,
                     items[0].id,
-                    type=dict,
                 )
             else:
                 purchase_rows = await db.call(
@@ -250,7 +173,6 @@ async def purchase(request: Request):
                     """,
                     int(session['discord']['id']),
                     items[0].id,
-                    type=dict,
                 )
             if purchase_rows:
                 purchase = purchase_rows[0]
@@ -265,14 +187,10 @@ async def purchase(request: Request):
         session["login_message"] = "Google login is required."
         session["redirect_on_login"] = f"/portal/{item.product_group}"
         return HTTPFound("/login")
-    if flags.facebook and "facebook" not in session:
-        session["login_message"] = "Facebook login is required."
-        session["redirect_on_login"] = f"/portal/{item.product_group}"
-        return HTTPFound("/login")
-    if flags.everlasting and "everlasting" not in session:
-        session["login_message"] = "Everlasting login is required."
-        session["redirect_on_login"] = f"/portal/{item.product_group}"
-        return HTTPFound("/login")
+    # if flags.facebook and "facebook" not in session:
+    #     session["login_message"] = "Facebook login is required."
+    #     session["redirect_on_login"] = f"/portal/{item.product_group}"
+    #     return HTTPFound("/login")
 
     # Get the item price if they're able to buy it more
     if not purchase:

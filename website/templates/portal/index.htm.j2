@@ -1,159 +1,44 @@
+{% from "functions.htm.j2" import display_item %}
+
+
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
-    <link rel="stylesheet" type="text/css" href="{{ static('css/portal/index.css') }}" />
-    <link rel="icon" href="{{ static('/images/_voxelfox/logo.png') }}" />
-    <title>Voxel Fox Payment Portal</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" type="text/css" href="{{ static('css/portal/index.css') }}" />
+  <link rel="icon" href="{{ static('/images/_voxelfox/logo.png') }}" />
+  <title>Voxel Fox Payment Portal</title>
 </head>
 <body>
 
-<div class="container">
+<div id="main">
 
-{# <div id="current-items" class="block">
-    {% if current_subscriptions %}
-        <h1 class="title">Current Subscriptions</h1>
-        <div class="items">
-            {% for item in current_subscriptions %}
-                <div class="item current" data-id="{{ item.id }}">
-                        <p class="name">{{ item.name }}</p>
-
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-</div> #}
-
-<div id="guild-items" class="block">
-    {% if guild_items %}
-        <h1 class="title">Per-Guild Items</h1>
-        <div class="items">
-            {% for item in guild_items %}
-                <div class="item" data-id="{{ item.id }}">
-                    <p class="name">{{ item.name }}</p>
-                    {% if item.description %}
-                        <div class="description">{{ item.description | markdown | safe }}</div>
-                    {% endif %}
-                    <p class="price">
-                        Price:
-                        <span>{{ item.currency_symbol }}{{ item.price }}</span>
-                        {% if item.quantity > 1 %}
-                            each
-                            (<span>{{ item.currency_symbol }}{{ "%.2f" | format(item.price_number * item.quantity / 100)}}</span>)
-                        {% endif %}
-                    </p>
-                    <select class="select guild-select" onchange="javascript:guildSelectChange('{{ item.id }}')">
-                        <option value="">{% if item.subscription %}Subscribe{% else %}Purchase{% endif %} for Guild</option>
-                    </select>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+<div id="purchase-items">
+  <h1 class="title">Available for Purchase</h1>
+  <div class="items">
+    {% for item in purchase_items %}
+      {{ display_item(item) }}
+    {% endfor %}
+  </div>
 </div>
 
-<div id="user-items" class="block">
-    {% if user_items %}
-        <h1 class="title">Per-User Items</h1>
-        <div class="items">
-            {% for item in user_items %}
-                <div class="item" data-id="{{ item.id }}">
-                    <p class="name">{{ item.name }}</p>
-                    {% if item.description %}
-                        <div class="description">{{ item.description | markdown | safe }}</div>
-                    {% endif %}
-                    <p class="price">
-                        Price:
-                        <span>{{ item.currency_symbol }}{{ item.price }}</span>
-                        {% if item.quantity > 1 %}
-                            each
-                            (<span>{{ item.currency_symbol }}{{ "%.2f" | format(item.price_number * item.quantity / 100)}}</span>)
-                        {% endif %}
-                    </p>
-                    <a href="/portal/item/{{ item.id }}" class="button">{% if item.subscription %}Subscribe{% else %}Purchase{% endif %}</a>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-</div>
+<div id="current-items">
+  <h1 class="title">Your Purchases</h1>
+  <div class="items">
+    {% for purchase in current_items %}
+      {{ display_item(purchase._item) }}
+    {% endfor %}
+  </div>
 </div>
 
-<script id="guild-script" type="text/javascript" data-logged-in="{{ logged_in | int }}">
-function guildSelectChange(itemId) {
-    var guildSelect = document.querySelector(`.item[data-id="${itemId}"] .guild-select`);
-    var guildId = guildSelect.value;
-    if (!guildId) {
-        return;
-    }
-    window.location.href = `/portal/item/${itemId}?guild=${guildId}`;
-}
+</div>
 
-
-async function getGuilds() {
-
-    // Get selectors
-    let allGuildSelectors = document.querySelectorAll(".guild-select");
-    if(allGuildSelectors.length <= 0) return;
-
-    // See if we need to replace the item
-    if (document.querySelector("#guild-script").dataset.loggedIn == "0") {
-        for(let g of allGuildSelectors) {
-            g.outerHTML = `<a href="?login" class="button">Login to see guilds</a>`;
-        }
-        return;
-    }
-
-    // Get guilds
-    var guilds = await fetch("/api/portal/get_guilds");
-    guilds = await guilds.json();
-
-    // Sort by name
-    guilds.sort((a, b) => {
-        var nameA = a.name.toUpperCase();
-        var nameB = b.name.toUpperCase();
-        if (nameA < nameB) {
-            return -1;
-        }
-        if (nameA > nameB) {
-            return 1;
-        }
-        return parseInt(a.id) - parseInt(b.id);
-    });
-
-    // Add to dropdowns
-    for(let select of allGuildSelectors) {
-        select.innerHTML = "<option value='' selected>Purchase for Guild</option>";
-        let owned = document.createElement("optgroup");
-        owned.label = "Guilds you own";
-        let administrate = document.createElement("optgroup");
-        administrate.label = "Guilds you administrate";
-        let manage = document.createElement("optgroup");
-        manage.label = "Guilds you manage";
-        let contained = document.createElement("optgroup");
-        contained.label = "Guilds you're in";
-        for(let guild of guilds) {
-            let option = document.createElement("option");
-            option.value = guild.id;
-            option.innerText = guild.name;
-            if(guild.permissions.owner) {
-                owned.appendChild(option);
-            } else if(guild.permissions.administrator) {
-                administrate.appendChild(option);
-            } else if(guild.permissions.manage_guild) {
-                manage.appendChild(option);
-            } else {
-                contained.appendChild(option);
-            }
-        }
-        select.appendChild(owned);
-        select.appendChild(administrate);
-        select.appendChild(manage);
-        select.appendChild(contained);
-    }
-}
-getGuilds();
+<script
+  id="guild-script"
+  type="text/javascript"
+  data-logged-in="{{ logged_in | int }}"
+  src="{{ static('/js/portal.js') }}">
 </script>
-
 </body>
 </html>
