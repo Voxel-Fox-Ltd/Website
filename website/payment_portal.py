@@ -53,15 +53,17 @@ async def index(request: Request):
             await i.fetch_user(db)
 
         # Get the user's purchase history
-        user = await LoginUser.fetch(db, id=session["id"])
-        assert user
-        item_ids = {i.id: i for i in items}
-        current_items = [
-            i for i in await Purchase.fetch_by_user(db, user)
-            if i.product_id in item_ids
-        ]
-        for i in current_items:
-            i._item = item_ids[i.product_id]
+        current_items: list[Purchase] | None = None
+        if "id" in session:
+            user = await LoginUser.fetch(db, id=session["id"])
+            assert user
+            item_ids = {i.id: i for i in items}
+            current_items = [
+                i for i in await Purchase.fetch_by_user(db, user)
+                if i.product_id in item_ids
+            ]
+            for i in current_items:
+                i._item = item_ids[i.product_id]
 
     # Get the prices for all available items
     for i in items:
