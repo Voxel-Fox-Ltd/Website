@@ -24,25 +24,29 @@
   </div>
 </div>
 
-<div id="purchase-items">
-  <h1 class="title">Available for Purchase</h1>
-  <div class="items">
-    {% for item in purchase_items %}
-      {{ display_item(item) }}
-    {% endfor %}
-  </div>
-</div>
-
 <div id="current-items">
   <h1 class="title">Your Purchases</h1>
   <div class="items">
     {% if current_items is none %}
       <a href="?login" class="button">Login to see your purchases</a>
     {% else %}
-      {% for purchase in current_items %}
-        {{ display_item(purchase._item, purchase) }}
-      {% endfor %}
+      {% if current_items %}
+        {% for purchase in current_items %}
+          {{ display_item(purchase._item, purchase) }}
+        {% endfor %}
+      {% else %}
+        <p>No items purchased.</p>
+      {% endif %}
     {% endif %}
+  </div>
+</div>
+
+<div id="purchase-items">
+  <h1 class="title">Available for Purchase</h1>
+  <div class="items">
+    {% for item in purchase_items %}
+      {{ display_item(item) }}
+    {% endfor %}
   </div>
 </div>
 
