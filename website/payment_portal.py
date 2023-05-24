@@ -74,11 +74,14 @@ async def index(request: Request):
         return HTTPFound("/")
 
     # Render the template
-    return {
+    v = {
         "logged_in": session.get('id') is not None,
         "purchase_items": items,
         "current_items": current_items,
     }
+    if "new" in request.query:
+        return render_template("portal2/index.htm.j2", request, v)
+    return v
 
 
 @routes.get("/portal/item/{id}")
@@ -189,10 +192,6 @@ async def purchase(request: Request):
         session["login_message"] = "Google login is required."
         session["redirect_on_login"] = f"/portal/{item.product_group}"
         return HTTPFound("/login")
-    # if flags.facebook and "facebook" not in session:
-    #     session["login_message"] = "Facebook login is required."
-    #     session["redirect_on_login"] = f"/portal/{item.product_group}"
-    #     return HTTPFound("/login")
 
     # Get the item price if they're able to buy it more
     if not purchase:

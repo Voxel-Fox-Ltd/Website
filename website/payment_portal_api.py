@@ -181,7 +181,6 @@ async def portal_check(request: Request):
     discord_user_id = request.query.get("discord_user_id", request.query.get("user_id", ""))
     google_user_id = request.query.get("google_user_id", "")
     facebook_user_id = request.query.get("facebook_user_id", "")
-    everlasting_user_id = request.query.get("everlasting_user_id", "")
     guild_id = request.query.get("guild_id", "")
     any_id = (
         ("vfl", vfl_id,),
@@ -189,7 +188,6 @@ async def portal_check(request: Request):
         ("guild", guild_id,),
         ("google", google_user_id,),
         ("facebook", facebook_user_id,),
-        ("everlasting", everlasting_user_id,),
     )
     if any((i[1] for i in any_id)):
         pass
@@ -241,9 +239,12 @@ async def portal_check(request: Request):
                 base_product = $1
             """,
             product_id,
-            type=dict,
         )
-        possible_base_product = [i for i in base_products if str(i['id']) == product_id]
+        possible_base_product = [
+            i
+            for i in base_products
+            if str(i['id']) == product_id
+        ]
     else:
         base_products = await db.call(
             """
@@ -258,7 +259,6 @@ async def portal_check(request: Request):
                 checkout_items.product_name = $1
             """,
             product_name,
-            type=dict,
         )
         possible_base_product = base_products
 
@@ -311,7 +311,6 @@ async def portal_check(request: Request):
         """.format(user_column),
         identity,
         recursive_base_product['id'],
-        type=dict,
     )
     await db.disconnect()
 
@@ -462,7 +461,6 @@ async def portal_unsubscribe(request: Request):
             """,
             purchase_id,
             int(user_session['discord']['id']),
-            type=dict,
         )
         if purchase_rows:
             purchased = purchase_rows[0]
