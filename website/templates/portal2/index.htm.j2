@@ -1,4 +1,4 @@
-{% from "portal/functions.htm.j2" import display_item %}
+{% from "portal2/functions.htm.j2" import display_item %}
 
 
 <!DOCTYPE html>
@@ -40,7 +40,7 @@
       <p>You are not logged in :(</p>
     {% else %}
       {% for purchase in current_items %}
-        {{ display_item(purchase._item) }}
+        {{ display_item(purchase._item, purchase) }}
       {% endfor %}
     {% endif %}
   </div>

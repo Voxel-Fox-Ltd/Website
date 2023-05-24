@@ -64,6 +64,7 @@ async def index(request: Request):
             ]
             for i in current_items:
                 i._item = item_ids[i.product_id]
+                items.remove(i._item)
 
     # Get the prices for all available items
     for i in items:

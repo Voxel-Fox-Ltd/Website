@@ -796,7 +796,7 @@ class Purchase:
             user: LoginUser | None,
             product: CheckoutItem | None = None,
             *,
-            discord_guild_id: int = MISSING) -> list[Purchase]:
+            discord_guild_id: int | None = MISSING) -> list[Purchase]:
         """
         Fetch a purchase from the database.
 
@@ -838,7 +838,11 @@ class Purchase:
                 ORDER BY
                     timestamp DESC
                 """.format(check),
-                int(discord_guild_id) if discord_guild_id else user.id,  # pyright: ignore
+                (
+                    int(discord_guild_id)
+                    if discord_guild_id is not MISSING and discord_guild_id is not None
+                    else user.id
+                ),
                 product.id,
             )
         else:
@@ -858,7 +862,7 @@ class Purchase:
                 """.format(check),
                 (
                     int(discord_guild_id)
-                    if discord_guild_id is not MISSING
+                    if discord_guild_id is not MISSING and discord_guild_id is not None
                     else user.id
                 ),
             )
