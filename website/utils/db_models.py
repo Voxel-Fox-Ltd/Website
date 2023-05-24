@@ -796,7 +796,7 @@ class Purchase:
             user: LoginUser | None,
             product: CheckoutItem | None = None,
             *,
-            discord_guild_id: int | None = MISSING) -> list[Purchase]:
+            discord_guild_id: int = MISSING) -> list[Purchase]:
         """
         Fetch a purchase from the database.
 
@@ -809,7 +809,7 @@ class Purchase:
             This can only be ``None`` if a guild ID is provided.
         product : CheckoutItem | None
             The item that was purchased.
-        discord_guild_id : int | None
+        discord_guild_id : int
             The guild that the item was purchased for. If this is given,
             the user parameter is ignored.
         """
@@ -856,7 +856,11 @@ class Purchase:
                 ORDER BY
                     timestamp DESC
                 """.format(check),
-                int(discord_guild_id) if discord_guild_id else user.id,  # pyright: ignore
+                (
+                    int(discord_guild_id)
+                    if discord_guild_id is not MISSING
+                    else user.id
+                ),
             )
 
         # Return rows
