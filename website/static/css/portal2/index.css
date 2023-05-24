@@ -1,0 +1,93 @@
+:root {
+    --voxel-fox-orange: #f17824;
+    --voxel-fox-orange-rgb: 241, 120, 36;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    font-family: "Century Gothic", "Helvetica", sans-serif;
+    margin: 0.5em;
+    font-size: 16px;
+    background: #040404;
+    color: white;
+}
+
+h1 {
+    margin: 0;
+}
+
+p {
+    margin: 0.5em 0;
+}
+
+#main {
+    max-width: 800px;
+    width: 100%;
+}
+
+
+#preamble {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1em;
+}
+
+#preamble div {
+    margin-left: 1.5em;
+}
+
+.items {
+    border: solid var(--voxel-fox-orange);
+    border-width: 0 0 0.2em 0.2em;
+    border-radius: 0 0 0 1.2em;
+    padding: 0 0 1em 1em;
+}
+
+.item {
+    border: solid var(--voxel-fox-orange);
+    border-width: 0 0 0.2em 0.2em;
+    border-radius: 0 0 0 1em;
+    padding: 0 0 1em 1em;
+    margin: 0 0 1em 0;
+}
+
+.item:last-of-type {
+    margin: 0;
+}
+
+.item .name {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.item .price {
+    font-style: italic;
+}
+
+.item .guild-select {}
+
+.item .button,
+.item .button:visited {
+    text-decoration: none;
+    padding: 0.5em;
+    margin: 0.2em 0;
+    background: white;
+    display: block;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 0.8em;
+    transition: 0.1s all;
+}
+
+.item .button:hover {
+    background: var(--voxel-fox-orange);
+    color: white;
+}
+
+#current-items {
+    margin-top: 2em;
+}
+
