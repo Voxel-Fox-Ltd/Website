@@ -51,6 +51,7 @@ async def index(request: Request):
         ]
         for i in items:
             await i.fetch_user(db)
+        item_ids = {i.id: i for i in items}
 
         # Get the user's purchase history
         current_items: list[Purchase] | None = None
@@ -62,13 +63,15 @@ async def index(request: Request):
                 i for i in await Purchase.fetch_by_user(db, user)
                 if i.product_id in item_ids
             ]
-            for i in current_items:
-                i._item = item_ids[i.product_id]
-                items.remove(i._item)
 
     # Get the prices for all available items
     for i in items:
         await i.fetch_price(request.app['config']['stripe_api_key'])
+
+    # Add item objects to the purchases
+    for i in current_items or []:
+        i._item = item_ids[i.product_id]
+        items.remove(i._item)
 
     # If there aren't any items then let's just redirect back to the index
     if not items:
