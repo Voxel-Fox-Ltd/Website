@@ -135,6 +135,7 @@ const WORD_REPLACEMENTS = [
 const IGNORED_USERS = [
     "cloudbot",
     "streamlabs",
+    "streamelements",
 ];
 
 
