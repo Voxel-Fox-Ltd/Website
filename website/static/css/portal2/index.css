@@ -15,7 +15,7 @@ body {
 }
 
 h1 {
-    margin: 0;
+    margin: 0 0 0.5em 0;
 }
 
 p {
@@ -27,11 +27,14 @@ p {
     width: 100%;
 }
 
+#main > div {
+    margin-bottom: 2em;
+}
+
 
 #preamble {
     display: flex;
     align-items: center;
-    margin-bottom: 1em;
 }
 
 #preamble div {
@@ -51,6 +54,7 @@ p {
     border-radius: 0 0 0 1em;
     padding: 0 1em 1em 1em;
     margin: 0 0 1em 0;
+    box-sizing: border-box;
 }
 
 .item:last-of-type {
@@ -60,6 +64,7 @@ p {
 .item .name {
     font-size: 2em;
     font-weight: bold;
+    margin-top: 0;
 }
 
 .item .price {
@@ -78,11 +83,10 @@ p {
     font-family: inherit;
 }
 
-.item .button,
-.item .button:visited {
+.button,
+.button:visited {
     text-decoration: none;
     padding: 0.5em;
-    margin: 0.2em 0;
     background: white;
     display: block;
     color: black;
@@ -95,8 +99,4 @@ p {
 .item .button:hover {
     background: var(--voxel-fox-orange);
     color: white;
-}
-
-#current-items {
-    margin-top: 2em;
 }
