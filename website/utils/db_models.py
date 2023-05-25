@@ -551,7 +551,7 @@ class CheckoutItem:
         return cls.from_row(item_rows[0])
 
     @classmethod
-    async def fetch_by_product_id(
+    async def fetch_by_stripe_product_id(
             cls,
             db: vbu.Database,
             id: str) -> Self | None:
@@ -1050,7 +1050,7 @@ class Purchase:
         Fetch the product associated with the purchase.
         """
 
-        v = await CheckoutItem.fetch_by_product_id(db, self.product_id)
+        v = await CheckoutItem.fetch(db, self.product_id)
         assert v
         self._item = v
         return v

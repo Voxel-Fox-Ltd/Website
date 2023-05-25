@@ -303,7 +303,7 @@ async def checkout_processor(
     ]
     async with vbu.Database() as db:
         items = [
-            await CheckoutItem.fetch_by_product_id(db, p)
+            await CheckoutItem.fetch_by_stripe_product_id(db, p)
             for p in line_item_products
         ]
     if not items:
@@ -464,7 +464,7 @@ async def subscription_deleted(
     # Get the product item so that we can grab its name
     product_id: str
     async with vbu.Database() as db:
-        item = await CheckoutItem.fetch_by_product_id(
+        item = await CheckoutItem.fetch_by_stripe_product_id(
             db,
             product_id := subscription_item["price"]["product"],
         )
