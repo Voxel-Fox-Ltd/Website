@@ -1,0 +1,52 @@
+{% set pp_base = "https://www.paypal.com/sdk/js" %}
+{% set client_id = (
+  "AZrQypK2Od7C44Y1JgQAStWunNw7puFjVx0ako0rCOl2zJWuRpMNnm"
+  "35uvxMCsPa-vNmJFAiHq-o0q61"
+) %}
+<script src="{{ pp_base }}?client-id={{ client_id }}&currency={{ item.currency_code }}"></script>
+<script
+    id="paypal-script"
+    data-user-id="{{ user_id }}"
+    data-discord-guild-id="{{ discord_guild_id or '' }}"
+    data-button="paypal-button">
+var pps = document.getElementById("paypal-script");
+paypal.Buttons({
+  style: {
+    label: 'paypal',
+    color: 'gold',
+    tagline: false,
+    layout: 'horizontal',
+  },
+  createOrder: function(data, actions) {
+    return actions.order.create({
+      purchase_units: [{
+        amount: {
+          value: "{{ item.price_number * item.quantity / 100 }}",
+          currency_code: "{{ item.currency_code }}",
+          breakdown: {
+            item_total: {
+              value: "{{ item.price_number * item.quantity / 100 }}",
+              currency_code: "{{ item.currency_code }}"
+            },
+          },
+        },
+        items: [{
+          name: "{{ item.name }}",
+          unit_amount: {
+            value: "{{ item.price_number / 100 }}",
+            currency_code: "{{ item.currency_code }}",
+          },
+          quantity: "{{ item.quantity }}",
+        }],
+        custom_id: JSON.stringify({
+          user_id: pps.dataset.userId,
+          discord_guild_id: pps.dataset.discordGuildId,
+        }),
+      }],
+    });
+  },
+  onApprove: function(data, actions) {
+    alert(data.subscriptionID);
+  }
+}).render("#" + pps.dataset.button);
+</script>

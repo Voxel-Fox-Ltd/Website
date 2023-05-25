@@ -1,0 +1,31 @@
+<script src="https://js.stripe.com/v3/"></script>
+<script
+    id="stripe-script"
+    data-product-id="{{ item.id }}"
+    data-user-id="{{ user_id }}"
+    data-discord-guild-id="{{ discord_guild_id or '' }}"
+    data-button="stripe-button">
+var stripe = Stripe("pk_live_0Fx3FqHVF6tDXipvuUxdSDeu00egEyOnyO");
+var ss = document.getElementById("stripe-script");
+var button = document.getElementById(ss.dataset.button);
+{% if item.subscription %}
+  button.innerHTML = "<button class='button'>Subscribe via Stripe</button>";
+{% else %}
+  button.innerHTML = "<button class='button'>Checkout via Stripe</button>";
+{% endif %}
+button.onclick = () => {
+  fetch("/webhooks/stripe/create_checkout_session", {
+    method: "POST",
+    body: JSON.stringify({
+      product_id: ss.dataset.productId,
+      user_id: ss.dataset.userId,
+      discord_guild_id: ss.dataset.discordGuildId,
+      quantity: {{ item.quantity }},
+    }),
+  }).then(function (response) {
+    return response.json();
+  }).then(function (session) {
+    window.location.replace(session.url);
+  });
+};
+</script>

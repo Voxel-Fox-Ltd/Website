@@ -1,156 +1,51 @@
+{% from "portal2/functions.htm.j2" import display_item %}
+
+
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
-    <link rel="stylesheet" type="text/css" href="{{ static('css/portal/item.css') }}" />
-    <link rel="icon" href="{{ static('/images/_voxelfox/logo.png') }}" />
-    <title>Voxel Fox Payment Portal - {{ item.name }}</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" type="text/css" href="{{ static('css/portal/index.css') }}" />
+  <link rel="icon" href="{{ static('/images/_voxelfox/logo.png') }}" />
+  <title>Voxel Fox Payment Portal - {{ item.name }}</title>
 </head>
 <body>
 
 
-<div class="container">
-    <a href="/portal/{{ item.product_group }}" class="back-button">&#8592; back</a>
-    <div class="item content" data-id="{{ item.id }}">
-        <h1 class="title">{{ item.name }}</h1>
-        <div class="content">
-            {% if item.description %}
-                <div class="description block">{{ item.description | markdown | safe }}</div>
-            {% endif %}
-            <p class="price block">Price: <span>{{ item.currency_symbol }}{{ "%.2f" | format(item.price_number * item.quantity / 100) }}</span></p>
-        </div>
-        <div id="stripe-button" class="button-holder block"></div>
-        <div id="paypal-button" class="button-holder block"></div>
-    </div>
+<div id="main">
+
+<div id="preamble">
+  <a href="/">
+    <img
+        src="{{ static('/images/_voxelfox/white.svg') }}"
+        alt="The Voxel Fox logo"
+        width="168"
+        height="164" />
+  </a>
+  <div>
+    <h1>Voxel Fox</h1>
+    <p>Designing digital experiences</p>
+  </div>
 </div>
 
+<div id="purchase-items">
+  <a href="/portal/{{ item.product_group }}" class="back-button">&#8592; back</a>
+  <div class="items">
+    {% for item in purchase_items %}
+      {{ display_item(item, none, false) }}
+    {% endfor %}
+    <div id="stripe-button" class="button-holder block"></div>
+    <div id="paypal-button" class="button-holder block"></div>
+  </div>
+</div>
 
-{# Stripe #}
-<script src="https://js.stripe.com/v3/"></script>
-<script
-        id="stripe-script"
-        data-product-id="{{ item.id }}"
-        data-user-id="{{ user_id }}"
-        data-discord-guild-id="{{ discord_guild_id or '' }}"
-        data-button="stripe-button">
-var stripe = Stripe("pk_live_0Fx3FqHVF6tDXipvuUxdSDeu00egEyOnyO");
-var ss = document.getElementById("stripe-script");
-var button = document.getElementById(ss.dataset.button);
-button.innerHTML = "<button class='button'>Checkout with Stripe</button>";
-button.onclick = () => {
-    fetch("/webhooks/stripe/create_checkout_session", {
-        method: "POST",
-        body: JSON.stringify({
-            product_id: ss.dataset.productId,
-            user_id: ss.dataset.userId,
-            discord_guild_id: ss.dataset.discordGuildId,
-            quantity: {{ item.quantity }},
-        }),
-    }).then(function (response) {
-        return response.json();
-    }).then(function (session) {
-        window.location.replace(session.url);
-    });
-};
-</script>
-
-
-{# PayPal global #}
-{% if item.user.paypal_client_id %}
-{% set pp_base = "https://www.paypal.com/sdk/js" %}
-{% set client_id = (
-    "AZrQypK2Od7C44Y1JgQAStWunNw7puFjVx0ako0rCOl2zJWuRpMNnm"
-    "35uvxMCsPa-vNmJFAiHq-o0q61"
-) %}
-
-
-{# PayPal subscription #}
-{% if item.subscription and item.paypal_plan_id %}
-<script src="{{ pp_base }}?client-id={{ client_id }}&vault=true&currency={{ item.currency_code }}"></script>
-<script
-        id="paypal-script"
-        data-user-id="{{ user_id }}"
-        data-discord-guild-id="{{ discord_guild_id or '' }}"
-        data-plan-id="{{ item.paypal_plan_id }}"
-        data-button="paypal-button">
-var pps = document.getElementById("paypal-script");
-paypal.Buttons({
-    style: {
-        label: 'subscribe',
-        color: 'gold',
-        tagline: false,
-        layout: 'horizontal',
-    },
-   createSubscription: function(data, actions) {
-        return actions.subscription.create({
-           'plan_id': pps.getAttribute("plan-id"),
-           'custom_id': JSON.stringify({
-                discord_user_id: pps.dataset.userId,
-                discord_guild_id: pps.dataset.discordGuildId,
-            }),
-        });
-    },
-    onApprove: function(data, actions) {
-        alert(data.subscriptionID);
-    }
-}).render("#" + pps.dataset.button);
-</script>
-
-
-{# PayPal single #}
-{% elif not item.subscription %}
-<script src="{{ pp_base }}?client-id={{ client_id }}&currency={{ item.currency_code }}"></script>
-<script
-        id="paypal-script"
-        data-user-id="{{ user_id }}"
-        data-discord-guild-id="{{ discord_guild_id or '' }}"
-        data-button="paypal-button">
-var pps = document.getElementById("paypal-script");
-paypal.Buttons({
-    style: {
-        label: 'paypal',
-        color: 'gold',
-        tagline: false,
-        layout: 'horizontal',
-    },
-    createOrder: function(data, actions) {
-        return actions.order.create({
-            purchase_units: [{
-                amount: {
-                    value: "{{ item.price_number * item.quantity / 100 }}",
-                    currency_code: "{{ item.currency_code }}",
-                    breakdown: {
-                        item_total: {
-                            value: "{{ item.price_number * item.quantity / 100 }}",
-                            currency_code: "{{ item.currency_code }}"
-                        },
-                    },
-                },
-                items: [{
-                    name: "{{ item.name }}",
-                    unit_amount: {
-                        value: "{{ item.price_number / 100 }}",
-                        currency_code: "{{ item.currency_code }}",
-                    },
-                    quantity: "{{ item.quantity }}",
-                }],
-                custom_id: JSON.stringify({
-                    user_id: pps.dataset.userId,
-                    discord_guild_id: pps.dataset.discordGuildId,
-                }),
-            }],
-        });
-    },
-    onApprove: function(data, actions) {
-        alert(data.subscriptionID);
-    }
-}).render("#" + pps.dataset.button);
-</script>
+{% include "portal2/stripe.htm.j2" %}
+{% if item.subscription %}
+  {% include "portal2/paypal_subscription.htm.j2" %}
+{% else %}
+  {% include "portal2/paypal_item.htm.j2" %}
 {% endif %}
-{% endif %}
-
 
 </body>
 </html>

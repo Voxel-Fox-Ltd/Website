@@ -14,6 +14,7 @@ __all__ = (
 
 RouteOutput = StreamResponse | dict[Any, Any]
 RouteFunc = Callable[[Request], Awaitable[RouteOutput]]
+RouteWrapper = Callable[..., Callable[..., Awaitable[StreamResponse]]]
 
 
 async def _require_login_wrapper(request: Request) -> StreamResponse | None:
@@ -23,17 +24,17 @@ async def _require_login_wrapper(request: Request) -> StreamResponse | None:
         return HTTPFound("/login")
 
 
-def requires_login():
+def requires_login() -> RouteWrapper:
     def inner(func: RouteFunc):
         async def wrapper(request: Request) -> RouteOutput:
             if (x := await _require_login_wrapper(request)):
                 return x
             return await func(request)
         return wrapper
-    return inner
+    return inner  # pyright: ignore
 
 
-def requires_manager_login(location: str = "/"):
+def requires_manager_login(location: str = "/") -> RouteWrapper:
     """
     Check if the user is in the payment processor users.
     """
@@ -60,4 +61,4 @@ def requires_manager_login(location: str = "/"):
                 return HTTPFound(location)
             return await func(request)
         return wrapper
-    return inner
+    return inner  # pyright: ignore

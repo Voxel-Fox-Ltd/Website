@@ -3,8 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
-    <link rel="stylesheet" type="text/css" href="{{ static('css/portal/item.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ static('css/portal2/item.css') }}" />
     <link rel="icon" href="{{ static('/images/_voxelfox/logo.png') }}" />
     <title>Voxel Fox Payment Portal</title>
 </head>
@@ -32,13 +31,15 @@ async function unsubscribe() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            id: "{{ purchase['id'] }}",
+            id: "{{ purchase.id }}",
         })
     });
     if (response.ok) {
         window.location.href = '/portal/{{ item.product_group }}';
     } else {
+        let data = await response.json();
         alert('An error occurred while unsubscribing.');
+        alert(JSON.stringify(data));
     }
 }
 </script>

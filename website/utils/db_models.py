@@ -1041,7 +1041,7 @@ class Purchase:
             cancel_url,  # cancel_url
             timestamp or dt.utcnow(),  # timestamp
             identifier,  # identifier
-            quantity,  # quantit
+            quantity,  # quantity
         )
         return Purchase.from_row(added_rows[0])
 
@@ -1052,4 +1052,5 @@ class Purchase:
 
         v = await CheckoutItem.fetch_by_product_id(db, self.product_id)
         assert v
+        self._item = v
         return v

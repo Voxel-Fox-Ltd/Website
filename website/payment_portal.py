@@ -213,3 +213,131 @@ async def purchase(request: Request):
     if "new" in request.query:
         template_name = template_name.replace("/portal/", "/portal2/")
     return render_template(template_name, request, context)
+
+
+@routes.get("/portal/unsubscribe/product/{id}")
+@requires_login()
+async def unsubscribe_product(request: Request):
+    """
+    Unsubscribe page for a user. Takes a product ID, redirects to the
+    individual user's unsubscribe page by the purchase ID.
+    """
+
+    # Make sure we have an ID
+    product_id = request.match_info["id"]
+    try:
+        uuid.UUID(product_id)
+    except ValueError:
+        return HTTPFound("/")
+
+    # Get session
+    session = await aiohttp_session.get_session(request)
+
+    # Make sure we have a guild ID if we need one
+    guild_id_str = request.query.get("guild", "")
+    if guild_id_str.isdigit():
+        guild_id = int(guild_id_str)
+    else:
+        guild_id = None
+
+    # Get the items to be shown on the page
+    async with vbu.Database() as db:
+
+        # See if the user has purchased this item already - we'll use this to
+        # redirect (if they can't buy multiple) or redirect to unsubscribe
+        # (if it's a subscription)
+        purchase: Optional[Purchase] = None
+        if guild_id:
+            purchase_rows = await db.call(
+                """
+                SELECT
+                    *
+                FROM
+                    purchases
+                WHERE
+                    user_id = $1
+                    AND discord_guild_id = $2
+                    AND product_id = $3
+                    AND expiry_time IS NULL
+                """,
+                session["id"],
+                guild_id,
+                product_id,
+            )
+        else:
+            purchase_rows = await db.call(
+                """
+                SELECT
+                    *
+                FROM
+                    purchases
+                WHERE
+                    user_id = $1
+                    AND discord_guild_id IS NULL
+                    AND product_id = $2
+                    AND expiry_time IS NULL
+                """,
+                session["id"],
+                product_id,
+            )
+
+    # Check if they purchased something
+    if purchase_rows:
+        purchase = Purchase.from_row(purchase_rows[0])
+
+    # Get the item price if they're able to buy it more
+    if not purchase:
+        return HTTPFound(f"/portal/item/{product_id}")
+    return HTTPFound(f"/portal/unsubscribe/{purchase.id}")
+
+
+@routes.get("/portal/unsubscribe/{id}")
+@requires_login()
+async def unsubscribe(request: Request):
+    """
+    Unsubscribe page for a user via its purchase ID.
+    """
+
+    # Make sure we have an ID
+    purchase_id = request.match_info["id"]
+    try:
+        uuid.UUID(purchase_id)
+    except ValueError:
+        return HTTPFound("/")
+
+    # Get session
+    session = await aiohttp_session.get_session(request)
+
+    # Get the items to be shown on the page
+    async with vbu.Database() as db:
+        purchase: Optional[Purchase] = None
+        purchase_rows = await db.call(
+            """
+            SELECT
+                *
+            FROM
+                purchases
+            WHERE
+                user_id = $1
+                AND id = $2
+            """,
+            session["id"],
+            purchase_id,
+        )
+
+        # Check if they purchased something
+        if purchase_rows:
+            purchase = Purchase.from_row(purchase_rows[0])
+        else:
+            return HTTPFound("/")
+        item = await purchase.fetch_product(db)
+
+    # Render the template
+    return render_template(
+        "portal2/unsubscribe.htm.j2",
+        request,
+        {
+            "item": item,
+            "purchase": purchase,
+        },
+    )

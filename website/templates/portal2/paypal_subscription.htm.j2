@@ -1,0 +1,34 @@
+{% set pp_base = "https://www.paypal.com/sdk/js" %}
+{% set client_id = (
+  "AZrQypK2Od7C44Y1JgQAStWunNw7puFjVx0ako0rCOl2zJWuRpMNnm"
+  "35uvxMCsPa-vNmJFAiHq-o0q61"
+) %}
+<script src="{{ pp_base }}?client-id={{ client_id }}&vault=true&currency={{ item.currency_code }}"></script>
+<script
+    id="paypal-script"
+    data-user-id="{{ user_id }}"
+    data-discord-guild-id="{{ discord_guild_id or '' }}"
+    data-plan-id="{{ item.paypal_plan_id }}"
+    data-button="paypal-button">
+var pps = document.getElementById("paypal-script");
+paypal.Buttons({
+  style: {
+    label: 'subscribe',
+    color: 'gold',
+    tagline: false,
+    layout: 'horizontal',
+  },
+   createSubscription: function(data, actions) {
+    return actions.subscription.create({
+       'plan_id': pps.getAttribute("plan-id"),
+       'custom_id': JSON.stringify({
+        discord_user_id: pps.dataset.userId,
+        discord_guild_id: pps.dataset.discordGuildId,
+      }),
+    });
+  },
+  onApprove: function(data, actions) {
+    alert(data.subscriptionID);
+  }
+}).render("#" + pps.dataset.button);
+</script>

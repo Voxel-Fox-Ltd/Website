@@ -1,4 +1,4 @@
-{% macro display_item(item, purchase=none) %}
+{% macro display_item(item, purchase=none, show_buy_button=true) %}
 <div class="item" data-id="{{ item.id }}">
   <p class="name">{{ item.name }}</p>
   {% if item.description %}
@@ -7,15 +7,17 @@
   <p class="price">
     Price: <span>{{ item.currency_symbol }}{{ item.price }}</span>
   </p>
-  {% if item.per_guild %}
-    <select class="guild-select" onchange="javascript:guildSelectChange('{{ item.id }}')">
-      <option value="">{% if item.subscription %}Subscribe{% else %}Purchase{% endif %} for Guild</option>
-    </select>
-  {% else %}
-    {% if purchase and item.subscription %}
-      <a href="/portal/item/{{ item.id }}" class="button">Unsubscribe</a>
-    {% elif item.subscription %}
-      <a href="/portal/item/{{ item.id }}" class="button">{% if item.subscription %}Subscribe{% else %}Purchase{% endif %}</a>
+  {% if show_buy_button %}
+    {% if item.per_guild %}
+      <select class="guild-select" onchange="javascript:guildSelectChange('{{ item.id }}')">
+        <option value="">{% if item.subscription %}Subscribe{% else %}Purchase{% endif %} for Guild</option>
+      </select>
+    {% else %}
+      {% if purchase and item.subscription %}
+        <a href="/portal/item/{{ item.id }}" class="button">Unsubscribe</a>
+      {% elif item.subscription %}
+        <a href="/portal/item/{{ item.id }}" class="button">{% if item.subscription %}Subscribe{% else %}Purchase{% endif %}</a>
+      {% endif %}
     {% endif %}
   {% endif %}
 </div>
