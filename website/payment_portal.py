@@ -140,7 +140,7 @@ async def purchase(request: Request):
             guild_id = None
 
         # See if the user has purchased this item already - we'll use this to
-        # redirect (if they can't buy multiple) or show an unsubscribe screen
+        # redirect (if they can't buy multiple) or redirect to unsubscribe
         # (if it's a subscription)
         purchase: Optional[dict] = None
         if (item.subscription or not item.multiple) and "discord" in session:
@@ -153,12 +153,9 @@ async def purchase(request: Request):
                         purchases
                     WHERE
                         discord_user_id = $1
-                    AND
-                        discord_guild_id = $2
-                    AND
-                        product_id = $3
-                    AND
-                        expiry_time IS NULL
+                        AND discord_guild_id = $2
+                        AND product_id = $3
+                        AND expiry_time IS NULL
                     """,
                     int(session['discord']['id']),
                     guild_id,
@@ -173,12 +170,9 @@ async def purchase(request: Request):
                         purchases
                     WHERE
                         discord_user_id = $1
-                    AND
-                        discord_guild_id IS NULL
-                    AND
-                        product_id = $2
-                    AND
-                        expiry_time IS NULL
+                        AND discord_guild_id IS NULL
+                        AND product_id = $2
+                        AND expiry_time IS NULL
                     """,
                     int(session['discord']['id']),
                     items[0].id,
@@ -204,7 +198,7 @@ async def purchase(request: Request):
     # Render the template
     context = {
         "item": item,
-        "user_id": session['id'],
+        "user_id": session["id"],
         "discord_guild_id": request.query.get("guild"),
         "purchase": purchase,
     }
@@ -216,4 +210,6 @@ async def purchase(request: Request):
             return HTTPFound(f"/portal/{item.product_group}")
         else:
             raise Exception("This shouldn't happen")
+    if "new" in request.query:
+        template_name = template_name.replace("/portal/", "/portal2/")
     return render_template(template_name, request, context)
