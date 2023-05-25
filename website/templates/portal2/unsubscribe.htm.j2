@@ -1,49 +1,42 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" type="text/css" href="{{ static('css/portal2/item.css') }}" />
-    <link rel="icon" href="{{ static('/images/_voxelfox/logo.png') }}" />
-    <title>Voxel Fox Payment Portal</title>
-</head>
-<body>
+{% extends "portal2/template.htm.j2" %}
 
+{% from "portal2/functions.htm.j2" import display_item %}
 
-<div class="container">
+{% block main %}
+{% include "portal2/preamble.htm.j2" %}
+
+<div id="current-items">
+  <div class="items">
     <div class="item" data-id="{{ item.id }}">
-        <h1 class="title">{{ item.name }}</h1>
-        <div class="block">
-            {% if item.description %}
-                <p class="description">{{ item.description }}</p>
-            {% endif %}
-            <button class="button unsubscribe-button" onclick="javascript:unsubscribe();">Unsubscribe</button>
-        </div>
+      <h1 class="title">{{ item.name }}</h1>
+      <div class="block">
+        {% if item.description %}
+          <p class="description">{{ item.description | markdown | safe }}</p>
+        {% endif %}
+        <a class="button unsubscribe" href="#" onclick="javascript:unsubscribe();">Unsubscribe</a>
+      </div>
     </div>
+  </div>
 </div>
-
 
 <script type="text/javascript">
 async function unsubscribe() {
-    var response = await fetch('/api/portal/unsubscribe', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            id: "{{ purchase.id }}",
-        })
-    });
-    if (response.ok) {
-        window.location.href = '/portal/{{ item.product_group }}';
-    } else {
-        let data = await response.json();
-        alert('An error occurred while unsubscribing.');
-        alert(JSON.stringify(data));
-    }
+  var response = await fetch('/api/portal/unsubscribe', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      id: "{{ purchase.id }}",
+    })
+  });
+  if (response.ok) {
+    window.location.href = '/portal/{{ item.product_group }}';
+  } else {
+    let data = await response.json();
+    alert('An error occurred while unsubscribing.');
+    alert(JSON.stringify(data));
+  }
 }
 </script>
-
-
-</body>
-</html>
+{% endblock main %}

@@ -1,32 +1,9 @@
+{% extends "portal2/template.htm.j2" %}
+
 {% from "portal2/functions.htm.j2" import display_item %}
 
-
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" type="text/css" href="{{ static('css/portal/index.css') }}" />
-  <link rel="icon" href="{{ static('/images/_voxelfox/logo.png') }}" />
-  <title>Voxel Fox Payment Portal - {{ item.name }}</title>
-</head>
-<body>
-
-<div id="main">
-
-<div id="preamble">
-  <a href="/">
-    <img
-        src="{{ static('/images/_voxelfox/white.svg') }}"
-        alt="The Voxel Fox logo"
-        width="168"
-        height="164" />
-  </a>
-  <div>
-    <h1>Voxel Fox</h1>
-    <p>Designing digital experiences</p>
-  </div>
-</div>
+{% block main %}
+{% include "portal2/preamble.htm.j2" %}
 
 <div id="purchase-items">
   <a href="/portal/{{ item.product_group }}" class="back-button">&#8592; back</a>
@@ -45,6 +22,4 @@
 {% else %}
   {% include "portal2/paypal_item.htm.j2" %}
 {% endif %}
-
-</body>
-</html>
+{% endblock main %}
