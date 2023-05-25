@@ -5,8 +5,9 @@
 {% block main %}
 {% include "portal2/preamble.htm.j2" %}
 
+<a href="/portal/{{ item.product_group }}" id="back-button">&#8592; back</a>
+
 <div id="purchase-items">
-  <a href="/portal/{{ item.product_group }}" class="back-button">&#8592; back</a>
   <div class="items">
     {% for item in purchase_items %}
       {{ display_item(item, none, false) }}

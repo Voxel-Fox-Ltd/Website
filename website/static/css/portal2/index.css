@@ -31,6 +31,12 @@ p {
     margin-bottom: 2em;
 }
 
+#back-button,
+#back-button:visited {
+    display: block;
+    margin-bottom: 1em;
+    color: white;
+}
 
 #preamble {
     display: flex;
@@ -41,7 +47,7 @@ p {
     margin-left: 1.5em;
 }
 
-#current-items {
+.button.unsubscribe {
     border-color: red;
 }
 

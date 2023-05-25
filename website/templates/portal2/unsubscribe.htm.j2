@@ -5,6 +5,8 @@
 {% block main %}
 {% include "portal2/preamble.htm.j2" %}
 
+<a href="/portal/{{ item.product_group }}" id="back-button">&#8592; back</a>
+
 <div id="current-items">
   <div class="items">
     <div class="item" data-id="{{ item.id }}">
