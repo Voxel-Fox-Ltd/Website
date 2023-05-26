@@ -137,7 +137,7 @@ async def portal_update(request: Request):
                     SELECT
                         id
                     FROM
-                        payment_users
+                        manager_users
                     WHERE
                         login_id = $10
                 )
@@ -212,9 +212,9 @@ async def portal_check(request: Request):
                 user_column = "purchases.discord_guild_id"
                 identity = int(i)
             elif k == "vfl":
-                user_column = "login_users.user_id"
+                user_column = "users.user_id"
             else:
-                user_column = f"login_users.{k}_user_id"
+                user_column = f"users.{k}_user_id"
             break
     else:
         raise ValueError("Could not find identity")
@@ -295,9 +295,9 @@ async def portal_check(request: Request):
         ON
             purchases.product_id = checkout_items.id
         LEFT JOIN
-            login_users
+            users
         ON
-            login_users.id = purchases.user_id
+            users.id = purchases.user_id
         WHERE
             {0} = $1
         AND
@@ -401,7 +401,7 @@ async def portal_get_guilds(request: Request):
     # Save new token to db
     async with vbu.Database() as db:
         await db.call(
-            "UPDATE login_users SET discord_refresh_token = $2 WHERE id = $1",
+            "UPDATE users SET discord_refresh_token = $2 WHERE id = $1",
             user_session["id"],
             user_session["discord"]["refresh_token"],
         )

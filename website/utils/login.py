@@ -51,7 +51,7 @@ def requires_manager_login(location: str = "/") -> RouteWrapper:
                     SELECT
                         1
                     FROM
-                        payment_users
+                        manager_users
                     WHERE
                         login_id = $1
                     """,

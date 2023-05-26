@@ -12,7 +12,7 @@ from discord.ext import vbu
 from .flags import RequiredLogins
 
 __all__ = (
-    'LoginUser',
+    'User',
     'CheckoutItem',
     'Purchase',
 )
@@ -24,7 +24,7 @@ log = logging.getLogger("vbu.voxelfox.db_models")
 MISSING: Any = object()
 
 
-class LoginUser:
+class User:
     """
     A user who is able to purchase items.
 
@@ -142,7 +142,7 @@ class LoginUser:
 
         # Fetch
         rows = await db.call(
-            "SELECT * FROM login_users WHERE {0}".format(query),
+            "SELECT * FROM users WHERE {0}".format(query),
             (
                 id
                 or discord_user_id
@@ -169,7 +169,7 @@ class LoginUser:
         rows = await db.call(
             """
             INSERT INTO
-                login_users
+                users
                 (
                     discord_user_id,
                     google_user_id,
@@ -268,7 +268,7 @@ class User:
         """
 
         row = await db.call(
-            """SELECT * FROM payment_users WHERE id = $1""",
+            """SELECT * FROM manager_users WHERE id = $1""",
             id,
         )
         if row:
@@ -772,7 +772,7 @@ class Purchase:
     async def fetch_by_user(
             cls,
             db: vbu.Database,
-            user: LoginUser,
+            user: User,
             product: CheckoutItem | None = None,
             *,
             discord_guild_id: None = ...) -> list[Purchase]:
@@ -793,7 +793,7 @@ class Purchase:
     async def fetch_by_user(
             cls,
             db: vbu.Database,
-            user: LoginUser | None,
+            user: User | None,
             product: CheckoutItem | None = None,
             *,
             discord_guild_id: int | None = MISSING) -> list[Purchase]:
@@ -956,7 +956,7 @@ class Purchase:
     async def create(
             cls,
             db: vbu.Database,
-            user: LoginUser,
+            user: User,
             product: CheckoutItem,
             *,
             quantity: int = 1,

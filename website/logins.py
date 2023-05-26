@@ -67,7 +67,7 @@ async def store_information(
             user_rows = await db.call(
                 """
                 UPDATE
-                    login_users
+                    users
                 SET
                     {0}_user_id = $2,
                     {0}_refresh_token = $3
@@ -87,7 +87,7 @@ async def store_information(
             # Delete existing
             conflict_row = await db.call(
                 """
-                DELETE FROM login_users WHERE {0}_user_id = $1 RETURNING *
+                DELETE FROM users WHERE {0}_user_id = $1 RETURNING *
                 """.format(identity),
                 user_id,
             )
@@ -121,7 +121,7 @@ async def store_information(
         if refresh_token is None:
             user_rows = await db.call(
                 """
-                SELECT * FROM login_users WHERE {0}_user_id = $1
+                SELECT * FROM users WHERE {0}_user_id = $1
                 """.format(identity),
                 user_id,
             )
@@ -131,7 +131,7 @@ async def store_information(
             user_rows = await db.call(
                 """
                 INSERT INTO
-                    login_users
+                    users
                     (
                         {0}_user_id,
                         {0}_refresh_token

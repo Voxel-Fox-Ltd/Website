@@ -8,7 +8,7 @@ from .webhook_util import *
 
 __all__: tuple[str, ...] = (
     'CheckoutItem',
-    'LoginUser',
+    'User',
     'RequiredLogins',
     '_require_login_wrapper',
     'get_paypal_access_token',

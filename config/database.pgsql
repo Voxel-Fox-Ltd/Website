@@ -12,9 +12,9 @@ CREATE TABLE IF NOT EXISTS google_forms_redirects(
 
 -- A table of users (and related information) who can create and manage
 -- checkout items
-CREATE TABLE IF NOT EXISTS payment_users(
+CREATE TABLE IF NOT EXISTS manager_users(
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    login_id UUID NOT NULL REFERENCES login_users(id),
+    login_id UUID NOT NULL REFERENCES users(id),
     manager BOOLEAN NOT NULL DEFAULT FALSE,
     stripe_id TEXT,
     paypal_id TEXT,
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS payment_users(
 );
 
 
-CREATE TABLE IF NOT EXISTS login_users(
+CREATE TABLE IF NOT EXISTS users(
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     discord_user_id TEXT UNIQUE,
     discord_refresh_token TEXT,
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS login_users(
 
 CREATE TABLE IF NOT EXISTS checkout_items(
     id UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
-    creator_id UUID NOT NULL REFERENCES payment_users(id),
+    creator_id UUID NOT NULL REFERENCES manager_users(id),
 
     -- Product information
     product_name CITEXT NOT NULL,
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS purchases(
     product_id UUID NOT NULL REFERENCES checkout_items(id),
 
     -- The user who purchased the item
-    user_id UUID NOT NULL REFERENCES login_users(id),
+    user_id UUID NOT NULL REFERENCES users(id),
     discord_guild_id BIGINT,
 
     -- If the item is a subscription, cancel metadata

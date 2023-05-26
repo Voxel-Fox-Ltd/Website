@@ -10,7 +10,7 @@ from aiohttp_jinja2 import render_template, template
 import aiohttp_session
 from discord.ext import vbu
 
-from .utils.db_models import CheckoutItem, LoginUser, Purchase
+from .utils.db_models import CheckoutItem, User, Purchase
 from .utils.login import requires_login, _require_login_wrapper
 
 
@@ -56,7 +56,7 @@ async def index(request: Request):
         # Get the user's purchase history
         current_items: list[Purchase] | None = None
         if "id" in session:
-            user = await LoginUser.fetch(db, id=session["id"])
+            user = await User.fetch(db, id=session["id"])
             assert user
             item_ids = {i.id: i for i in items}
             current_items = [

@@ -10,7 +10,7 @@ import aiohttp
 from aiohttp.web import Request, RouteTableDef, Response, json_response
 from discord.ext import vbu
 
-from website.utils.db_models import LoginUser, Purchase
+from website.utils.db_models import User, Purchase
 
 from .utils import (
     types,
@@ -377,7 +377,7 @@ async def checkout_processor(
         for i in items:
             if event_type != "charge.refunded":
                 user_id: str = all_metadata["user_id"]
-                user = LoginUser(user_id)
+                user = User(user_id)
                 current = None
                 if subscription_id:
                     current = await Purchase.fetch_by_identifier(db, subscription_id)
@@ -484,7 +484,7 @@ async def subscription_deleted(
         **subscription_item["metadata"],
     }
     user_id = all_metadata["user_id"]
-    user = LoginUser(user_id)
+    user = User(user_id)
 
     # Throw our relevant data at the webhook
     json_data = {

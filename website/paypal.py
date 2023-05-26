@@ -14,7 +14,7 @@ from .utils import (
     get_paypal_access_token,
     CheckoutItem,
     types,
-    LoginUser,
+    User,
     Purchase,
 )
 
@@ -276,13 +276,13 @@ async def charge_captured(request: Request, data: types.IPNMessage):
     # Add these transactions to the database
     async with vbu.Database() as db:
         for i in items:
-            user = await LoginUser.fetch(
+            user = await User.fetch(
                 db,
                 id=metadata.get("user_id"),
                 discord_user_id=metadata.get("discord_user_id"),
             )
             if user is None:
-                user = await LoginUser.create(
+                user = await User.create(
                     db,
                     discord_user_id=metadata.get("discord_user_id"),
                 )
@@ -346,13 +346,13 @@ async def subscription_created(request: Request, data: types.IPNMessage):
 
     # And store in the database
     async with vbu.Database() as db:
-        user = await LoginUser.fetch(
+        user = await User.fetch(
             db,
             id=metadata.get("user_id"),
             discord_user_id=metadata.get("discord_user_id"),
         )
         if user is None:
-            user = await LoginUser.create(
+            user = await User.create(
                 db,
                 discord_user_id=metadata.get("discord_user_id"),
             )
@@ -422,13 +422,13 @@ async def subscription_deleted(request: Request, data: types.IPNMessage):
 
     # And update the database
     async with vbu.Database() as db:
-        user = await LoginUser.fetch(
+        user = await User.fetch(
             db,
             id=metadata.get("user_id"),
             discord_user_id=metadata.get("discord_user_id"),
         )
         if user is None:
-            user = await LoginUser.create(
+            user = await User.create(
                 db,
                 discord_user_id=metadata.get("discord_user_id"),
             )
