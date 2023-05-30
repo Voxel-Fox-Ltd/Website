@@ -19,7 +19,7 @@
         </form>
       {% elif item.subscription %}
         <form>
-          <button href="/portal/item/{{ item.id }}" class="button">{% if item.subscription %}Subscribe{% else %}Purchase{% endif %}</button>
+          <button formaction="/portal/item/{{ item.id }}" class="button">{% if item.subscription %}Subscribe{% else %}Purchase{% endif %}</button>
         </form>
       {% endif %}
     {% endif %}
