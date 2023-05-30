@@ -14,9 +14,13 @@
       </select>
     {% else %}
       {% if purchase and item.subscription %}
-        <a href="/portal/unsubscribe/{{ purchase.id }}" class="button unsubscribe" role="button">Unsubscribe</a>
+        <form>
+          <button formaction="/portal/unsubscribe/{{ purchase.id }}" class="button unsubscribe" type="button">Unsubscribe</button>
+        </form>
       {% elif item.subscription %}
-        <a href="/portal/item/{{ item.id }}" class="button" role="button">{% if item.subscription %}Subscribe{% else %}Purchase{% endif %}</a>
+        <form>
+          <button href="/portal/item/{{ item.id }}" class="button" type="button">{% if item.subscription %}Subscribe{% else %}Purchase{% endif %}</button>
+        </form>
       {% endif %}
     {% endif %}
   {% endif %}

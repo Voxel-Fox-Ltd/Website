@@ -15,7 +15,9 @@
         {% if item.description %}
           <p class="description">{{ item.description | markdown | safe }}</p>
         {% endif %}
-        <a class="button unsubscribe" href="#" onclick="javascript:unsubscribe();" role="button">Unsubscribe</a>
+        <form>
+          <button class="button unsubscribe" onclick="javascript:unsubscribe();" type="button">Unsubscribe</button>
+        </form>
       </div>
     </div>
   </div>
