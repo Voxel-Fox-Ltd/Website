@@ -9,7 +9,7 @@
   <h1 class="title">Your Purchases</h1>
   <div class="items">
     {% if current_items is none %}
-      <a href="?login" class="button">Login to see your purchases</a>
+      <button href="?login" class="button" role="button">Login to see your purchases</a>
     {% else %}
       {% if current_items %}
         {% for purchase in current_items %}
