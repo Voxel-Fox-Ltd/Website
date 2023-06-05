@@ -139,46 +139,28 @@ async def purchase(request: Request):
         else:
             guild_id = None
 
+        # Get a user
+        user = await User.fetch(db, id=session["id"])
+        assert user
+
         # See if the user has purchased this item already - we'll use this to
         # redirect (if they can't buy multiple) or redirect to unsubscribe
         # (if it's a subscription)
-        purchase: Optional[dict] = None
+        purchase: Optional[Purchase] = None
         if (item.subscription or not item.multiple) and "discord" in session:
-            if item.per_guild:
-                purchase_rows = await db.call(
-                    """
-                    SELECT
-                        *
-                    FROM
-                        purchases
-                    WHERE
-                        discord_user_id = $1
-                        AND discord_guild_id = $2
-                        AND product_id = $3
-                        AND expiry_time IS NULL
-                    """,
-                    int(session['discord']['id']),
-                    guild_id,
-                    items[0].id,
+            if item.per_guild and guild_id:
+                purchase_list = await Purchase.fetch_by_user(
+                    db, None, item,
+                    discord_guild_id=guild_id,
+                )
+            elif not item.per_guild:
+                purchase_list = await Purchase.fetch_by_user(
+                    db, user, item,
                 )
             else:
-                purchase_rows = await db.call(
-                    """
-                    SELECT
-                        *
-                    FROM
-                        purchases
-                    WHERE
-                        discord_user_id = $1
-                        AND discord_guild_id IS NULL
-                        AND product_id = $2
-                        AND expiry_time IS NULL
-                    """,
-                    int(session['discord']['id']),
-                    items[0].id,
-                )
-            if purchase_rows:
-                purchase = purchase_rows[0]
+                return HTTPFound(f"/portal/{item.product_group}")  # missing required guild ID
+            if purchase_list:
+                purchase = purchase_list[0]
 
     # See if we have relevant login data
     flags = item.required_logins
