@@ -30,9 +30,7 @@ CREATE TABLE IF NOT EXISTS users(
     google_user_id TEXT UNIQUE,
     google_refresh_token TEXT,
     facebook_user_id TEXT UNIQUE,
-    facebook_refresh_token TEXT,
-    everlasting_user_id TEXT UNIQUE,
-    everlasting_refresh_token TEXT  -- Will never be used, but dw about it
+    facebook_refresh_token TEXT
 );
 
 
@@ -71,12 +69,6 @@ CREATE TABLE IF NOT EXISTS checkout_items(
 
     -- Text to be displayed on the portal page.
     description TEXT,
-
-    -- Quantities for the items.
-    quantity INTEGER NOT NULL DEFAULT 1,
-    min_quantity INTEGER,
-    max_quantity INTEGER,
-    base_product UUID REFERENCES checkout_items(id) ON DELETE SET NULL,
 
     -- Add our constraints
     UNIQUE (creator_id, product_name)
