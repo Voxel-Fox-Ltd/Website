@@ -36,7 +36,7 @@ CR = Callable[
 class CacheItem:
 
     all_items: dict[str, Self] = dict()
-    max_lifetime = timedelta(minutes=15)
+    max_lifetime = timedelta(minutes=1)
 
     __slots__ = (
         '_response',
