@@ -7,15 +7,21 @@
 
 <a href="/portal/{{ item.product_group }}" id="back-button">&#8592; back</a>
 
-<div id="purchase-items">
+<div id="current-items">
   <div class="items">
-    {% for item in purchase_items %}
-      {{ display_item(item, none, false) }}
-    {% endfor %}
-    <div id="stripe-button" class="button-holder block"></div>
-    <div id="paypal-button" class="button-holder block"></div>
+    <div class="item" data-id="{{ item.id }}">
+      <h1 class="title">{{ item.name }}</h1>
+      <div class="block">
+        {% if item.description %}
+          <p class="description">{{ item.description | markdown | safe }}</p>
+        {% endif %}
+        <div id="stripe-button" class="button-holder block"></div>
+        <div id="paypal-button" class="button-holder block"></div>
+      </div>
+    </div>
   </div>
 </div>
+
 
 {% include "portal2/stripe.htm.j2" %}
 {% if item.subscription %}
