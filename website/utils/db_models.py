@@ -342,8 +342,8 @@ class CheckoutItem:
         '_id',
         '_creator_id',
         'name',
-        'success_url',
-        'cancel_url',
+        '_success_url',
+        '_cancel_url',
         'subscription',
         'stripe_product_id',
         'stripe_price_id',
@@ -370,8 +370,8 @@ class CheckoutItem:
             id: uuid.UUID | str,
             creator_id: uuid.UUID | str,
             product_name: str,
-            success_url: str,
-            cancel_url: str,
+            success_url: str | None,
+            cancel_url: str | None,
             subscription: bool,
             stripe_product_id: str,
             stripe_price_id: str,
@@ -382,13 +382,12 @@ class CheckoutItem:
             multiple: bool,
             per_guild: bool,
             description: str,
-            quantity: int,
             required_logins: RequiredLogins):
         self._id = id
         self._creator_id = creator_id
         self.name: str = product_name
-        self.success_url: str = success_url
-        self.cancel_url: str = cancel_url
+        self._success_url: str | None = success_url
+        self._cancel_url: str | None = cancel_url
         self.subscription: bool = subscription
         self.stripe_product_id: str = stripe_product_id
         self.stripe_price_id: str = stripe_price_id
@@ -403,15 +402,15 @@ class CheckoutItem:
 
         self.description: str = description
 
-        self.quantity: int = quantity
-        self.purchased_quantity: int = quantity
+        self.quantity: int = 1
+        self.purchased_quantity: int = 1
 
         self.price: str | None = None
         self.price_number: int = 0
         self.currency_code: str | None = None
         self._currency_symbol: str | None = None
 
-        self.user: User | None = None
+        self.user: ManagerUser | None = None
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} id={self.id!s} name={self.name}>"
@@ -439,6 +438,18 @@ class CheckoutItem:
         else:
             self._currency_symbol = self.currency_code
         return self._currency_symbol
+
+    @property
+    def success_url(self) -> str:
+        if self._success_url:
+            return self._success_url
+        return f"https://voxelfox.co.uk/portal/{self.product_group}"
+
+    @property
+    def cancel_url(self) -> str:
+        if self._cancel_url:
+            return self._cancel_url
+        return f"https://voxelfox.co.uk/portal/{self.product_group}"
 
     async def fetch_price(self, stripe_api_key: str) -> str:
         """
@@ -501,8 +512,7 @@ class CheckoutItem:
             per_guild=row['per_guild'],
             multiple=row.get('multiple', False),
             description=row['description'],
-            quantity=row['quantity'],
-            required_logins=RequiredLogins(row['required_logins']),
+            required_logins=RequiredLogins(row.get('required_logins', 1)),
         )
 
     @classmethod
@@ -639,7 +649,7 @@ class CheckoutItem:
         await items[0].fetch_user(db)
         return items[0]
 
-    async def fetch_user(self, db: vbu.Database) -> User:
+    async def fetch_user(self, db: vbu.Database) -> ManagerUser:
         """
         Fetch the user who created the item.
         """
