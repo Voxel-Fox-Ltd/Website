@@ -13,6 +13,7 @@ from .flags import RequiredLogins
 
 __all__ = (
     'User',
+    'ManagerUser',
     'CheckoutItem',
     'Purchase',
 )
@@ -190,7 +191,7 @@ class User:
         return cls.from_row(rows[0])
 
 
-class User:
+class ManagerUser:
     """
     A user in the database who can create checkout items.
 
@@ -643,7 +644,7 @@ class CheckoutItem:
         Fetch the user who created the item.
         """
 
-        user = await User.fetch(db, self.creator_id)
+        user = await ManagerUser.fetch(db, self.creator_id)
         assert user
         self.user = user
         return user

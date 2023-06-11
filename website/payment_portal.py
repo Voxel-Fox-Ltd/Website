@@ -58,10 +58,7 @@ async def index(request: Request):
         current_items: list[Purchase] | None = None
         if "id" in session:
             user = await User.fetch(db, id=session["id"])
-            try:
-                assert user
-            except AssertionError:
-                return json_response(dict(session), status=500)
+            assert user
             item_ids = {i.id: i for i in items}
             current_items = [
                 i for i in await Purchase.fetch_by_user(db, user)
