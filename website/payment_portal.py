@@ -84,8 +84,6 @@ async def index(request: Request):
         "purchase_items": items,
         "current_items": current_items,
     }
-    if "new" in request.query:
-        return render_template("portal2/index.htm.j2", request, v)
     return v
 
 
@@ -193,8 +191,6 @@ async def purchase(request: Request):
             return HTTPFound(f"/portal/{item.product_group}")
         else:
             raise Exception("This shouldn't happen")
-    if "new" in request.query:
-        template_name = template_name.replace("portal/", "portal2/")
     return render_template(template_name, request, context)
 
 
@@ -275,6 +271,7 @@ async def unsubscribe_product(request: Request):
 
 
 @routes.get("/portal/unsubscribe/{id}")
+@template("portal/unsubscribe.htm.j2")
 @requires_login()
 async def unsubscribe(request: Request):
     """
@@ -316,11 +313,7 @@ async def unsubscribe(request: Request):
         item = await purchase.fetch_product(db)
 
     # Render the template
-    return render_template(
-        "portal2/unsubscribe.htm.j2",
-        request,
-        {
-            "item": item,
-            "purchase": purchase,
-        },
-    )
+    return {
+        "item": item,
+        "purchase": purchase,
+    }

@@ -1,18 +1,29 @@
+{% extends "portal/template.htm.j2" %}
+
 {% from "portal/functions.htm.j2" import display_item %}
 
+{% block main %}
+{% include "portal/preamble.htm.j2" %}
 
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" type="text/css" href="{{ static('css/portal/index.css') }}" />
-  <link rel="icon" href="{{ static('/images/_voxelfox/logo.png') }}" />
-  <title>Voxel Fox Payment Portal</title>
-</head>
-<body>
-
-<div id="main">
+<div id="current-items">
+  <h1 class="title">Your Purchases</h1>
+  <div class="items">
+    {% if current_items is none %}
+      <form>
+        <input type="hidden" name="login" />
+        <button class="button">Login to see your purchases</button>
+      </form>
+    {% else %}
+      {% if current_items %}
+        {% for purchase in current_items %}
+          {{ display_item(purchase._item, purchase) }}
+        {% endfor %}
+      {% else %}
+        <p>No items purchased.</p>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
 
 <div id="purchase-items">
   <h1 class="title">Available for Purchase</h1>
@@ -20,19 +31,6 @@
     {% for item in purchase_items %}
       {{ display_item(item) }}
     {% endfor %}
-  </div>
-</div>
-
-<div id="current-items" style="display: none;">
-  <h1 class="title">Your Purchases</h1>
-  <div class="items">
-    {% if current_items is none %}
-      <p>You are not logged in :(</p>
-    {% else %}
-      {% for purchase in current_items %}
-        {{ display_item(purchase._item) }}
-      {% endfor %}
-    {% endif %}
   </div>
 </div>
 
@@ -44,5 +42,4 @@
   data-logged-in="{{ logged_in | int }}"
   src="{{ static('/js/portal.js') }}">
 </script>
-</body>
-</html>
+{% endblock main %}
