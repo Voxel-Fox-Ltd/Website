@@ -10,7 +10,8 @@
   <div class="items">
     {% if current_items is none %}
       <form>
-        <button formaction="?login" class="button">Login to see your purchases</button>
+        <input type="hidden" name="login" />
+        <button class="button">Login to see your purchases</button>
       </form>
     {% else %}
       {% if current_items %}
