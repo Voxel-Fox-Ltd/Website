@@ -5,6 +5,7 @@ from aiohttp.web import (
     HTTPFound,
     Request,
     RouteTableDef,
+    json_response,
 )
 from aiohttp_jinja2 import render_template, template
 import aiohttp_session
@@ -57,7 +58,10 @@ async def index(request: Request):
         current_items: list[Purchase] | None = None
         if "id" in session:
             user = await User.fetch(db, id=session["id"])
-            assert user
+            try:
+                assert user
+            except AssertionError:
+                return json_response(dict(session), status=500)
             item_ids = {i.id: i for i in items}
             current_items = [
                 i for i in await Purchase.fetch_by_user(db, user)
