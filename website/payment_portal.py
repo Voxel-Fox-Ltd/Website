@@ -80,7 +80,7 @@ async def index(request: Request):
 
     # Render the template
     v = {
-        "logged_in": session.get('id') is not None,
+        "logged_in": session.get("id") is not None,
         "purchase_items": items,
         "current_items": current_items,
     }
@@ -194,7 +194,7 @@ async def purchase(request: Request):
         else:
             raise Exception("This shouldn't happen")
     if "new" in request.query:
-        template_name = template_name.replace("/portal/", "/portal2/")
+        template_name = template_name.replace("portal/", "portal2/")
     return render_template(template_name, request, context)
 
 
