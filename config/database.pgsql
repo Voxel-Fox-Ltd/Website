@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS checkout_items(
     -- on a page.
     product_group TEXT,
     base_product_id UUID REFERENCES checkout_items(id) ON DELETE SET NULL,
-    order INTEGER NOT NULL DEFAULT 0,
+    display_order INTEGER NOT NULL DEFAULT 0,
 
     -- Whether or not the product is per guild (true) or per user (false). Only
     -- applies to purchases done through this site; not to externals.

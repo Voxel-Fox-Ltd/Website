@@ -533,7 +533,7 @@ class CheckoutItem:
             product_group=row['product_group'],
             per_guild=row['per_guild'],
             base_product_id=row['base_product'],
-            order=row['order'],
+            order=row['display_order'],
             multiple=row.get('multiple', False),
             description=row['description'],
             required_logins=RequiredLogins(row.get('required_logins', 1)),
