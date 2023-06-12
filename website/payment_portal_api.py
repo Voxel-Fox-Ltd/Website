@@ -236,7 +236,7 @@ async def portal_check(request: Request):
             WHERE
                 id = $1
             OR
-                base_product = $1
+                base_product_id = $1
             """,
             product_id,
         )
@@ -287,7 +287,7 @@ async def portal_check(request: Request):
             purchases.timestamp,
             purchases.quantity,
             purchases.product_id,
-            checkout_items.base_product AS base_product_id
+            checkout_items.base_product_id
         FROM
             purchases
         LEFT JOIN
@@ -306,7 +306,7 @@ async def portal_check(request: Request):
             (
                     purchases.product_id = $2
                 OR
-                    checkout_items.base_product = $2
+                    checkout_items.base_product_id = $2
             )
         """.format(user_column),
         identity,

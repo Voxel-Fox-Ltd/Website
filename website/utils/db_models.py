@@ -351,6 +351,8 @@ class CheckoutItem:
         'webhook',
         'webhook_auth',
         'product_group',
+        'base_product_id',
+        'order',
         'per_guild',
         'multiple',
         'description',
@@ -379,8 +381,10 @@ class CheckoutItem:
             transaction_webhook: str,
             transaction_webhook_authorization: str,
             product_group: str,
+            base_product_id: str | None,
             multiple: bool,
             per_guild: bool,
+            order: int,
             description: str,
             required_logins: RequiredLogins):
         self._id = id
@@ -396,6 +400,9 @@ class CheckoutItem:
         self.webhook_auth: str = transaction_webhook_authorization
 
         self.product_group: str = product_group
+        self.base_product_id: str | None = base_product_id
+        self.order: int = order
+
         self.per_guild: bool = per_guild
         self.multiple = multiple
         self.required_logins = required_logins
@@ -418,6 +425,21 @@ class CheckoutItem:
     @property
     def id(self) -> str:
         return str(self._id)
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return self.id == other.id
+
+    def __hash__(self) -> int:
+        return hash(repr(self))
+
+    def __gt__(self, other) -> bool:
+        if not isinstance(other, self.__class__):
+            raise TypeError("Comparison items must both be checkout items.")
+        if self.product_group != other.product_group:
+            raise ValueError("Cannot compare products from different product groups.")
+        return self.order > other.order
 
     @property
     def creator_id(self) -> str:
@@ -510,6 +532,8 @@ class CheckoutItem:
             transaction_webhook_authorization=row['transaction_webhook_authorization'],
             product_group=row['product_group'],
             per_guild=row['per_guild'],
+            base_product_id=row['base_product'],
+            order=row['order'],
             multiple=row.get('multiple', False),
             description=row['description'],
             required_logins=RequiredLogins(row.get('required_logins', 1)),
@@ -659,6 +683,32 @@ class CheckoutItem:
         self.user = user
         return user
 
+    async def fetch_siblings(self, db: vbu.Database) -> list[Self]:
+        """
+        Fetch the siblings for this item - other checkout items sharing the
+        same base item ID.
+        """
+
+        if self.base_product_id is None:
+            return [self]
+        rows = await db.call(
+            """
+            SELECT
+                *
+            FROM
+                checkout_items
+            WHERE
+                base_product_id = $1
+            """,
+            self.base_product_id,
+        )
+        siblings = [
+            self.from_row(i)
+            for i in rows
+        ]
+        siblings.remove(self)  # remove created
+        siblings.append(self)  # add self with cached items
+        return sorted(siblings)  # sort and return
 
 class Purchase:
     """
