@@ -1,5 +1,5 @@
-{% macro display_item(item, purchase=none, show_buy_button=true) %}
-<div class="item" data-id="{{ item.id }}">
+{% macro display_item(item, purchase=none, show_buy_button=true, disabled=false) %}
+<div class="item{% if disabled %} disabled{% endif %}" data-id="{{ item.id }}" data-order="{{ item.order }}">
   <p class="name">{{ item.name }}{% if purchase and purchase.discord_guild_id %}({{ purchase.discord_guild_id }}){% endif %}</p>
   {% if item.description %}
     <div class="description">{{ item.description | markdown | safe }}</div>
@@ -7,7 +7,7 @@
   <p class="price">
     Price: <span>{{ item.currency_symbol }}{{ item.price }}</span>
   </p>
-  {% if show_buy_button %}
+  {% if show_buy_button and not disabled %}
     {% if item.per_guild %}
       <select class="guild-select" onchange="javascript:guildSelectChange('{{ item.id }}')">
         <option value="">{% if item.subscription %}Subscribe{% else %}Purchase{% endif %} for Guild</option>

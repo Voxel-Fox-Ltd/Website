@@ -5,7 +5,6 @@ from aiohttp.web import (
     HTTPFound,
     Request,
     RouteTableDef,
-    json_response,
 )
 from aiohttp_jinja2 import render_template, template
 import aiohttp_session
@@ -78,11 +77,20 @@ async def index(request: Request):
     if not items:
         return HTTPFound("/")
 
+    # Work out what we have unabailable
+    unavailable_items: set[CheckoutItem] = set()
+    for i in current_items or []:
+        assert i._item
+        for p in items:
+            if p.base_product_id == i._item.base_product_id: # and i._item > p:
+                unavailable_items.add(p)
+
     # Render the template
     v = {
         "logged_in": session.get("id") is not None,
-        "purchase_items": items,
-        "current_items": current_items,
+        "purchase_items": items,  # things that are available
+        "unavailable_items": unavailable_items,
+        "current_items": current_items,  # things they have purchased
     }
     return v
 
