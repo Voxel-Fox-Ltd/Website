@@ -532,7 +532,7 @@ class CheckoutItem:
             transaction_webhook_authorization=row['transaction_webhook_authorization'],
             product_group=row['product_group'],
             per_guild=row['per_guild'],
-            base_product_id=row['base_product'],
+            base_product_id=row['base_product_id'],
             order=row['display_order'],
             multiple=row.get('multiple', False),
             description=row['description'],
