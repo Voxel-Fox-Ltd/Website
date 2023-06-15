@@ -988,7 +988,7 @@ class Purchase:
             An open database connection.
         """
 
-        log.info("Updating purchase with ID %s" % id)
+        log.info("Updating purchase with ID %s" % self.id)
         kwargs = {
             "discord_guild_id": discord_guild_id,
             "expiry_time": expiry_time,
@@ -1009,7 +1009,7 @@ class Purchase:
                     for i, key in enumerate(kwargs)
                 )
             ),
-            id,
+            self.id,
             *kwargs.values(),
         )
 
