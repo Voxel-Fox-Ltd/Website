@@ -46,4 +46,12 @@
   data-logged-in="{{ logged_in | int }}"
   src="{{ static('/js/portal.js') }}">
 </script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.8/dayjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.8/plugin/relativeTime.min.js"></script>
+<script>
+dayjs.extend(dayjs_plugin_relativeTime)
+for(let d of document.querySelectorAll(".expiry_time")) {
+  d.textContent = dayjs(d.dataset.expiry).fromNow();
+}
+</script>
 {% endblock main %}

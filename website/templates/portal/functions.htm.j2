@@ -14,9 +14,13 @@
       </select>
     {% else %}
       {% if purchase and item.subscription %}
-        <form>
-          <button formaction="/portal/unsubscribe/{{ purchase.id }}" class="button unsubscribe">Unsubscribe</button>
-        </form>
+        {% if purchase.expiry_time is none %}
+          <form>
+            <button formaction="/portal/unsubscribe/{{ purchase.id }}" class="button unsubscribe">Unsubscribe</button>
+          </form>
+        {% else %}
+          <p style="font-weight: bold;">This subscription will expire automatically <span class="expiry_time" data-expiry="{{ purchase. expiry_time.isoformat() }}"></span>.</p>
+        {% endif %}
       {% elif item.subscription %}
         <form>
           <button formaction="/portal/item/{{ item.id }}" class="button">{% if item.subscription %}Subscribe{% else %}Purchase{% endif %}</button>
