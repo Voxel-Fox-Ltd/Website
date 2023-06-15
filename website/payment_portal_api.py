@@ -18,6 +18,7 @@ import aiohttp
 from .utils.json_utils import serialize
 from .utils.get_paypal_access_token import get_paypal_basicauth
 from .utils.login import requires_manager_login
+from .utils.db_models import Purchase
 
 
 routes = RouteTableDef()
@@ -463,7 +464,9 @@ async def portal_unsubscribe(request: Request):
             user_session['id'],
         )
         if purchase_rows:
-            purchased = purchase_rows[0]
+            purchase = Purchase.from_row(purchase_rows[0])
+            assert purchase.cancel_url is not None
+            assert purchase.expiry_time is None
         else:
             return json_response(
                 {"error": "No active subscription found.", "success": False},
@@ -473,10 +476,10 @@ async def portal_unsubscribe(request: Request):
     # Get the right auth and url
     auth: Optional[aiohttp.BasicAuth] = None
     method: str = ""
-    if "paypal.com" in purchased['cancel_url'].casefold():
+    if "paypal.com" in purchase.cancel_url.casefold():
         auth = await get_paypal_basicauth()
         method = "POST"
-    elif "stripe.com" in purchased['cancel_url'].casefold():
+    elif "stripe.com" in purchase.cancel_url.casefold():
         auth = aiohttp.BasicAuth(
             request.app['config']['stripe_api_key'],
         )
@@ -487,7 +490,7 @@ async def portal_unsubscribe(request: Request):
         async with aiohttp.ClientSession() as session:
             resp = await session.request(
                 method,
-                purchased['cancel_url'],
+                purchase.cancel_url,
                 auth=auth,
             )
         if resp.ok:
@@ -506,19 +509,11 @@ async def portal_unsubscribe(request: Request):
 
     # If it was a fake purchase, update the expiry time in the database.
     # If it WASNT a fake purchase, then we'll get a webhook about it later.
-    if not method:
-        async with vbu.Database() as db:
-            await db.call(
-                """
-                UPDATE
-                    purchases
-                SET
-                    expiry_time = NOW() + INTERVAL '30 days'
-                WHERE
-                    id = $1
-                """,
-                purchased['id'],
-            )
+    async with vbu.Database() as db:
+        await purchase.update(
+            db,
+            expiry_time=dt.utcnow() + timedelta(days=30),
+        )
 
     # And done
     return json_response({"success": True})
