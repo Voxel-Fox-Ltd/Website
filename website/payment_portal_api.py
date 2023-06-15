@@ -492,7 +492,11 @@ async def portal_unsubscribe(request: Request):
             )
         if not resp.ok:
             return json_response(
-                {"error": "Failed to cancel subscription.", "success": False},
+                {
+                    "error": "Failed to cancel subscription.",
+                    "success": False,
+                    "data": (await resp.text()),
+                },
                 status=400,
             )
 
