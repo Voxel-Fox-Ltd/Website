@@ -453,14 +453,14 @@ async def portal_unsubscribe(request: Request):
             WHERE
                 id = $1
             AND
-                discord_user_id = $2
+                user_id = $2
             AND
                 expiry_time IS NULL
             AND
                 cancel_url IS NOT NULL
             """,
             purchase_id,
-            int(user_session['discord']['id']),
+            user_session['id'],
         )
         if purchase_rows:
             purchased = purchase_rows[0]
