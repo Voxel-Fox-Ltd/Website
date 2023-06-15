@@ -490,7 +490,11 @@ async def portal_unsubscribe(request: Request):
                 purchased['cancel_url'],
                 auth=auth,
             )
-        if not resp.ok:
+        if resp.ok:
+            pass
+        elif resp.status == 404:
+            pass
+        else:
             return json_response(
                 {
                     "error": "Failed to cancel subscription.",
