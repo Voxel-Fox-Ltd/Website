@@ -876,7 +876,7 @@ class Purchase:
         """
 
         # Work out what we're searching by
-        if discord_guild_id is not MISSING:
+        if discord_guild_id is not MISSING and discord_guild_id is not None:
             check = "purchases.discord_guild_id"
         else:
             assert user
