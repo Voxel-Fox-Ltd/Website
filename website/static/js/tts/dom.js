@@ -153,11 +153,11 @@ function changeOutput() {
 
 function expandItem(button) {
     let targets = document.querySelectorAll(button.dataset.target);
-    let current = targets[0].dataset.hidden || "0";
+    let current = targets[0].dataset.hidden || "";
     for(let t of targets) {
-        t.dataset.hidden = current == "0" ? "1" : "0";
+        t.dataset.hidden = current == "" ? "1" : "";
     }
     // button.innerHTML = "\u2193"  // down arrow
     // button.innerHTML = "\u2191"  // up arrow
-    button.innerHTML = current == "0" ? "\u2193" : "\u2191";
+    button.innerHTML = current == "" ? "\u2193" : "\u2191";
 }
