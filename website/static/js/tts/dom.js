@@ -152,14 +152,12 @@ function changeOutput() {
 
 
 function expandItem(button) {
-    let target = document.querySelector(button.dataset.target)
-    let current = target.dataset.hidden || "0"
-    if(current == "0") {
-        target.dataset.hidden = "1";
-        button.innerHTML = "\u2193"  // down arrow
+    let targets = document.querySelectorAll(button.dataset.target);
+    let current = targets[0].dataset.hidden || "0";
+    for(let t of targets) {
+        t.dataset.hidden = current == "0" ? "1" : "0";
     }
-    else {
-        target.dataset.hidden = "0";
-        button.innerHTML = "\u2191"  // up arrow
-    }
+    // button.innerHTML = "\u2193"  // down arrow
+    // button.innerHTML = "\u2191"  // up arrow
+    button.innerHTML = current == "0" ? "\u2193" : "\u2191";
 }
