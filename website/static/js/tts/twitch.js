@@ -475,7 +475,7 @@ class TwitchPubSub {
                 },
             );
             let data = await createdSite.json();
-            r.dataset.id = data.data.id;
+            r.dataset.id = data.data[0].id;
         }
 
         console.log("Creating reward loop");
