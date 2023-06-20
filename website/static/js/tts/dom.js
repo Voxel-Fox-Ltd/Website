@@ -67,27 +67,6 @@ function addNewVoiceOverride(twitchUsername, voice) {
 
 
 /**
- * Load all of the inputs from localstorage and spit them onto the page.
- * */
-function loadInputs() {
-    let params = new URLSearchParams(location.hash.slice(1));
-    let givenToken = params.get("access_token");
-    let savedToken = localStorage.getItem(`twitchAccessToken`);
-    let accessToken = givenToken || savedToken;
-    document.querySelector(`[name="at"]`).value = accessToken;
-    document.querySelector(`[name="connect"]`).value = localStorage.getItem(`ttsChannels`);
-    let voices = JSON.parse(localStorage.getItem(`voiceOverrides`));
-    let voiceDom = document.querySelector("#voices");
-    for(let vdo of voiceDom.children) {
-        if(!vdo.classList.contains("template")) vdo.remove();
-    }
-    for(let u in voices) {
-        addNewVoiceOverride(u, voices[u]);
-    }
-}
-
-
-/**
  * Serialize all of the voice override nodes into a JSON string.
  * */
 function serializeVoiceOverrides() {
@@ -104,12 +83,52 @@ function serializeVoiceOverrides() {
 
 
 /**
- * Save all of the relevant inputs into localstorage.
+ * Load all of the inputs from localstorage and spit them onto the page.
  * */
+const BASIC_SAVES = {
+    "twitchAccessToken": () => document.querySelector(`[name="at"]`).value,
+    "ttsChannels": () => document.querySelector(`[name="connect"]`).value,
+    "voiceOverrides": serializeVoiceOverrides,
+    "soundRedeemsEnabled": () => document.querySelector(`[name="sound-redeems-enabled"]`).checked,
+}
+const BASIC_LOADS = {
+    '[name="at"]': () => {
+        let params = new URLSearchParams(location.hash.slice(1));
+        let givenToken = params.get("access_token");
+        if(givenToken) return givenToken
+        return localStorage.getItem(`twitchAccessToken`);
+    },
+    '[name="connect"]': () => localStorage.getItem(`ttsChannels`),
+    '[name="sound-redeems-enabled"]': () => {
+        return JSON.parse(localStorage.getItem(`soundRedeemsEnabled`))
+    },
+}
 function saveInputs() {
-    localStorage.setItem(`twitchAccessToken`, document.querySelector(`[name="at"]`).value);
-    localStorage.setItem(`ttsChannels`, document.querySelector(`[name="connect"]`).value);
-    localStorage.setItem(`voiceOverrides`, serializeVoiceOverrides());
+    for(let i in BASIC_SAVES) {
+        localStorage.setItem(i, BASIC_SAVES[i]());
+    }
+}
+function loadInputs() {
+    for(let i in BASIC_LOADS) {
+        let node = document.querySelector(i);
+        let value = BASIC_LOADS[i]();
+        if(node.type.toLowerCase() == "checkbox") {
+            node.checked = value;
+        }
+        else {
+            node.value = value;
+        }
+    }
+
+    // TTS voice overrides
+    let voices = JSON.parse(localStorage.getItem(`voiceOverrides`));
+    let voiceDom = document.querySelector("#voices");
+    for(let vdo of voiceDom.children) {
+        if(!vdo.classList.contains("template")) vdo.remove();
+    }
+    for(let u in voices) {
+        addNewVoiceOverride(u, voices[u]);
+    }
 }
 
 

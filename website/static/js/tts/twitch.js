@@ -100,9 +100,11 @@ const TWITCH_IRC_URI = "wss://irc-ws.chat.twitch.tv:443";
 
 
 class TwitchIRC {
+
     constructor(accessToken, channels) {
         this.token = accessToken;
         this.name = null;
+        this.userId = null;
         this.channels = channels;
         this.socket = null;
         this.socketHavingFun = false;
@@ -131,6 +133,7 @@ class TwitchIRC {
         );
         let data = await site.json();
         this.name = data["preferred_username"];
+        this.userId = data["sub"];
 
         // Create a new socket instance
         this.socketHavingFun = false;
@@ -253,5 +256,276 @@ class TwitchIRC {
     async onTextMessage(message) {
         console.log(`${message.username} said ${message.message} (${message.filteredMessage})`);
         sayMessageSE(message)  // from tts.js
+    }
+}
+
+
+class PointsReward {
+
+    constructor(data) {
+        this.id = data.id;
+        this.channelId = data["channel_id"];
+        this.title = data.title;
+        this.prompt = data.prompt;
+        this.cost = data.cost;
+        this.subOnly = data["is_sub_only"];
+    }
+
+}
+
+
+class PointsRedeem {
+
+    constructor(data) {
+        this.id = data.id;
+        this.user = data.user.login;
+        this.channelId = data["channel_id"];
+        this.timestamp = data["redeemed_at"];
+        this.reward = new PointsReward(data.reward);
+        this.userInput = data["user_input"];
+        this.status = data.status;
+    }
+
+    async updateStatus(clientId, token, status) {
+        await fetch(
+            (
+                "https://api.twitch.tv/helix"
+                + "/channel_points/custom_rewards/redemptions"
+                + `?broadcaster_id=${this.reward.channelId}`
+                + `&reward_id=${this.reward.id}`
+                + `&id=${this.id}`
+            ),
+            {
+                method: "PATCH",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Client-ID": clientId,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    status: status,
+                }),
+            },
+        );
+    }
+
+    async cancel(clientId, token) {
+        return await this.updateStatus(clientId, token, "CANCELED");
+    }
+
+    async fulfil(clientId, token) {
+        return await this.updateStatus(clientId, token, "FULFILLED");
+    }
+}
+
+
+const TWITCH_PUBSUB_URI = "wss://pubsub-edge.twitch.tv";
+
+
+class TwitchPubSub {
+
+    constructor(accessToken, userId, clientId) {
+        this.token = accessToken;
+        this.userId = userId;
+        this.clientId = clientId;
+        this.socket = null;
+    }
+
+    async updateRewardDom(initialSleepTime = 0) {
+        if(initialSleepTime > 0) {
+            await new Promise(r => setTimeout(r, initialSleepTime));
+        }
+        while(true) {
+            if(this.socket === null) return;
+            console.log("Getting updated DOM")
+            let rewardNodeList = document.querySelectorAll(".sound");
+            let rewardNodes = {}
+            for(let r of rewardNodeList) {
+                rewardNodes[r.dataset.name] = r;
+            }
+            let currentRewards = await fetch(
+                (
+                    "https://api.twitch.tv/helix/channel_points/custom_rewards"
+                    + `?broadcaster_id=${this.userId}`
+                    + "&only_manageable_rewards=true"
+                ),
+                {
+                    headers: {
+                        "Authorization": `Bearer ${this.token}`,
+                        "Client-ID": this.clientId,
+                    }
+                }
+            );
+            let currentRewardData = await currentRewards.json();
+            for(let r of currentRewardData.data) {
+                if(r.title.startsWith("VFTTS Sound: ")) {
+                    let title = r.title.substr("VFTTS Sound: ".length);
+                    let reward = rewardNodes[title];
+                    reward.dataset.id = r.id;
+                    reward.querySelector(`input[name="enabled"]`).value = (
+                        r["is_enabled"] == "true" ? true : false
+                    );
+                }
+            }
+            await new Promise(r => setTimeout(r, 10_000));
+        }
+    }
+
+    /**
+     * Connect to pubsub.
+     * */
+    async connect() {
+        if(!document.querySelector(`input[name="sound-redeems-enabled"]`).checked) return;
+        if(this.socket !== null) throw new Error("Socket is already open");
+        let socket = new WebSocket(TWITCH_PUBSUB_URI);
+        this.socket = socket;
+        socket.addEventListener("close", this.close.bind(this));
+        socket.addEventListener("error", this.close.bind(this));
+        socket.addEventListener("message", this.onMessage.bind(this));
+        socket.addEventListener("open", this.onSocketOpen.bind(this));
+    }
+
+    /**
+     * Close the open websocket connection.
+     * */
+    async close() {
+        if(this.socket === null) return;
+        try {
+            this.socket.close();
+        }
+        catch (e) {
+        }
+        this.socket = null;
+    }
+
+    /**
+     * Send a message to the open websocket.
+     * */
+    async send(message) {
+        if(this.socket === null) throw new Error("No open socket");
+        await this.socket.send(JSON.stringify(message));
+    }
+
+    /**
+     * Handle sending authentication and connecting to available channels
+     * on the websocket's opening.
+     * Should not be called manually.
+     * */
+    async onSocketOpen() {
+        console.log("Sending listen request");
+        await this.send({
+            "type": "LISTEN",
+            "data": {
+                "topics": [`channel-points-channel-v1.${this.userId}`],
+                "auth_token": this.token,
+            }
+        });
+
+        console.log("Creating rewards");
+        let rewardNodeList = document.querySelectorAll(".sound");
+        let rewardNodes = {}
+        for(let r of rewardNodeList) {
+            rewardNodes[r.dataset.name] = r;
+        }
+        let currentRewards = await fetch(
+            (
+                "https://api.twitch.tv/helix/channel_points/custom_rewards"
+                + `?broadcaster_id=${this.userId}`
+                + "&only_manageable_rewards=true"
+            ),
+            {
+                headers: {
+                    "Authorization": `Bearer ${this.token}`,
+                    "Client-ID": this.clientId,
+                }
+            }
+        );
+        let currentRewardData = await currentRewards.json();
+        for(let r of currentRewardData.data) {
+            if(r.title.startsWith("VFTTS Sound: ")) {
+                let title = r.title.substr("VFTTS Sound: ".length);
+                let reward = rewardNodes[title];
+                reward.dataset.id = r.id;
+                reward.querySelector(`input[name="enabled"]`).value = (
+                    r["is_enabled"] == "true" ? true : false
+                );
+            }
+        }
+        for(let rName in rewardNodes) {
+            let r = rewardNodes[rName];
+            if(r.dataset.id) continue;
+            let createdSite = await fetch(
+                (
+                    "https://api.twitch.tv/helix/channel_points/custom_rewards"
+                    + `?broadcaster_id=${this.userId}`
+                ),
+                {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${this.token}`,
+                        "Client-ID": this.clientId,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        title: `VFTTS Sound: ${r.dataset.name}`,
+                        cost: 100,
+                        is_enabled: r.querySelector(`input[name="enabled"]`).checked,
+                        background_color: "#D580D0",
+                    }),
+                },
+            );
+            let data = await createdSite.json();
+            r.dataset.id = data.data.id;
+        }
+
+        console.log("Creating reward loop");
+        this.updateRewardDom(60_000)
+    }
+
+    /**
+     * Receive a message from the socket.
+     * */
+    async onMessage(message) {
+        let data = JSON.parse(event.data);
+        if(data.type == "RESPONSE") {
+            if(data.error) {
+                console.log("Failed to connect to PubSub websocket");
+                console.log(data);
+                await self.close();
+            }
+            return;
+        }
+        else if(data.type == "MESSAGE") {
+            let messageData = JSON.parse(data.data.message);
+            switch(data.data.topic) {
+                case `channel-points-channel-v1.${this.userId}`:
+                    this.onPointsRedeem(new PointsRedeem(messageData.data.redemption));
+                    return;
+            }
+        }
+        console.log("Can't work out what to do with message from Twitch.");
+        console.log(data);
+    }
+
+    async onPointsRedeem(redeem) {
+        if(redeem.reward.title.startsWith("VFTTS Sound: ")) {
+            this.onSoundRedeem(redeem);
+        }
+        else {
+            await redeem.cancel(this.clientId, this.token);
+        }
+    }
+
+    async onSoundRedeem(redeem) {
+        let allAudio = [
+            ...document.querySelectorAll(`.sound[data-id="${redeem.reward.id}"] audio`)
+        ];
+        let playableAudio = allAudio.filter(a => a.paused);
+        if(playableAudio.length == 0) {
+            await redeem.cancel();
+            return;
+        }
+        playableAudio[0].play();
+        await redeem.fulfil(this.clientId, this.token);
     }
 }

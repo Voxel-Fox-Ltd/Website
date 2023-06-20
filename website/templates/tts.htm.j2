@@ -13,8 +13,10 @@
 <div id="content">
 
   <!-- Add our toplevel buttons -->
-  <button id="tts-connect" type="button" onclick="connectTTS()" style="margin: 0;">Connect TTS</button>
-  <button id="change-output" type="button" onclick="changeOutput()" style="margin: 1em 0;">Change Audio Output</button>
+  <div class="mb">
+    <button id="tts-connect" type="button" onclick="connectTTS()">Connect Twitch</button>
+    <!-- <button id="change-output" type="button" onclick="changeOutput()">Change Audio Output</button> -->
+  </div>
 
   <!-- Box our access token and login buttons -->
   <div id="access-token-box" class="boxed mb">
@@ -30,7 +32,7 @@
   </div>
 
   <!-- TTS controls -->
-  <div id="tts-controls" class="boxed">
+  <div id="tts-controls" class="boxed mb">
 
     <!-- Hide TTS stuff -->
     <div class="control-buttons">
@@ -65,7 +67,7 @@
       </div>  <!-- Button to add new voices -->
 
       <!-- Container for the voices -->
-      <div id="voices" data-hidden="1">
+      <div id="voices" class="item-grid" data-hidden="1">
 
         <!-- Template voice -->
         <div class="template boxed mb">
@@ -90,7 +92,65 @@
   </div>  <!-- TTS controls -->
 
   <!-- Sound redeems -->
-  <div class="boxed">
+  <div id="sound-redeems-controls" class="boxed">
+
+    <!-- Hide sound stuff -->
+    <div class="control-buttons">
+      <label>Sound Controls</label>
+      <button type="button" data-target="#sound-redeems-controls > *[data-hidden]" onclick="javascript:expandItem(this)">&darr;</button>
+    </div>  <!-- Hide sound stuff -->
+
+    <div class="labelled-checkbox">
+      <label for="sound-redeems-enabled">Sound Redeems Enabled</label>
+      <input
+        id="sound-redeems-enabled"
+        type="checkbox"
+        name="sound-redeems-enabled"
+        onchange="javascript:saveInputs();" />
+    </div>
+
+    {% macro create_sound(name, url) %}
+      <div class="sound boxed mb" data-id="" data-name="{{ name }}">
+        <p>Name: <span style="font-weight: bold;">{{ name }}</span></p>
+        <div class="labelled-checkbox">
+          <label>Enabled</label>
+          <input type="checkbox" name="enabled" checked disabled />
+        </div>
+        <div>
+          <audio src="{{ url }}"></audio>
+          <audio src="{{ url }}"></audio>
+          <audio src="{{ url }}"></audio>
+          <audio src="{{ url }}"></audio>
+          <audio src="{{ url }}"></audio>
+        </div>
+      </div>
+    {% endmacro %}
+
+    <div id="sounds" class="item-grid mt" data-hidden="1">
+      {{ create_sound("a bean", static("/sounds/a bean.wav")) }}
+      {{ create_sound("airhorn", static("/sounds/airhorn.wav")) }}
+      {{ create_sound("applause", static("/sounds/applause.wav")) }}
+      {{ create_sound("augh", static("/sounds/augh.wav")) }}
+      {{ create_sound("boo", static("/sounds/boo.wav")) }}
+      {{ create_sound("bozo", static("/sounds/bozo.wav")) }}
+      {{ create_sound("bruh", static("/sounds/bruh.wav")) }}
+      {{ create_sound("clown", static("/sounds/clown.wav")) }}
+      {{ create_sound("crowd ooh", static("/sounds/crowd ooh.wav")) }}
+      {{ create_sound("gorsh", static("/sounds/gorsh.wav")) }}
+      {{ create_sound("hello there", static("/sounds/hello there.wav")) }}
+      {{ create_sound("I can't believe you've done this", static("/sounds/I can't believe you've done this.wav")) }}
+      {{ create_sound("laughtrack", static("/sounds/laughtrack.wav")) }}
+      {{ create_sound("meow", static("/sounds/meow.wav")) }}
+      {{ create_sound("noot noot", static("/sounds/noot noot.wav")) }}
+      {{ create_sound("oh my god", static("/sounds/oh my god.wav")) }}
+      {{ create_sound("police siren", static("/sounds/police siren.wav")) }}
+      {{ create_sound("rimshot", static("/sounds/rimshot.wav")) }}
+      {{ create_sound("Roblox death", static("/sounds/Roblox death.wav")) }}
+      {{ create_sound("shotgun", static("/sounds/shotgun.wav")) }}
+      {{ create_sound("Spongebob disappointed", static("/sounds/Spongebob disappointed.wav")) }}
+      {{ create_sound("vine boom", static("/sounds/vine boom.wav")) }}
+      {{ create_sound("water droplet", static("/sounds/water droplet.wav")) }}
+    </div>
   </div>  <!-- Sound redeems -->
 
 </div>

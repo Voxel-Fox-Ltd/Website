@@ -13,7 +13,11 @@ label {
 }
 
 .mb {
-    margin-bottom: 20px;
+    margin-bottom: 1em;
+}
+
+.mt {
+    margin-top: 1em;
 }
 
 .boxed {
@@ -75,13 +79,13 @@ button {
     margin-left: auto !important;
 }
 
-#voices > div {
+.item-grid > div {
     width: 100%;
     max-width: 30%;
     min-width: 400px;
 }
 
-#voices {
+.item-grid {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -103,4 +107,29 @@ button {
 
 audio {
     width: 100%;
+}
+
+.sound p {
+    margin: 0
+}
+
+.sound audio {
+    display: none;
+}
+
+.labelled-checkbox {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.labelled-checkbox label:after {
+    content: ":";
+}
+
+.labelled-checkbox label {
+    margin-right: 0.3em;
+}
+
+.labelled-checkbox input {
+    width: auto !important;
 }
