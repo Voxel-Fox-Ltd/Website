@@ -331,6 +331,15 @@ class TwitchPubSub {
         this.socket = null;
     }
 
+    async pingLoop() {
+        while(true) {
+            if(this.socket === null) return;
+            console.log("Sending ping")
+            await this.send({type: "PING"});
+            await new Promise(r => setTimeout(r, 4 * 60 * 1_000));
+        }
+    }
+
     async updateRewardDom(initialSleepTime = 0) {
         if(initialSleepTime > 0) {
             await new Promise(r => setTimeout(r, initialSleepTime));
@@ -367,7 +376,7 @@ class TwitchPubSub {
                     );
                 }
             }
-            await new Promise(r => setTimeout(r, 10_000));
+            await new Promise(r => setTimeout(r, 10 * 1_000));
         }
     }
 
@@ -480,6 +489,8 @@ class TwitchPubSub {
 
         console.log("Creating reward loop");
         this.updateRewardDom(60_000)
+        console.log("Creating ping loop");
+        this.pingLoop();
     }
 
     /**
@@ -493,6 +504,15 @@ class TwitchPubSub {
                 console.log(data);
                 await self.close();
             }
+            return;
+        }
+        else if(data.type == "PONG") {
+            console.log("Received pong");
+            return;
+        }
+        else if(data.type == "RECONNECT") {
+            console.log("Asked to reconnect");
+            this.close().then(this.connect);
             return;
         }
         else if(data.type == "MESSAGE") {
