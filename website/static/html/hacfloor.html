@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Haverhill Arts Centre</title>
+    <!-- <meta name="viewport" content="width=16000, initial-scale=1.0"> -->
+</head>
+<body>
+
+<style>
+:root {
+    /*
+        For some reason, all pixel -> real world measurements are like so:
+        * 1px = 0.0001m
+        * 10px = 0.001m = 1mm
+        * 100px = 0.01m = 1cm = 10mm
+        * 10_000px = 1m
+        I don't know why I did this but it's too lage to change now.
+    */
+    --calc-m-to-px: 10000px;  /* Set as px for multiplication */
+    --calc-mm-to-px: 10px;  /* Set as px for multiplication */
+    --calc-ft-to-px: 3048px;  /* Set as px for multiplication */
+
+    /*
+        z-index guide:
+        * 0 - floor
+        * 10 - parts of the building that go onto the floor
+        * 15 - guidelines
+        * 20 - parts of the building that go onto other parts of the building
+        * 100 - loose items that can be repositioned on other parts of the floor
+    */
+
+    --room-width: calc(11.8 * var(--calc-m-to-px));
+    --room-length: calc(11.9 * var(--calc-m-to-px));  /* stage edge to rake */
+
+    --stage-width: 69050px;
+    --stair-length-stageleft: 11200px;
+    --stair-length-stageright: 10600px;
+    --stair-depth: 11400px;
+    --stair-to-wall: 13575px;
+
+    --rake-width: 94800px;
+    --rake-walkway-width-stageright: 11330px;
+    --rake-to-bar-door: 43250px;
+
+    --bar-door-width: 15150px;
+
+    --stage-to-fire-exit: 9680px;
+    --fire-exit-width: 15450px;
+
+    --door-indicator-width: 2000px;
+
+    --table-width: calc(8 * var(--calc-ft-to-px));
+    --table-length: 5000px;
+
+    --floor-colour: #deb887;
+    --wood-colour: #8d7556;
+    --wood-highlight-colour: #5f4f3a;
+    --table-colour: #4747c0;
+    --danger-colour: red;
+}
+html {
+    margin: 0;
+}
+body {
+    --zoom-amount: calc(24 / 3500);  /* Full height on a 1080p screen */
+    zoom: var(--zoom-amount);
+    -moz-transform: scale(var(--zoom-amount));
+    -moz-transform-origin: 0 0;
+    margin: 0;
+    font-family: 'Century Gothic', sans-serif;
+}
+#floor-plan {
+    --room-margin: 20px;
+    margin: 10px 10px 10px calc(var(--door-indicator-width) + 2000px);
+    box-sizing: content-box;
+    position: relative;
+}
+.item {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgb(255, 34, 255);  /* Make it obvious what isn't coloured */
+}
+.item[data-label]:after {
+    content: attr(data-label);
+    font-size: 2000px;
+    z-index: 100;
+    position: absolute;
+    font-weight: bold;
+    color: #eeeeee;
+    text-shadow:
+        1px 1px 1000px black,
+        -1px 1px 1000px black,
+        1px -1px 1000px black,
+        -1px -1px 1000px black;
+}
+.draggable:hover {
+    cursor: grab;
+}
+#line-markings {
+    position: relative;
+}
+#line-markings * {
+    position: absolute;
+    z-index: 5;
+}
+#line-markings .vertical-centre {
+    height: calc(var(--room-length) + var(--stair-depth) - 1000px);
+    border: 100px dotted black;
+    left: calc(
+        (
+            var(--rake-walkway-width-stageright)
+            + var(--rake-walkway-width-stageright)
+            + var(--rake-width)
+        ) / 2
+    );
+    filter: opacity(0.2);
+}
+#floor {
+    height: calc(var(--room-length) + var(--stair-depth));
+    width: var(--room-width);
+    background: var(--floor-colour);
+    z-index: 0;
+}
+#stage {
+    top: 0;
+    left: var(--stair-to-wall);
+    height: var(--stair-depth);
+    width: calc(var(--stage-width) + var(--stair-length-stageleft) + var(--stair-length-stageright));
+    background: var(--wood-colour);
+    z-index: 10;
+}
+#stage-right-stairs {
+    top: 0;
+    left: var(--stair-to-wall);
+    height: var(--stair-depth);
+    width: var(--stair-length-stageright);
+    background: var(--wood-highlight-colour);
+    z-index: 20;
+}
+#stage-left-stairs {
+    top: 0;
+    left: calc(var(--stair-to-wall) + var(--stage-width) + var(--stair-length-stageright));
+    height: var(--stair-depth);
+    width: var(--stair-length-stageleft);
+    background: var(--wood-highlight-colour);
+    z-index: 20;
+}
+#fire-exit {
+    top: var(--stage-to-fire-exit);
+    left: var(--room-width);
+    height: var(--fire-exit-width);
+    width: var(--door-indicator-width);
+    background: var(--danger-colour);
+    z-index: 0;
+}
+#bar-exit {
+    top: calc(var(--stair-depth) + var(--room-length) - var(--rake-to-bar-door));
+    left: calc(var(--door-indicator-width) * -1);
+    height: var(--bar-door-width);
+    width: var(--door-indicator-width);
+    background: var(--danger-colour);
+    z-index: 0;
+}
+#rake {
+    top: var(--room-length);
+    left: var(--rake-walkway-width-stageright);
+    height: var(--stair-depth);
+    width: var(--rake-width);
+    background: var(--wood-colour);
+    z-index: 20;
+}
+
+
+#false-wall {
+    height: calc(500 * var(--calc-mm-to-px));
+    width: calc(28 * var(--calc-ft-to-px));
+    top: calc(
+        var(--room-width)
+        - (500 * var(--calc-mm-to-px))
+    );
+    left: calc(
+        var(--rake-walkway-width-stageright)
+        + (0.5 * var(--calc-m-to-px))
+    );
+    z-index: 100;
+}
+
+
+.table {
+    height: var(--table-length);
+    width: var(--table-width);
+    z-index: 100;
+    background: var(--table-colour);
+}
+</style>
+
+<div id="floor-plan">
+    <div id="floor" class="item"></div>
+    <div id="stage-right-stairs" class="item"></div>
+    <div id="stage" class="item" data-label="Stage"></div>
+    <div id="stage-left-stairs" class="item"></div>
+    <div id="fire-exit" class="item"></div>
+    <div id="bar-exit" class="item"></div>
+    <div id="rake" class="item" data-label="Rake"></div>
+
+    <div id="line-markings">
+        <div class="vertical-centre"></div>
+    </div>
+
+    <div id="false-wall" class="item" data-label="False wall"></div>
+
+    <div class="item table draggable" data-name="urban-1" data-label="Display"></div>
+    <div class="item table draggable" data-name="urban-2" data-label="Display"></div>
+    <div class="item table draggable" data-name="urban-3" data-label="Display"></div>
+    <div class="item table draggable" data-name="urban-4" data-label="Display"></div>
+    <div class="item table draggable" data-name="urban-5" data-label="Display"></div>
+    <div class="item table draggable" data-name="urban-6" data-label="Display"></div>
+</div>
+
+
+<script>
+// Because I insisted on a dumb scale
+const ZOOM_LEVEL = 24 / 3500;
+
+
+function setHash() {
+    itemLocations = {};
+    for(let d of document.querySelectorAll(".draggable")) {
+        if(!(d.dataset.position && d.dataset.rotation)) continue;
+        itemLocations[d.dataset.name] = `${d.dataset.position},${d.dataset.rotation}`;
+    }
+    location.hash = encodeURIComponent(JSON.stringify(itemLocations));
+    console.log(itemLocations);
+}
+function fromHash() {
+    if(!location.hash) {
+        return
+    };
+    try {
+        itemLocations = JSON.parse(decodeURIComponent(location.hash.substring(1)));
+    } catch (error) {
+        return;
+    }
+    for(let d in itemLocations) {
+        split = itemLocations[d].split(",");
+        if(split.length != 3) continue;
+        x = parseInt(split[0]);
+        y = parseInt(split[1]);
+        r = parseInt(split[2]);
+        node = document.querySelector(`.draggable[data-name='${d}']`);
+        if(!node) continue;
+        node.style.top = `${y}px`;
+        node.style.left = `${x}px`;
+        node.style.transform = `rotate(${r}deg)`;
+        node.dataset.position = `${x},${y}`;
+        node.dataset.rotation = r;
+    }
+}
+
+
+// Add events for every draggable item
+for(let i of document.querySelectorAll(".draggable")) {
+
+    // Set initial values that we can do maths on later
+    i.style.top = "10000px";
+    i.style.left = "10000px";
+    i.dataset.position = "10000,10000";
+    i.dataset.rotation = "0";
+    i.style.transform = "rotate(0deg)";
+
+    // When an item is clicked, say it's clicked
+    i.addEventListener("mousedown", (event) => {
+        event.target.classList.add("being-dragged");
+        console.log(`Starting coords are (${event.target.style.left}, ${event.target.style.top})`);
+    })
+
+    // Rotation support
+    i.addEventListener("wheel", (event) => {
+        target = event.target;
+        currentRotation = parseFloat(target.style.transform.match(/\d+/)[0])
+        newRotation = currentRotation + (15 * (event.deltaY < 0 ? 1 : -1));
+        while(newRotation >= 360) newRotation -= 360;
+        while(newRotation < 0) newRotation += 360;
+        target.dataset.rotation = newRotation;
+        target.style.transform = `rotate(${newRotation}deg)`;
+        setHash();
+    })
+
+    // Ignore Chrome's drag mechanics entirely
+    for(let d of ["drag", "dragend", "dragenter", "dragleave", "dragover", "dragstart", "drop"]) {
+        i.addEventListener(d, (e) => e.preventDefault());
+    }
+}
+
+
+// Event pinged for us dragging the mouse around
+document.addEventListener("mousemove", (event) => {
+
+    // Make sure we're actually clicking something
+    if(event.buttons != 1) return;
+    target = document.querySelector(".being-dragged");
+    if(target === null) return;
+
+    // Make sure the mouse has moved
+    if(event.movementX != 0 || event.movementY != 0) {
+
+        // Get the current position
+        currentY = parseInt(target.style.top.match(/\d+/)[0]);
+        currentX = parseInt(target.style.left.match(/\d+/)[0]);
+
+        // Get the amount we've moved by
+        moveY = parseInt(event.movementY / ZOOM_LEVEL);
+        moveX = parseInt(event.movementX / ZOOM_LEVEL);
+
+        // Move the item
+        locationY = currentY + moveY
+        locationX = currentX + moveX
+        target.style.top = locationY.toString() + "px";
+        target.style.left = locationX.toString() + "px";
+        target.dataset.position = `${locationX},${locationY}`;
+        // console.log(`Current (${currentX}, ${currentY}), moving (${moveX}, ${moveY}), set to (${locationX}, ${locationY})`);
+    }
+});
+
+
+// Save hash after move
+document.addEventListener("mouseup", (event) => {
+    dragList = document.querySelectorAll(".being-dragged");
+    for(let bd of dragList) {
+        bd.classList.remove("being-dragged");
+    }
+    setHash();
+})
+
+
+// Load from the current hash
+fromHash();
+
+</script>
+
+</body>
+</html>
