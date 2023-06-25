@@ -391,7 +391,7 @@ class TwitchPubSub {
             );
             let currentRewardData = await currentRewards.json();
             for(let r of currentRewardData.data) {
-                let reward = document.querySelectorAll(`.sound[id="${r.id}"]`);
+                let reward = document.querySelectorAll(`.sound[data-id="${r.id}"]`);
                 if(reward === null) continue;
                 reward.querySelector(`input[name="enabled"]`).value = r["is_enabled"];
             }
@@ -450,11 +450,6 @@ class TwitchPubSub {
         });
 
         console.log("Creating rewards");
-        let rewardNodeList = document.querySelectorAll(".sound");
-        let rewardNodes = {}
-        for(let r of rewardNodeList) {
-            rewardNodes[r.dataset.name] = r;
-        }
         let currentRewards = await fetch(
             (
                 "https://api.twitch.tv/helix/channel_points/custom_rewards"
@@ -472,12 +467,12 @@ class TwitchPubSub {
         for(let r of currentRewardData.data) {
             if(r.title.startsWith("VFTTS Sound: ")) {
                 let title = r.title.substr("VFTTS Sound: ".length);
-                let reward = rewardNodes[title];
+                let reward = document.querySelector(`.sound[data-name="${title}"]`);
                 reward.dataset.id = r.id;
-                reward.querySelector(`input[name="enabled"]`).value = r["is_enabled"];
+                reward.querySelector(`input[name="enabled"]`).checked = r["is_enabled"];
             }
         }
-        for(let rName in rewardNodes) {
+        for(let r in document.querySelectorAll(`.sound[data-id=""]`)) {
             let r = rewardNodes[rName];
             if(r.dataset.id) continue;
             let createdSite = await fetch(
