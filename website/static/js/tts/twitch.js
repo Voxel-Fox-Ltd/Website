@@ -275,7 +275,7 @@ class PointsReward {
         return await fetch(
             (
                 "https://api.twitch.tv/helix"
-                + "/channel_points/custom_rewards/redemptions"
+                + "/channel_points/custom_rewards"
                 + `?broadcaster_id=${this.channelId}`
                 + `&id=${this.id}`
             ),
