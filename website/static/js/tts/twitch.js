@@ -312,8 +312,10 @@ class PointsRedeem {
     constructor(data) {
         this.id = data.id;
         this.user = data.user.login;
+        this.userId = data.user.id;
         this.timestamp = data["redeemed_at"];
         this.reward = new PointsReward(data.reward);
+        this.reward.channelId = data["channel_id"];
         this.userInput = data["user_input"];
         this.status = data.status;
     }
@@ -554,9 +556,10 @@ class TwitchPubSub {
         ];
         let playableAudio = allAudio.filter(a => a.paused);
         if(playableAudio.length == 0) {
-            await redeem.cancel();
+            await redeem.cancel(this.clientId, this.token);
             return;
         }
+        playableAudio[0].volume = 0.35;
         playableAudio[0].play();
         await redeem.fulfil(this.clientId, this.token);
     }
