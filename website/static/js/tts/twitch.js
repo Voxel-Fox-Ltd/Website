@@ -272,7 +272,7 @@ class PointsReward {
     }
 
     async updateStatus(clientId, token, enabledStatus) {
-        return await fetch(
+        let site = await fetch(
             (
                 "https://api.twitch.tv/helix"
                 + "/channel_points/custom_rewards"
@@ -291,6 +291,9 @@ class PointsReward {
                 }),
             },
         );
+        if(!site.ok) return;
+        let json = site.json();
+        document.querySelector(`.sound[data-id="${json.data[0].id}"] input[name="enabled"]`).checked = json.data[0]["is_enabled"];
     }
 
     async enable(clientId, token) {
@@ -391,9 +394,8 @@ class TwitchPubSub {
             );
             let currentRewardData = await currentRewards.json();
             for(let r of currentRewardData.data) {
-                let reward = document.querySelectorAll(`.sound[data-id="${r.id}"]`);
-                if(reward === null) continue;
-                reward.querySelector(`input[name="enabled"]`).value = r["is_enabled"];
+                let box = document.querySelectorAll(`.sound[data-id="${r.id}"] input[name="enabled"]`);
+                box.checked = r["is_enabled"];
             }
             await new Promise(r => setTimeout(r, 10 * 1_000));
         }
