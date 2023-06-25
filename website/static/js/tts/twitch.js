@@ -473,7 +473,6 @@ class TwitchPubSub {
             }
         }
         for(let r in document.querySelectorAll(`.sound[data-id=""]`)) {
-            let r = rewardNodes[rName];
             if(r.dataset.id) continue;
             let createdSite = await fetch(
                 (
