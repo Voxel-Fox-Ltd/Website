@@ -64,12 +64,12 @@ async function modifyAllRewards(enable) {
             broadcaster_id: pubsub.userId,
         });
         if(enable) {
-            if(i.querySelector("input[name='enabled']").value) continue;
-            await r.enable();
+            if(i.querySelector("input[name='enabled']").checked) continue;
+            await r.enable(pubsub.clientId, pubsub.token);
         }
         else {
-            if(!i.querySelector("input[name='enabled']").value) continue;
-            await r.disable();
+            if(!i.querySelector("input[name='enabled']").checked) continue;
+            await r.disable(pubsub.clientId, pubsub.token);
         }
     }
     for(let i of document.querySelectorAll("#modify-all-point-rewards button")) i.disabled = false;

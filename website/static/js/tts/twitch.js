@@ -294,11 +294,11 @@ class PointsReward {
     }
 
     async enable(clientId, token) {
-        await updateStatus(clientId, token, true);
+        await this.updateStatus(clientId, token, true);
     }
 
     async disable(clientId, token) {
-        await updateStatus(clientId, token, false);
+        await this.updateStatus(clientId, token, false);
     }
 
 }
