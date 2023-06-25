@@ -54,6 +54,28 @@ function redirectToLogin() {
 }
 
 
+async function modifyRewards(enable) {
+    if(pubsub === null) return;
+    for(let i of document.querySelectorAll("#modify-all-point-rewards button")) i.disabled = true;
+    for(let i of document.querySelectorAll(".sound")) {
+        if(i.dataset.id == "" || i.dataset.id === null) continue;
+        r = new PointsRedeem({
+            id: i.dataset.id,
+            broadcaster_id: pubsub.userId,
+        });
+        if(enable) {
+            if(i.querySelector("input[name='enabled']").value) continue;
+            await r.enable();
+        }
+        else {
+            if(!i.querySelector("input[name='enabled']").value) continue;
+            await r.disable();
+        }
+    }
+    for(let i of document.querySelectorAll("#modify-all-point-rewards button")) i.disabled = false;
+}
+
+
 function main() {
     loadInputs();
     saveInputs();

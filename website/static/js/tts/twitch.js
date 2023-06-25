@@ -264,11 +264,41 @@ class PointsReward {
 
     constructor(data) {
         this.id = data.id;
-        this.channelId = data["channel_id"];
+        this.channelId = data["broadcaster_id"];
         this.title = data.title;
         this.prompt = data.prompt;
         this.cost = data.cost;
         this.subOnly = data["is_sub_only"];
+    }
+
+    async updateStatus(clientId, token, enabledStatus) {
+        return await fetch(
+            (
+                "https://api.twitch.tv/helix"
+                + "/channel_points/custom_rewards/redemptions"
+                + `?broadcaster_id=${this.channelId}`
+                + `&id=${this.id}`
+            ),
+            {
+                method: "PATCH",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Client-ID": clientId,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    "is_enabled": enabledStatus,
+                }),
+            },
+        );
+    }
+
+    async enable(clientId, token) {
+        await updateStatus(clientId, token, true);
+    }
+
+    async disable(clientId, token) {
+        await updateStatus(clientId, token, false);
     }
 
 }
@@ -279,7 +309,6 @@ class PointsRedeem {
     constructor(data) {
         this.id = data.id;
         this.user = data.user.login;
-        this.channelId = data["channel_id"];
         this.timestamp = data["redeemed_at"];
         this.reward = new PointsReward(data.reward);
         this.userInput = data["user_input"];
@@ -287,7 +316,7 @@ class PointsRedeem {
     }
 
     async updateStatus(clientId, token, status) {
-        await fetch(
+        return await fetch(
             (
                 "https://api.twitch.tv/helix"
                 + "/channel_points/custom_rewards/redemptions"
@@ -347,11 +376,6 @@ class TwitchPubSub {
         while(true) {
             if(this.socket === null) return;
             console.log("Getting updated DOM")
-            let rewardNodeList = document.querySelectorAll(".sound");
-            let rewardNodes = {}
-            for(let r of rewardNodeList) {
-                rewardNodes[r.dataset.name] = r;
-            }
             let currentRewards = await fetch(
                 (
                     "https://api.twitch.tv/helix/channel_points/custom_rewards"
@@ -367,14 +391,9 @@ class TwitchPubSub {
             );
             let currentRewardData = await currentRewards.json();
             for(let r of currentRewardData.data) {
-                if(r.title.startsWith("VFTTS Sound: ")) {
-                    let title = r.title.substr("VFTTS Sound: ".length);
-                    let reward = rewardNodes[title];
-                    reward.dataset.id = r.id;
-                    reward.querySelector(`input[name="enabled"]`).value = (
-                        r["is_enabled"] == "true" ? true : false
-                    );
-                }
+                reward = document.querySelectorAll(`.sound[id="${r.id}"]`);
+                if(reward === null) continue;
+                reward.querySelector(`input[name="enabled"]`).value = r["is_enabled"];
             }
             await new Promise(r => setTimeout(r, 10 * 1_000));
         }
@@ -455,9 +474,7 @@ class TwitchPubSub {
                 let title = r.title.substr("VFTTS Sound: ".length);
                 let reward = rewardNodes[title];
                 reward.dataset.id = r.id;
-                reward.querySelector(`input[name="enabled"]`).value = (
-                    r["is_enabled"] == "true" ? true : false
-                );
+                reward.querySelector(`input[name="enabled"]`).value = r["is_enabled"];
             }
         }
         for(let rName in rewardNodes) {

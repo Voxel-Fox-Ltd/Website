@@ -101,12 +101,16 @@
     </div>  <!-- Hide sound stuff -->
 
     <div class="labelled-checkbox">
-      <label for="sound-redeems-enabled">Sound Redeems Enabled</label>
+      <label for="sound-redeems-enabled">Rewards WS Enabled</label>
       <input
         id="sound-redeems-enabled"
         type="checkbox"
         name="sound-redeems-enabled"
         onchange="javascript:saveInputs();" />
+    </div>
+    <div id="modify-all-point-rewards">
+      <button onclick="javascript:modifyAllRewards(true)">Enable all redeems</button>
+      <button onclick="javascript:modifyAllRewards(false)">Disable all redeems</button>
     </div>
 
     {% macro create_sound(name, url) %}
