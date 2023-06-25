@@ -391,7 +391,7 @@ class TwitchPubSub {
             );
             let currentRewardData = await currentRewards.json();
             for(let r of currentRewardData.data) {
-                reward = document.querySelectorAll(`.sound[id="${r.id}"]`);
+                let reward = document.querySelectorAll(`.sound[id="${r.id}"]`);
                 if(reward === null) continue;
                 reward.querySelector(`input[name="enabled"]`).value = r["is_enabled"];
             }

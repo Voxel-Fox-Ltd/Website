@@ -59,7 +59,7 @@ async function modifyAllRewards(enable) {
     for(let i of document.querySelectorAll("#modify-all-point-rewards button")) i.disabled = true;
     for(let i of document.querySelectorAll(".sound")) {
         if(i.dataset.id == "" || i.dataset.id === null) continue;
-        r = new PointsRedeem({
+        r = new PointsReward({
             id: i.dataset.id,
             broadcaster_id: pubsub.userId,
         });
