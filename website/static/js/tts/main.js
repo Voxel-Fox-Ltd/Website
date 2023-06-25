@@ -54,7 +54,7 @@ function redirectToLogin() {
 }
 
 
-async function modifyRewards(enable) {
+async function modifyAllRewards(enable) {
     if(pubsub === null) return;
     for(let i of document.querySelectorAll("#modify-all-point-rewards button")) i.disabled = true;
     for(let i of document.querySelectorAll(".sound")) {
