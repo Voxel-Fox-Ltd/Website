@@ -472,8 +472,7 @@ class TwitchPubSub {
                 reward.querySelector(`input[name="enabled"]`).checked = r["is_enabled"];
             }
         }
-        for(let r in document.querySelectorAll(`.sound[data-id=""]`)) {
-            if(r.dataset.id) continue;
+        for(let r of document.querySelectorAll(`.sound[data-id=""]`)) {
             let createdSite = await fetch(
                 (
                     "https://api.twitch.tv/helix/channel_points/custom_rewards"
