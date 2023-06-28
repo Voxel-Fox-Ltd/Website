@@ -102,7 +102,7 @@ async def index(request: Request):
 @requires_login()
 async def purchase(request: Request):
     """
-    Portal page for payments. This should show all items in the group.
+    Portal page for payments. This will show one particular item in the group.
     """
 
     # Make sure we have an ID
@@ -115,29 +115,11 @@ async def purchase(request: Request):
     # Get session
     session = await aiohttp_session.get_session(request)
 
-    # Get the items to be shown on the page
+    # Get the item to be shown on the page
     async with vbu.Database() as db:
-        item_rows = await db.call(
-            """
-            SELECT
-                *
-            FROM
-                checkout_items
-            WHERE
-                id = $1
-            """,
-            product_id,
-        )
-        items = [
-            CheckoutItem.from_row(row)
-            for row in item_rows
-        ]
-
-        # If there aren't any items then let's just redirect back to
-        # the index
-        if not items:
+        item = await CheckoutItem.fetch(db, product_id)
+        if not item:
             return HTTPFound("/")
-        item = items[0]
         await item.fetch_user(db)
 
         # Make sure we have a guild ID if we need one
@@ -148,6 +130,19 @@ async def purchase(request: Request):
             return HTTPFound(f"/portal/{item.product_group}")
         else:
             guild_id = None
+
+        # See if a purchase already exists for the given guild
+        if guild_id:
+            purchase_rows = await db.call(
+                """SELECT * FROM purchases WHERE discord_guild_id = $1""",
+                guild_id,
+            )
+            if purchase_rows:
+                session["login_message"] = (
+                    "This product has already been purchased for that guild."
+                )
+                session["redirect_on_login"] = f"/portal/{item.product_group}"
+                return HTTPFound("/login")
 
         # Get a user
         user = await User.fetch(db, id=session["id"])
