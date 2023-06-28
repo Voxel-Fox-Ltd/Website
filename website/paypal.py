@@ -280,9 +280,10 @@ async def charge_captured(request: Request, data: types.IPNMessage):
                 )
                 if not current:
                     continue
-                await current[0].delete(db)
+                current = current[0]
+                await current.delete(db)
             else:
-                await Purchase.create(
+                current = await Purchase.create(
                     db, user, i,
                     discord_guild_id=metadata.get('discord_guild_id'),
                     identifier=data.get('txn_id'),
@@ -303,6 +304,7 @@ async def charge_captured(request: Request, data: types.IPNMessage):
                 "source": "PayPal",
                 "subscription_delete_url": None,
                 "discord_user_id": user.discord_user_id,
+                "discord_guild_id": current.discord_guild_id,
             }
             await send_webhook(i, json_data)
 
@@ -333,22 +335,6 @@ async def subscription_created(request: Request, data: types.IPNMessage):
         log.info(f"Missing item {product_name} from database.")
         return
 
-    # Send a POST request for the item
-    json_data = {
-        "product_name": item.name,
-        "quantity": item.quantity,
-        "refund": False,
-        "subscription": True,
-        **metadata,
-        "subscription_expiry_time": None,
-        "source": "PayPal",
-        "subscription_delete_url": (
-            f"{PAYPAL_BASE}/v1/billing/subscriptions/"
-            f"{recurring_payment_id}/cancel"
-        ),
-    }
-    await send_webhook(item, json_data)
-
     # And store in the database
     async with vbu.Database() as db:
         user = await User.fetch(
@@ -369,7 +355,7 @@ async def subscription_created(request: Request, data: types.IPNMessage):
             )
             if current:
                 return  # We only want to store the original subscription create
-        await Purchase.create(
+        current = await Purchase.create(
             db, user, item,
             discord_guild_id=metadata.get('discord_guild_id'),
             expiry_time=None,
@@ -379,6 +365,23 @@ async def subscription_created(request: Request, data: types.IPNMessage):
             ),
             identifier=data.get('txn_id'),
         )
+
+        json_data = {
+            "product_name": item.name,
+            "quantity": item.quantity,
+            "refund": False,
+            "subscription": True,
+            **metadata,
+            "subscription_expiry_time": None,
+            "source": "PayPal",
+            "subscription_delete_url": (
+                f"{PAYPAL_BASE}/v1/billing/subscriptions/"
+                f"{recurring_payment_id}/cancel"
+            ),
+            "discord_user_id": user.discord_user_id,
+            "discord_guild_id": current.discord_guild_id,
+        }
+        await send_webhook(item, json_data)
 
 
 async def subscription_deleted(request: Request, data: types.IPNMessage):
@@ -412,19 +415,6 @@ async def subscription_deleted(request: Request, data: types.IPNMessage):
     last_purchase = get_datetime_from_standard_format(payment_time_str)
     expiry_time = last_purchase + timedelta(days=30)
 
-    # Send a POST request for the item
-    json_data = {
-        "product_name": item.name,
-        "quantity": item.quantity,
-        "refund": False,
-        "subscription": True,
-        **metadata,
-        "subscription_expiry_time": expiry_time.timestamp(),
-        "source": "PayPal",
-        "subscription_delete_url": None,
-    }
-    await send_webhook(item, json_data)
-
     # And update the database
     async with vbu.Database() as db:
         user = await User.fetch(
@@ -444,3 +434,17 @@ async def subscription_deleted(request: Request, data: types.IPNMessage):
         if not current:
             return
         await current[0].update(db, expiry_time=expiry_time)
+
+        json_data = {
+            "product_name": item.name,
+            "quantity": item.quantity,
+            "refund": False,
+            "subscription": True,
+            **metadata,
+            "subscription_expiry_time": expiry_time.timestamp(),
+            "source": "PayPal",
+            "subscription_delete_url": None,
+            "discord_user_id": user.discord_user_id,
+            "discord_guild_id": current[0].discord_guild_id,
+        }
+        await send_webhook(item, json_data)

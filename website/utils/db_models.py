@@ -1115,3 +1115,12 @@ class Purchase:
         assert v
         self._item = v
         return v
+
+    async def fetch_user(self, db: vbu.Database) -> User:
+        """
+        Fetch the user associated with a purchase.
+        """
+
+        v = await User.fetch(db, id=self.user_id)
+        assert v
+        return v

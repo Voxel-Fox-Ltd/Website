@@ -332,29 +332,6 @@ async def checkout_processor(
         else:
             log.warning(f"Line item not found for {purchased!r}")
 
-    # Throw all the relevant data to the specified webhook if this is the
-    # first checkout
-    if event_type in ["checkout.session.completed", "charge.refunded"]:
-        for item in items:
-            if not item.webhook:
-                continue
-            json_data = {
-                "product_name": item.name,
-                "quantity": item.purchased_quantity,
-                "refund": event_type == "charge.refunded",
-                "subscription": item.subscription,
-                **all_metadata,
-                "subscription_expiry_time": None,
-                "source": "Stripe",
-                "subscription_delete_url": None,
-            }
-            if data.get("subscription"):
-                data = cast(types.CheckoutSession, data)
-                json_data["subscription_delete_url"] = (
-                    f"{STRIPE_BASE}/subscriptions/{data['subscription']}"
-                )
-            asyncio.create_task(send_webhook(item, json_data))
-
     # And log the transaction
     subscription_id: str | None = None
     subscription_cancel_url: str | None = None
@@ -377,7 +354,8 @@ async def checkout_processor(
         for i in items:
             if event_type != "charge.refunded":
                 user_id: str = all_metadata["user_id"]
-                user = User(user_id)
+                user = await User.fetch(db, id=user_id)
+                assert user
                 current = None
                 if subscription_id:
                     current = await Purchase.fetch_by_identifier(db, subscription_id)
@@ -388,7 +366,7 @@ async def checkout_processor(
                     )
                 if current:
                     continue  # Subscription already stored
-                await Purchase.create(
+                current = await Purchase.create(
                     db,
                     user=user,
                     product=i,
@@ -407,6 +385,26 @@ async def checkout_processor(
                 if current is None:
                     continue
                 await current.delete(db)
+                user = await current.fetch_user(db)
+
+            json_data = {
+                "product_name": i.name,
+                "quantity": i.purchased_quantity,
+                "refund": event_type == "charge.refunded",
+                "subscription": i.subscription,
+                **all_metadata,
+                "subscription_expiry_time": None,
+                "source": "Stripe",
+                "subscription_delete_url": None,
+                "discord_user_id": user.discord_user_id,
+                "discord_guild_id": current.discord_guild_id,
+            }
+            if data.get("subscription"):
+                data = cast(types.CheckoutSession, data)
+                json_data["subscription_delete_url"] = (
+                    f"{STRIPE_BASE}/subscriptions/{data['subscription']}"
+                )
+            asyncio.create_task(send_webhook(i, json_data))
 
 
 async def set_customer_metadata(
@@ -483,25 +481,12 @@ async def subscription_deleted(
         **customer_data["metadata"],
         **subscription_item["metadata"],
     }
-    user_id = all_metadata["user_id"]
-    user = User(user_id)
-
-    # Throw our relevant data at the webhook
-    json_data = {
-        "product_name": item.name,
-        "quantity": item.quantity,
-        "refund": False,
-        "subscription": True,
-        **all_metadata,
-        "subscription_expiry_time": subscription_expiry_time,
-        "source": "Stripe",
-        "subscription_delete_url": None,
-    }
-    if item.webhook:
-        asyncio.create_task(send_webhook(item, json_data))
 
     # And log the transaction
     async with vbu.Database() as db:
+        user_id = all_metadata["user_id"]
+        user = await User.fetch(db, id=user_id)
+        assert user
         current = await Purchase.fetch_by_user(
             db,
             user,
@@ -514,3 +499,17 @@ async def subscription_deleted(
             db,
             expiry_time=dt.fromtimestamp(subscription_expiry_time),
         )
+
+        json_data = {
+            "product_name": item.name,
+            "quantity": item.quantity,
+            "refund": False,
+            "subscription": True,
+            **all_metadata,
+            "subscription_expiry_time": subscription_expiry_time,
+            "source": "Stripe",
+            "subscription_delete_url": None,
+            "discord_user_id": user.discord_user_id,
+            "discord_guild_id": current[0].discord_guild_id,
+        }
+        asyncio.create_task(send_webhook(item, json_data))
