@@ -280,7 +280,7 @@ async def checkout_processor(
             resp = await session.get(url, auth=auth, headers=headers)
             invoice_object = await resp.json()
             log.info(f"Invoice object: {json.dumps(invoice_object)}")
-            line_items_object = invoice_object['lines']
+            line_items_object = invoice_object["lines"]
     elif data["object"] == "checkout.session":
         data = cast(types.CheckoutSession, data)
         log.info(f"Getting items from an checkout session {data['id']}")
@@ -290,6 +290,18 @@ async def checkout_processor(
             session_object = await resp.json()
             log.info(f"Session object: {json.dumps(session_object)}")
             line_items_object = session_object
+    elif data["object"] == "charge":
+        data = cast(types.CheckoutSession, data)
+        log.info(f"Getting items from a charge {data['id']}")
+        async with aiohttp.ClientSession() as session:
+            url = (
+                f"{STRIPE_BASE}/payment_intents/{data['id']}?"
+                "expand[]=invoice"
+            )
+            resp = await session.get(url, auth=auth, headers=headers)
+            session_object = await resp.json()
+            log.info(f"Charge object: {json.dumps(session_object)}")
+            line_items_object = session_object["invoice"]["lines"]
     else:
         log.critical(f"Failed to get line items for purchase ({data['object']}).")
         return
