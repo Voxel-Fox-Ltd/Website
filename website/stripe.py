@@ -292,10 +292,10 @@ async def checkout_processor(
             line_items_object = session_object
     elif data["object"] == "charge":
         data = cast(types.CheckoutSession, data)
-        log.info(f"Getting items from a charge {data['id']}")
+        log.info(f"Getting items from a charge {data['id']} via payment intent {data['payment_intent']}")
         async with aiohttp.ClientSession() as session:
             url = (
-                f"{STRIPE_BASE}/payment_intents/{data['id']}?"
+                f"{STRIPE_BASE}/payment_intents/{data['payment_intent']}?"
                 "expand[]=invoice"
             )
             resp = await session.get(url, auth=auth, headers=headers)
