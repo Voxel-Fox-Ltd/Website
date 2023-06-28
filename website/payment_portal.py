@@ -71,7 +71,8 @@ async def index(request: Request):
     # Add item objects to the purchases
     for i in current_items or []:
         i._item = item_ids[i.product_id]
-        items.remove(i._item)
+        if not i._item.multiple:
+            items.remove(i._item)
 
     # If there aren't any items then let's just redirect back to the index
     if not items:
