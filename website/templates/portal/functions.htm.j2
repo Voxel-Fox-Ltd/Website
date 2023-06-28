@@ -7,7 +7,7 @@
 <div
     class="item{% if disabled %} disabled{% endif %}"
     data-id="{{ item.id }}"
-    data-order="{{ item.order }}" >
+    style="order: {{ item.order }};" >
   <p class="name">
     {{ item.name }}
     {% if purchase and purchase.discord_guild_id %}

@@ -56,6 +56,9 @@ p {
     border-width: 0 0 0.2em 0.2em;
     border-radius: 0 0 0 1.2em;
     padding: 0 1em 1em 1em;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
 }
 
 .item {
