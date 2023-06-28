@@ -335,7 +335,7 @@ async def checkout_processor(
     # And log the transaction
     subscription_id: str | None = None
     subscription_cancel_url: str | None = None
-    if "subscription" in data:
+    if "subscription" in data and data["subscription"]:  # pyright: ignore
         data = cast(types.CheckoutSession, data)
         subscription_cancel_url = (
             f"{STRIPE_BASE}/subscriptions/"
@@ -365,7 +365,8 @@ async def checkout_processor(
                         discord_guild_id=all_metadata.get("discord_guild_id"),
                     )
                 if current:
-                    continue  # Subscription already stored
+                    log.info("Ignoring purchase that is already stored.")
+                    continue  # Already stored
                 current = await Purchase.create(
                     db,
                     user=user,
@@ -383,6 +384,7 @@ async def checkout_processor(
                     data["refunds"]["data"][0]["charge"],
                 )
                 if current is None:
+                    log.info("Cannot delete item that is not currently stored.")
                     continue
                 await current.delete(db)
                 user = await current.fetch_user(db)
