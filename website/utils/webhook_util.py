@@ -23,6 +23,7 @@ async def send_webhook(
     """
 
     if not item.webhook:
+        log.info(f"No webhook found for item {item} {data}")
         return
     headers = {"Authorization": item.webhook_auth}
     url = item.webhook

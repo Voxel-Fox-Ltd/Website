@@ -291,7 +291,7 @@ async def checkout_processor(
             log.info(f"Session object: {json.dumps(session_object)}")
             line_items_object = session_object
     else:
-        log.critical("Failed to get line items for purchase.")
+        log.critical(f"Failed to get line items for purchase ({data['object']}).")
         return
     line_items: list[types.InvoiceLineItem | types.CheckoutSessionLineItem]
     line_items = line_items_object["data"]
