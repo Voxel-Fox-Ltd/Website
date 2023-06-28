@@ -8,14 +8,14 @@
 <div id="current-items">
   <h1 class="title">Your Purchases</h1>
   <div class="items">
-    {% if current_items is none %}
+    {% if user_purchases is none %}
       <form>
         <input type="hidden" name="login" />
         <button class="button">Login to see your purchases</button>
       </form>
     {% else %}
-      {% if current_items %}
-        {% for purchase in current_items %}
+      {% if user_purchases %}
+        {% for purchase in user_purchases %}
           {{ display_item(purchase._item, purchase) }}
         {% endfor %}
       {% else %}
@@ -28,7 +28,7 @@
 <div id="purchase-items">
   <h1 class="title">Available for Purchase</h1>
   <div class="items">
-    {% for item in purchase_items %}
+    {% for item in available_items %}
       {% if item in unavailable_items %}
         {{ display_item(item, disabled=true) }}
       {% else %}

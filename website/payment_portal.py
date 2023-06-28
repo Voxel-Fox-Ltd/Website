@@ -45,53 +45,55 @@ async def index(request: Request):
             """,
             request.match_info["group"],
         )
-        items = [
+        available_items = [
             CheckoutItem.from_row(row)
             for row in item_rows
         ]
-        for i in items:
+        for i in available_items:
             await i.fetch_user(db)
-        item_ids = {i.id: i for i in items}
+        item_ids = {i.id: i for i in available_items}
 
         # Get the user's purchase history
-        current_items: list[Purchase] | None = None
+        user_purchases: list[Purchase] | None = None
         if "id" in session:
             user = await User.fetch(db, id=session["id"])
             assert user
-            item_ids = {i.id: i for i in items}
-            current_items = [
+            item_ids = {i.id: i for i in available_items}
+            user_purchases = [
                 i for i in await Purchase.fetch_by_user(db, user)
                 if i.product_id in item_ids
             ]
 
     # Get the prices for all available items
-    for i in items:
+    for i in available_items:
         await i.fetch_price(request.app['config']['stripe_api_key'])
 
     # Add item objects to the purchases
-    for i in current_items or []:
+    for i in user_purchases or []:
         i._item = item_ids[i.product_id]
         if not i._item.multiple:
-            items.remove(i._item)
+            available_items.remove(i._item)
 
     # If there aren't any items then let's just redirect back to the index
-    if not items:
+    if not available_items:
         return HTTPFound("/")
 
     # Work out what we have unabailable
     unavailable_items: set[CheckoutItem] = set()
-    for i in current_items or []:
+    for i in user_purchases or []:
         assert i._item
-        for p in items:
+        if i._item.multiple:
+            continue
+        for p in available_items:
             if p.base_product_id == i._item.base_product_id: # and i._item > p:
                 unavailable_items.add(p)
 
     # Render the template
     v = {
         "logged_in": session.get("id") is not None,
-        "purchase_items": items,  # things that are available
+        "available_items": available_items,
         "unavailable_items": unavailable_items,
-        "current_items": current_items,  # things they have purchased
+        "user_purchases": user_purchases,
     }
     return v
 
