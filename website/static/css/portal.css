@@ -78,9 +78,9 @@ p {
     display: none;
 }
 
-.item:last-of-type {
+/*.item:last-of-type {
     margin: 0;
-}
+}*/
 
 .item .name {
     font-size: 2em;
