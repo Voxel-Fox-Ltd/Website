@@ -139,7 +139,8 @@ async def purchase(request: Request):
             )
             if purchase_rows:
                 session["login_message"] = (
-                    "This product has already been purchased for that guild."
+                    "{} has already been purchased for guild {}."
+                    .format(item.name, guild_id)
                 )
                 session["redirect_on_login"] = f"/portal/{item.product_group}"
                 return HTTPFound("/login")
