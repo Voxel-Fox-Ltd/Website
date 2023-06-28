@@ -259,20 +259,6 @@ async def charge_captured(request: Request, data: types.IPNMessage):
                 i.quantity = p['quantity']
                 break  # Only break out of the inner loop
 
-    # And send a POST request for each of the items
-    for item in items:
-        json_data = {
-            "product_name": item.name,
-            "quantity": item.quantity,
-            "refund": refunded,
-            "subscription": False,
-            **metadata,
-            "subscription_expiry_time": None,
-            "source": "PayPal",
-            "subscription_delete_url": None,
-        }
-        await send_webhook(item, json_data)
-
     # Add these transactions to the database
     async with vbu.Database() as db:
         for i in items:
@@ -286,6 +272,7 @@ async def charge_captured(request: Request, data: types.IPNMessage):
                     db,
                     discord_user_id=metadata.get("discord_user_id"),
                 )
+
             if refunded:
                 current = await Purchase.fetch_by_user(
                     db, user, i,
@@ -299,7 +286,25 @@ async def charge_captured(request: Request, data: types.IPNMessage):
                     db, user, i,
                     discord_guild_id=metadata.get('discord_guild_id'),
                     identifier=data.get('txn_id'),
+                    # cancel_url=(
+                    #     ""
+                    #     if "recurring_payment_id" in data
+                    #     else None
+                    # ),
                 )
+
+            json_data = {
+                "product_name": i.name,
+                "quantity": i.quantity,
+                "refund": refunded,
+                "subscription": False,
+                **metadata,
+                "subscription_expiry_time": None,
+                "source": "PayPal",
+                "subscription_delete_url": None,
+                "discord_user_id": user.discord_user_id,
+            }
+            await send_webhook(i, json_data)
 
 
 async def subscription_created(request: Request, data: types.IPNMessage):
