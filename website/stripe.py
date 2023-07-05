@@ -346,13 +346,8 @@ async def checkout_processor(
 
     # And log the transaction
     subscription_id: str | None = None
-    subscription_cancel_url: str | None = None
     if "subscription" in data and data["subscription"]:  # pyright: ignore
         data = cast(types.CheckoutSession, data)
-        subscription_cancel_url = (
-            f"{STRIPE_BASE}/subscriptions/"
-            f"{data['subscription']}"
-        )
         subscription_id = data["subscription"]
     else:
         for i in line_items:
@@ -385,7 +380,10 @@ async def checkout_processor(
                     product=i,
                     discord_guild_id=all_metadata.get('discord_guild_id'),
                     expiry_time=None,
-                    cancel_url=subscription_cancel_url,
+                    cancel_url=(
+                        f"{STRIPE_BASE}/subscriptions/{subscription_id}"
+                        if subscription_id else None
+                    ),
                     identifier=subscription_id or data["id"],
                     quantity=i.purchased_quantity,
                 )
