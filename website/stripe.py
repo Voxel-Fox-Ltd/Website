@@ -360,7 +360,10 @@ async def checkout_processor(
     async with vbu.Database() as db:
         for i in items:
             if event_type != "charge.refunded":
-                user_id: str = all_metadata["user_id"]
+                try:
+                    user_id: str = all_metadata["user_id"]
+                except KeyError:
+                    continue  # No user ID in charge
                 user = await User.fetch(db, id=user_id)
                 assert user
                 current = None
