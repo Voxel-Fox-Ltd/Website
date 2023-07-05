@@ -50,8 +50,8 @@
 
     --door-indicator-width: 2000px;
 
-    --table-width: calc(8 * var(--calc-ft-to-px));
-    --table-length: 5000px;
+    --floor-display-width: calc(8 * var(--calc-ft-to-px));
+    --floor-display-length: 5000px;
 
     --floor-colour: #deb887;
     --wood-colour: #8d7556;
@@ -95,6 +95,10 @@ body {
         -1px 1px 1000px black,
         1px -1px 1000px black,
         -1px -1px 1000px black;
+}
+.draggable {
+    box-sizing: border-box;
+    border-bottom: 400px solid black;
 }
 .draggable:hover {
     cursor: grab;
@@ -186,14 +190,27 @@ body {
         + (0.5 * var(--calc-m-to-px))
     );
     z-index: 100;
+    background: lightblue;
 }
 
 
-.table {
-    height: var(--table-length);
-    width: var(--table-width);
+.floor-display {
+    height: var(--floor-display-length);
+    width: var(--floor-display-width);
     z-index: 100;
     background: var(--table-colour);
+}
+.chair {
+    width: calc(0.55 * var(--calc-m-to-px));
+    height: calc(0.63 * var(--calc-m-to-px));
+    z-index: 100;
+    background: beige;
+}
+.sofa {
+    width: calc(1.85 * var(--calc-m-to-px));
+    height: calc(1.00 * var(--calc-m-to-px));
+    z-index: 100;
+    background: beige;
 }
 </style>
 
@@ -210,20 +227,29 @@ body {
         <div class="vertical-centre"></div>
     </div>
 
-    <div id="false-wall" class="item" data-label="False wall"></div>
+    <div id="false-wall" class="item" data-label="Banksy Wall"></div>
 
-    <div class="item table draggable" data-name="urban-1" data-label="Display"></div>
-    <div class="item table draggable" data-name="urban-2" data-label="Display"></div>
-    <div class="item table draggable" data-name="urban-3" data-label="Display"></div>
-    <div class="item table draggable" data-name="urban-4" data-label="Display"></div>
-    <div class="item table draggable" data-name="urban-5" data-label="Display"></div>
-    <div class="item table draggable" data-name="urban-6" data-label="Display"></div>
+    <div class="item floor-display draggable" data-name="urban-1" data-label="Display 1"></div>
+    <div class="item floor-display draggable" data-name="urban-2" data-label="Display 2"></div>
+    <div class="item floor-display draggable" data-name="urban-3" data-label="Display 3"></div>
+    <div class="item floor-display draggable" data-name="urban-4" data-label="Display 4"></div>
+    <div class="item floor-display draggable" data-name="urban-5" data-label="Display 5"></div>
+    <div class="item floor-display draggable" data-name="urban-6" data-label="Display 6"></div>
+    <div class="item chair draggable" data-name="chair-1" data-label="Chair"></div>
+    <div class="item chair draggable" data-name="chair-2" data-label="Chair"></div>
+    <div class="item chair draggable" data-name="chair-3" data-label="Chair"></div>
+    <div class="item chair draggable" data-name="chair-4" data-label="Chair"></div>
+    <div class="item chair draggable" data-name="chair-5" data-label="Chair"></div>
+    <div class="item sofa draggable" data-name="chair-6" data-label="Sofa"></div>
 </div>
 
 
 <script>
 // Because I insisted on a dumb scale
 const ZOOM_LEVEL = 24 / 3500;
+
+// No accidental draggings
+var SHIFT_HELD = false;
 
 
 function setHash() {
@@ -273,12 +299,14 @@ for(let i of document.querySelectorAll(".draggable")) {
 
     // When an item is clicked, say it's clicked
     i.addEventListener("mousedown", (event) => {
+        if(!event.shiftKey) return;
         event.target.classList.add("being-dragged");
         console.log(`Starting coords are (${event.target.style.left}, ${event.target.style.top})`);
     })
 
     // Rotation support
     i.addEventListener("wheel", (event) => {
+        if(!event.shiftKey) return;
         target = event.target;
         currentRotation = parseFloat(target.style.transform.match(/\d+/)[0])
         newRotation = currentRotation + (15 * (event.deltaY < 0 ? 1 : -1));
@@ -300,6 +328,7 @@ for(let i of document.querySelectorAll(".draggable")) {
 document.addEventListener("mousemove", (event) => {
 
     // Make sure we're actually clicking something
+    if(!event.shiftKey) return;
     if(event.buttons != 1) return;
     target = document.querySelector(".being-dragged");
     if(target === null) return;
