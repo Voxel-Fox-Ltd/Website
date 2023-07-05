@@ -292,7 +292,7 @@ class PointsReward {
             },
         );
         if(!site.ok) return;
-        let json = site.json();
+        let json = await site.json();
         document.querySelector(`.sound[data-id="${json.data[0].id}"] input[name="enabled"]`).checked = json.data[0]["is_enabled"];
     }
 
