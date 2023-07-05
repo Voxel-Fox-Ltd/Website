@@ -98,6 +98,20 @@ ul {
     gap: 0.8em;
 }
 
+.project-date {
+    filter: opacity(0.6);
+    font-size: 0.7em;
+}
+
+.project-date:before {
+    content: "\a(";
+    white-space: pre;
+}
+
+.project-date:after {
+    content: ")";
+}
+
 a,
 a:visited {
     padding: 0 10px;
