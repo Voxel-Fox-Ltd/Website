@@ -25,19 +25,23 @@ icon {
     -moz-osx-font-smoothing: grayscale;
 }
 
-icon[node]:before {content: "\e907";}
-icon[css3]:before {content: "\e908";}
-icon[postgres]:before {content: "\e909";}
 icon[html5]:before {content: "\e90a";}
+icon[css3]:before {content: "\e908";}
 icon[javascript]:before {content: "\e90b";}
+
+icon[postgres]:before {content: "\e909";}
+
+icon[node]:before {content: "\e907";}
 icon[python]:before {content: "\e90c";}
-icon[mastodon]:before {content: "\e905";}
-icon[discord]:before {content: "\e904";}
+
 icon[banknote]:before {content: "\e901";}
-icon[at]:before {content: "\e900";}
 icon[computer]:before {content: "\e956";}
 icon[link]:before {content: "\e9cb";}
 icon[terminal]:before {content: "\ea81";}
+
+icon[mastodon]:before {content: "\e905";}
+icon[discord]:before {content: "\e904";}
+icon[at]:before {content: "\e900";}
 icon[twitter]:before {content: "\ea96";}
 icon[youtube]:before {content: "\e906";}
 icon[twitch]:before {content: "\e902";}
