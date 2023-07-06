@@ -86,6 +86,18 @@ ul {
     text-align: center;
 }
 
+.project-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 2em;
+}
+
+.project-list p {
+  width: 15em;
+  margin: 0;
+}
+
 .project .links {
     display: block;
     margin-top: 10px;
