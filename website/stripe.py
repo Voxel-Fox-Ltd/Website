@@ -109,7 +109,16 @@ async def create_checkout_session(request: Request):
         "metadata": post_data,
     }
     if item.subscription:
-        json_data.update({"subscription_data": {"metadata": post_data}})
+        json_data.update({
+            "subscription_data": {"metadata": post_data},
+        })
+    else:
+        json_data.update({
+            "invoice_creation": {
+                "enabled": True,
+                "invoice_data": {"metadata": post_data},
+            },
+        })
 
     # Send some data to Stripe
     async with aiohttp.ClientSession() as session:
