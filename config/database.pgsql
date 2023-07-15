@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS users(
     google_user_id TEXT UNIQUE,
     google_refresh_token TEXT,
     facebook_user_id TEXT UNIQUE,
-    facebook_refresh_token TEXT
+    facebook_refresh_token TEXT,
+    stripe_customer_id TEXT UNIQUE
 );
 
 

@@ -39,6 +39,7 @@ class User:
     google_refresh_token : str | None
     facebook_user_id : str | None
     facebook_refresh_token : str | None
+    stripe_customer_id : str | None
     """
 
     __slots__ = (
@@ -49,6 +50,7 @@ class User:
         'google_refresh_token',
         'facebook_user_id',
         'facebook_refresh_token',
+        'stripe_customer_id',
     )
 
     def __init__(
@@ -60,7 +62,8 @@ class User:
             google_user_id: str | None = None,
             google_refresh_token: str | None = None,
             facebook_user_id: str | None = None,
-            facebook_refresh_token: str | None = None):
+            facebook_refresh_token: str | None = None,
+            stripe_customer_id: str | None = None):
         self._id = id
         self.discord_user_id = discord_user_id
         self.discord_refresh_token = discord_refresh_token
@@ -68,6 +71,7 @@ class User:
         self.google_refresh_token = google_refresh_token
         self.facebook_user_id = facebook_user_id
         self.facebook_refresh_token = facebook_refresh_token
+        self.stripe_customer_id = stripe_customer_id
 
     @classmethod
     def from_row(cls, row: dict[str, Any]):
@@ -79,6 +83,7 @@ class User:
             google_refresh_token=row.get("google_refresh_token"),
             facebook_user_id=row.get("facebook_user_id"),
             facebook_refresh_token=row.get("facebook_refresh_token"),
+            stripe_customer_id=row.get("stripe_customer_id"),
         )
 
     @property
@@ -93,7 +98,8 @@ class User:
             id: str | None = None,
             discord_user_id: str | None = None,
             google_user_id: str | None = None,
-            facebook_user_id: str | None = None) -> Self | None:
+            facebook_user_id: str | None = None,
+            stripe_customer_id: str | None = None) -> Self | None:
         """
         Fetch a user from the database.
 
@@ -127,6 +133,8 @@ class User:
             google_user_id = str(google_user_id)
         if facebook_user_id is not None:
             facebook_user_id = str(facebook_user_id)
+        if stripe_customer_id is not None:
+            stripe_customer_id = str(stripe_customer_id)
 
         # Build our query
         query: str
@@ -138,6 +146,8 @@ class User:
             query = "google_user_id = $1"
         elif facebook_user_id:
             query = "facebook_user_id = $1"
+        elif stripe_customer_id:
+            query = "stripe_customer_id = $1"
         else:
             raise ValueError("Missing query")
 
@@ -149,6 +159,7 @@ class User:
                 or discord_user_id
                 or google_user_id
                 or facebook_user_id
+                or stripe_customer_id
             ),
         )
         if not rows:
@@ -162,7 +173,8 @@ class User:
             *,
             discord_user_id: str | None = None,
             google_user_id: str | None = None,
-            facebook_user_id: str | None = None) -> Self:
+            facebook_user_id: str | None = None,
+            stripe_customer_id: str | None = None) -> Self:
         """
         Create a new user.
         """
@@ -174,7 +186,8 @@ class User:
                 (
                     discord_user_id,
                     google_user_id,
-                    facebook_user_id
+                    facebook_user_id,
+                    stripe_customer_id
                 )
             VALUES
                 (
@@ -187,6 +200,7 @@ class User:
             str(discord_user_id) if discord_user_id is not None else None,
             str(google_user_id) if google_user_id is not None else None,
             str(facebook_user_id) if facebook_user_id is not None else None,
+            str(stripe_customer_id) if stripe_customer_id is not None else None,
         )
         return cls.from_row(rows[0])
 

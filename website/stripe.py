@@ -80,14 +80,18 @@ async def create_checkout_session(request: Request):
     # Get the user's login details for metadata
     if "user_id" not in post_data:
         raise Exception("Missing user ID from POST request")
+    user_id = post_data["user_id"]
     if product_id is None:
         raise Exception("Missing product ID from POST request")
 
-    # Get the item data from the database
+    # Get the item and user data from the database
     async with vbu.Database() as db:
         item = await CheckoutItem.fetch(db, id=product_id)
+        user = await User.fetch(db, id=user_id)
     if item is None:
         raise Exception(f"Missing item {product_id} from database")
+    if user is None:
+        raise Exception(f"Missing user {user_id} from database")
     stripe_id: str | None = (
         item.user.stripe_id
         if item.user and item.user.stripe_id
@@ -108,6 +112,8 @@ async def create_checkout_session(request: Request):
         ],
         "metadata": post_data,
     }
+    if user.stripe_customer_id:
+        json_data["customer"] = user.stripe_customer_id
     if item.subscription:
         json_data.update({
             "subscription_data": {"metadata": post_data},
@@ -143,11 +149,19 @@ async def create_checkout_session(request: Request):
 
     # And while we're here, add a User ID to the customer's metadata
     if response["customer"]:
-        await set_customer_metadata(
-            request,
-            customer_id=response["customer"],
-            metadata={"user_id": post_data["user_id"]},
-            stripe_account_id=stripe_id,
+        asyncio.create_task(
+            set_customer_metadata(
+                request,
+                customer_id=response["customer"],
+                metadata={"user_id": user.id},
+                stripe_account_id=stripe_id,
+            )
+        )
+        asyncio.create_task(
+            vbu.Database.pool.execute(  # pyright: ignore  # Postgres :kaeShrug:
+                """UPDATE users SET stripe_customer_id = $2 WHERE id = $1""",
+                user.id, response["customer"],
+            )
         )
 
     # And return the session ID
