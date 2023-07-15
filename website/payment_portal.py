@@ -69,6 +69,15 @@ async def index(request: Request):
     for i in available_items:
         await i.fetch_price(request.app['config']['stripe_api_key'])
 
+    # Filter out stuff that's expired
+    user_purchases = [
+        i for i in user_purchases
+        if (
+            i.expiry_time is None  # no expiry
+            or i.expiry_time > dt.utcnow()  # expires in the future
+        )
+    ]
+
     # Add item objects to the purchases
     for i in user_purchases:
         i._item = item_ids[i.product_id]
@@ -78,15 +87,6 @@ async def index(request: Request):
     # If there aren't any items then let's just redirect back to the index
     if not available_items:
         return HTTPFound("/")
-
-    # Filter out stuff that's expired
-    user_purchases = [
-        i for i in user_purchases
-        if (
-            i.expiry_time is None  # no expiry
-            or i.expiry_time > dt.utcnow()  # expires in the future
-        )
-    ]
 
     # Work out what we have unabailable
     unavailable_items: set[CheckoutItem] = set()
