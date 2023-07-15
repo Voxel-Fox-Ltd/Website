@@ -1,5 +1,6 @@
 import uuid
 from typing import Optional
+from datetime import datetime as dt
 
 from aiohttp.web import (
     HTTPFound,
@@ -54,7 +55,7 @@ async def index(request: Request):
         item_ids = {i.id: i for i in available_items}
 
         # Get the user's purchase history
-        user_purchases: list[Purchase] | None = None
+        user_purchases: list[Purchase] = []
         if "id" in session:
             user = await User.fetch(db, id=session["id"])
             assert user
@@ -69,7 +70,7 @@ async def index(request: Request):
         await i.fetch_price(request.app['config']['stripe_api_key'])
 
     # Add item objects to the purchases
-    for i in user_purchases or []:
+    for i in user_purchases:
         i._item = item_ids[i.product_id]
         if not i._item.multiple:
             available_items.remove(i._item)
@@ -78,9 +79,18 @@ async def index(request: Request):
     if not available_items:
         return HTTPFound("/")
 
+    # Filter out stuff that's expired
+    user_purchases = [
+        i for i in user_purchases
+        if (
+            i.expiry_time is None  # no expiry
+            or i.expiry_time > dt.utcnow()  # expires in the future
+        )
+    ]
+
     # Work out what we have unabailable
     unavailable_items: set[CheckoutItem] = set()
-    for i in user_purchases or []:
+    for i in user_purchases:
         assert i._item
         if i._item.multiple:
             continue
