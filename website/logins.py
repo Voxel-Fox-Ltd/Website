@@ -56,7 +56,6 @@ async def store_information(
         "discord",
         "google",
         "facebook",
-        "everlasting",
     ]
 
     # See if a user exists already
@@ -312,59 +311,6 @@ async def google(request: Request):
     return None
 
 
-@routes.get('/login/everlasting')
-@always_return('/login')
-async def everlasting(request: Request):
-    """
-    Process Everlasting login.
-    """
-
-    # Get the code
-    code = request.query.get("access_token")
-    if not code:
-        return HTTPFound(location="/login")
-
-    # Build the JSON response
-    everlasting_config = request.app['config']['oauth']['everlasting']
-    data = {
-        "grant_type": "access_token",
-        "access_token": code,
-        "api_key": everlasting_config['api_key'],
-    }
-    headers = {
-        "User-Agent": "VoxelFox.co.uk Login Processor (kae@voxelfox.co.uk)",
-    }
-
-    # Perform our web requests
-    async with aiohttp.ClientSession() as s:
-
-        # Use code to get a token
-        url = "https://everlastingservers.companion.repl.co/auth/verify"
-        r = await s.post(url, data=data, headers=headers)
-        try:
-            token_json = await r.json(content_type=None)  # don't verify mimetype
-        except Exception:
-            token_text = await r.text()
-            log.error(f"Failed to parse Everlasting JSON - {token_text}")
-            return None
-        if token_json.get("valid", False) is False:
-            log.error(f"Failed to validate Everlasting token - {token_json}")
-            return None
-        log.info("Got Everlasting token information %s" % dump(token_json))
-
-    # Store the data in database
-    storage = await aiohttp_session.get_session(request)
-    async with vbu.Database() as db:
-        await store_information(
-            db,
-            storage,
-            'everlasting',
-            token_json['id'],
-            "UNUSED",
-        )
-    return None
-
-
 @routes.get('/logout')
 async def logout(request: Request):
     """
@@ -413,15 +359,6 @@ async def login(request: Request):
         })
     )
 
-    # Build Everlasting Auth URL
-    # everlasting_config = request.app['config']['oauth']['everlasting']
-    everlasting_url = (
-        "https://everlastingservers.companion.repl.co/auth/login?"
-        + urlencode({
-            "redirect_uri": base_url + "/login/everlasting",
-        })
-    )
-
     # Return auth URLs
     return {
         "session": session,
@@ -429,7 +366,6 @@ async def login(request: Request):
 
         "discord": discord_url,
         "google": google_url,
-        "everlasting": everlasting_url,
     }
 
 
