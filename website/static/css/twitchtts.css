@@ -122,9 +122,9 @@ audio {
     justify-content: flex-start;
 }
 
-.labelled-checkbox label:after {
+/*.labelled-checkbox label:after {
     content: ":";
-}
+}*/
 
 .labelled-checkbox label {
     margin-right: 0.3em;

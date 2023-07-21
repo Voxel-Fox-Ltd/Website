@@ -101,12 +101,14 @@
     </div>  <!-- Hide sound stuff -->
 
     <div class="labelled-checkbox">
-      <label for="sound-redeems-enabled">Rewards WS Enabled</label>
-      <input
-        id="sound-redeems-enabled"
-        type="checkbox"
-        name="sound-redeems-enabled"
-        onchange="javascript:saveInputs();" />
+      <label>
+        Rewards WS Enabled
+        <input
+          id="sound-redeems-enabled"
+          type="checkbox"
+          name="sound-redeems-enabled"
+          onchange="javascript:saveInputs();" />
+      </label>
     </div>
     <div id="modify-all-point-rewards">
       <button onclick="javascript:modifyAllRewards(true)" disabled>Enable selected</button>
@@ -117,16 +119,20 @@
       <div class="sound boxed mb" data-id="" data-name="{{ name }}">
         <p>Name: <span style="font-weight: bold;">{{ name }}</span></p>
         <div class="labelled-checkbox">
-          <label>Enabled on Twitch</label>
-          <input type="checkbox" name="enabled" checked disabled />
+          <label>
+            Enabled on Twitch
+            <input type="checkbox" name="enabled" checked disabled />
+          </label>
         </div>
         <div class="labelled-checkbox">
-          <label>Selected</label>
-          <input
-              type="checkbox"
-              name="managed"
-              onchange="javascript:saveInputs();"
-              checked />
+          <label>
+            Selected
+            <input
+                type="checkbox"
+                name="managed"
+                onchange="javascript:saveInputs();"
+                checked />
+          </label>
         </div>
         <div>
           <audio src="{{ url }}"></audio>
