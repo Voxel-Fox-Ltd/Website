@@ -109,8 +109,8 @@
         onchange="javascript:saveInputs();" />
     </div>
     <div id="modify-all-point-rewards">
-      <button onclick="javascript:modifyAllRewards(true)" disabled>Enable all redeems</button>
-      <button onclick="javascript:modifyAllRewards(false)" disabled>Disable all redeems</button>
+      <button onclick="javascript:modifyAllRewards(true)" disabled>Enable selected</button>
+      <button onclick="javascript:modifyAllRewards(false)" disabled>Disable selected</button>
     </div>
 
     {% macro create_sound(name, url) %}
@@ -121,8 +121,12 @@
           <input type="checkbox" name="enabled" checked disabled />
         </div>
         <div class="labelled-checkbox">
-          <label>Managed</label>
-          <input type="checkbox" name="managed" checked />
+          <label>Selected</label>
+          <input
+              type="checkbox"
+              name="managed"
+              onchange="javascript:saveInputs();"
+              checked />
         </div>
         <div>
           <audio src="{{ url }}"></audio>
