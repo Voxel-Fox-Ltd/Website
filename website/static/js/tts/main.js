@@ -22,6 +22,7 @@ async function connectTTS() {
         if(pubsub === null) {
             pubsub = new TwitchPubSub(accessToken, irc.userId, CLIENT_ID);
             pubsub.connect();
+            for(let b of document.querySelectorAll("#modify-all-point-rewards button")) b.disabled = false;
         }
     }
     else {
@@ -29,6 +30,7 @@ async function connectTTS() {
         pubsub.close();
         document.querySelector(`[name="connect"]`).disabled = false;
         document.querySelector(`#login-button`).disabled = false;
+        for(let b of document.querySelectorAll("#modify-all-point-rewards button")) b.disabled = true;
         irc = null;
         pubsub = null;
     }
@@ -63,13 +65,12 @@ async function modifyAllRewards(enable) {
             id: i.dataset.id,
             broadcaster_id: pubsub.userId,
         });
+        if(!i.querySelector("input[name=managed]").checked) continue;
         if(enable) {
-            if(i.querySelector("input[name='enabled']").checked) continue;
-            await r.enable(pubsub.clientId, pubsub.token);
+            await r.enable(pubsub.clientId, pubsub.token)
         }
         else {
-            if(!i.querySelector("input[name='enabled']").checked) continue;
-            await r.disable(pubsub.clientId, pubsub.token);
+            await r.disable(pubsub.clientId, pubsub.token)
         }
     }
     for(let i of document.querySelectorAll("#modify-all-point-rewards button")) i.disabled = false;

@@ -89,7 +89,7 @@ function serializeSoundRedeems() {
     let sounds = document.querySelectorAll(".sound")
     let selected = {};
     for(let soundNode of sounds) {
-        selected[soundNode.dataset.name] = sounds.querySelector("[name=enabled]").checked;
+        selected[soundNode.dataset.name] = soundNode.querySelector("[name=managed]").checked;
     }
     return JSON.stringify(selected);
 }
@@ -148,7 +148,7 @@ function loadInputs() {
     let sounds = JSON.parse(localStorage.getItem("soundRedeems"));
     if(sounds) {
         for(let name in sounds) {
-            document.querySelector(`.sound[data-name="${name}"] input[name=enabled]`).checked = sounds[name];
+            document.querySelector(`.sound[data-name="${name}"] input[name=managed]`).checked = sounds[name];
         }
     }
 }
