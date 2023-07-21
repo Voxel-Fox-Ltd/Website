@@ -83,6 +83,19 @@ function serializeVoiceOverrides() {
 
 
 /**
+ * Serialize all of the enabled points rewards into a JSON string.
+ * */
+function serializeSoundRedeems() {
+    let sounds = document.querySelectorAll(".sound")
+    let selected = {};
+    for(let soundNode of sounds) {
+        selected[soundNode.dataset.name] = sounds.querySelector("[name=enabled]").checked;
+    }
+    return JSON.stringify(selected);
+}
+
+
+/**
  * Load all of the inputs from localstorage and spit them onto the page.
  * */
 const BASIC_SAVES = {
@@ -90,6 +103,12 @@ const BASIC_SAVES = {
     "ttsChannels": () => document.querySelector(`[name="connect"]`).value,
     "voiceOverrides": serializeVoiceOverrides,
     "soundRedeemsEnabled": () => document.querySelector(`[name="sound-redeems-enabled"]`).checked,
+    "soundRedeems": serializeSoundRedeems,
+}
+function saveInputs() {
+    for(let i in BASIC_SAVES) {
+        localStorage.setItem(i, BASIC_SAVES[i]());
+    }
 }
 const BASIC_LOADS = {
     '[name="at"]': () => {
@@ -102,11 +121,6 @@ const BASIC_LOADS = {
     '[name="sound-redeems-enabled"]': () => {
         return JSON.parse(localStorage.getItem(`soundRedeemsEnabled`))
     },
-}
-function saveInputs() {
-    for(let i in BASIC_SAVES) {
-        localStorage.setItem(i, BASIC_SAVES[i]());
-    }
 }
 function loadInputs() {
     for(let i in BASIC_LOADS) {
@@ -128,6 +142,14 @@ function loadInputs() {
     }
     for(let u in voices) {
         addNewVoiceOverride(u, voices[u]);
+    }
+
+    // Sound redeems
+    let sounds = JSON.parse(localStorage.getItem("soundRedeems"));
+    if(sounds) {
+        for(let name in sounds) {
+            document.querySelector(`.sound[data-name="${name}"] input[name=enabled]`).checked = sounds[name];
+        }
     }
 }
 
