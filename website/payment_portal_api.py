@@ -302,7 +302,11 @@ async def portal_check(request: Request):
         WHERE
             {0} = $1
         AND
-            expiry_time IS NULL
+            (
+                    expiry_time IS NULL
+                OR
+                    expiry_time > TIMEZONE('UTC', NOW())
+            )
         AND
             (
                     purchases.product_id = $2
