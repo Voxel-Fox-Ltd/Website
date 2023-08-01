@@ -83,7 +83,10 @@ async def index(request: Request):
     for i in (user_purchases or []):
         i._item = item_ids[i.product_id]
         if not i._item.multiple:
-            available_items.remove(i._item)
+            try:
+                available_items.remove(i._item)
+            except ValueError:
+                pass
 
     # If there aren't any items then let's just redirect back to the index
     if not available_items:
