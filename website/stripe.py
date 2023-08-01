@@ -157,12 +157,13 @@ async def create_checkout_session(request: Request):
                 stripe_account_id=stripe_id,
             )
         )
-        asyncio.create_task(
-            vbu.Database.pool.execute(  # pyright: ignore  # Postgres :kaeShrug:
-                """UPDATE users SET stripe_customer_id = $2 WHERE id = $1""",
-                user.id, response["customer"],
-            )
-        )
+        async def db_wrapper():
+            async with vbu.Database() as db:
+                await db.call(
+                    """UPDATE users SET stripe_customer_id = $2 WHERE id = $1""",
+                    user.id, response["customer"],
+                )
+        asyncio.create_task(db_wrapper())
 
     # And return the session ID
     href_url = f"https://checkout.stripe.com/pay/{response['id']}"
