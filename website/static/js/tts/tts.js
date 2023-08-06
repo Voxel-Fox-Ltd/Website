@@ -36,7 +36,7 @@ const WORD_REPLACEMENTS = [
     ["b)", "cool face"],
     ["ppl", "people"],
     ["ic", "I see"],
-    [";-;" "crying"],
+    [";-;", "crying"],
     ["im", "I'm"],
     ["em", "them"],
     ["theres", "there's"],
