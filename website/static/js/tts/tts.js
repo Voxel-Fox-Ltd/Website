@@ -22,7 +22,8 @@ const REGEX_REPLACEMENTS = [
     ["u(?:wu)+", "uwu"],
     ["^\\^+$", "Yeah, agreed!"],
     ["^</3$", ""],
-    [`kae`, "Kay"],
+    // ["kae", "Kay"],
+    [`(^|[\W\s])(kae)($|[\W\s])`, "$1Kay$2"],
 ]
 
 // Patterns that are replaced word-for-word
