@@ -129,7 +129,8 @@ const WORD_REPLACEMENTS = [
     ["smth", "something"],
     ["ily2", "i love you too"],
     ["wha", "waa"],
-    ["chatgpt", "chat GPT"],
+    // ["chatgpt", "chat GPT"],
+    ["chatgpt", "chatgăpît"],
 ]
 
 
