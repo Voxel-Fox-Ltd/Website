@@ -68,7 +68,7 @@ class TwitchMessage {
             }
 
             // Filter words that are too long
-            if(i.length >= 15) {
+            if(i.length >= 20) {
                 continue;
             }
 
