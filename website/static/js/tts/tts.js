@@ -33,7 +33,7 @@ const WORD_REPLACEMENTS = [
     ["yk", "you know"],
     ["omg", "oh my god"],
     ["btw", "by the way"],
-    ["b)", "cool face"],
+    // ["b)", "cool face"],
     ["ppl", "people"],
     ["ic", "I see"],
     [";-;", "crying"],
