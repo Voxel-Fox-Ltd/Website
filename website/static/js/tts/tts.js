@@ -23,7 +23,7 @@ const REGEX_REPLACEMENTS = [
     ["^\\^+$", "Yeah, agreed!"],
     ["^</3$", ""],
     // ["kae", "Kay"],
-    [`(^|[\W\s])(kae)($|[\W\s])`, "$1Kay$2"],
+    [`(^|[\W\s])(kae)($|[\W\s])`, "$1Kay$3"],
 ]
 
 // Patterns that are replaced word-for-word
