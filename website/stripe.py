@@ -297,14 +297,21 @@ async def checkout_processor(
     headers = {}
     if stripe_account_id:
         headers["Stripe-Account"] = stripe_account_id
+    invoice_id: str
+
+    # Get line items from an invoice
     if data["invoice"]:
         log.info(f"Getting items from an invoice {data['invoice']}")
         async with aiohttp.ClientSession() as session:
             url = f"{STRIPE_BASE}/invoices/{data['invoice']}"
             resp = await session.get(url, auth=auth, headers=headers)
             invoice_object = await resp.json()
+        invoice_object = cast(types.Invoice, invoice_object)
         log.info(f"Invoice object: {json.dumps(invoice_object)}")
         line_items_object = invoice_object["lines"]
+        invoice_id = invoice_object["id"]
+
+    # Get line items from a checkout session
     elif data["object"] == "checkout.session":
         data = cast(types.CheckoutSession, data)
         log.info(f"Getting items from an checkout session {data['id']}")
@@ -312,8 +319,12 @@ async def checkout_processor(
             url = f"{STRIPE_BASE}/checkout/sessions/{data['id']}/line_items"
             resp = await session.get(url, auth=auth, headers=headers)
             session_object = await resp.json()
+        session_object = cast(types.DataList[types.CheckoutSessionLineItem], session_object)
         log.info(f"Session object: {json.dumps(session_object)}")
         line_items_object = session_object
+        invoice_id = data["invoice"]
+
+    # Get line items from a charge
     elif data["object"] == "charge":
         data = cast(types.Charge, data)
         log.info(f"Getting items from a charge {data['id']} via payment intent {data['payment_intent']}")
@@ -324,16 +335,23 @@ async def checkout_processor(
             )
             resp = await session.get(url, auth=auth, headers=headers)
             payment_intent = await resp.json()
+        payment_intent = cast(types.PaymentIntent, payment_intent)
         log.info(f"Payment intent object: {json.dumps(payment_intent)}")
         try:
-            line_items_object = payment_intent["invoice"]["lines"]
+            invoice: types.Invoice = payment_intent["invoice"]  # pyright: ignore
+            line_items_object = invoice["lines"]
         except TypeError:
             log.info(f"Missing invoice from payment intent object {payment_intent['id']}")
             return
+        invoice_id = invoice["id"]
+
+    # Whoops we don't have anything available to get the lines from
     else:
         log.critical(f"Failed to get line items for purchase ({data['object']}).")
         return
-    line_items: list[types.InvoiceLineItem | types.CheckoutSessionLineItem]
+
+    # Cast our data as necessary
+    line_items: list[types.InvoiceLineItem] | list[types.CheckoutSessionLineItem]
     line_items = line_items_object["data"]
 
     # Grab the item from the database
@@ -395,13 +413,7 @@ async def checkout_processor(
                 user = await User.fetch(db, id=user_id)
                 assert user
                 current = None
-                if subscription_id:
-                    current = await Purchase.fetch_by_identifier(db, subscription_id)
-                else:
-                    current = await Purchase.fetch_by_user(
-                        db, user, i,
-                        discord_guild_id=all_metadata.get("discord_guild_id"),
-                    )
+                current = await Purchase.fetch_by_identifier(db, subscription_id or invoice_id)
                 if current:
                     log.info("Ignoring purchase that is already stored.")
                     continue  # Already stored
@@ -415,14 +427,14 @@ async def checkout_processor(
                         f"{STRIPE_BASE}/subscriptions/{subscription_id}"
                         if subscription_id else None
                     ),
-                    identifier=subscription_id or data["id"],
+                    identifier=subscription_id or invoice_id,
                     quantity=i.purchased_quantity,
                 )
             else:
                 data = cast(types.Charge, data)
                 current = await Purchase.fetch_by_identifier(
                     db,
-                    data["refunds"]["data"][0]["charge"],
+                    invoice_id,
                 )
                 if current is None:
                     log.info("Cannot delete item that is not currently stored.")

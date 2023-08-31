@@ -15,8 +15,10 @@ __all__ = (
     'Refund',
     'Charge',
     'CheckoutSession',
+    'Invoice',
     'InvoiceLineItem',
     'CheckoutSessionLineItem',
+    'PaymentIntent',
 )
 
 
@@ -66,7 +68,6 @@ class Plan(TypedDict):
     metadata: dict[str, Any]
 
 
-
 class Price(TypedDict):
     """The price of an item."""
     id: str
@@ -84,11 +85,9 @@ class Price(TypedDict):
     metadata: dict[str, Any]
 
 
-
 class PriceRecurring(TypedDict):
     interval: str
     interval_count: int
-
 
 
 class SubscriptionItem(TypedDict):
@@ -186,6 +185,26 @@ class CheckoutSession(TypedDict):
     url: str
 
 
+class Invoice(TypedDict):
+    id: str
+    object: Literal["invoice"]
+    auto_advance: bool
+    charge: str
+    collection_method: Literal["charge_automatically", "send_invoice"]
+    currency: str
+    customer: str
+    description: str  # "memo" in the dashboard
+    hosted_invoice_url: str
+    lines: DataList[InvoiceLineItem]
+    metadata: dict[str, str]
+    payment_intent: str
+    period_end: Timestamp
+    period_start: Timestamp
+    status: Literal["draft", "open", "paid", "uncollectible", "void"]
+    subscription: str
+    total: int
+
+
 class InvoiceLineItem(TypedDict):
     id: str
     object: Literal["line_item"]
@@ -215,3 +234,26 @@ class CheckoutSessionLineItem(TypedDict):
     description: str
     price: Price
     quantity: int
+
+
+class PaymentIntent(TypedDict):
+    id: str
+    object: Literal["payment_intent"]
+    amount: int
+    automatic_payment_methods: Unused
+    client_secret: Unused
+    currency: str
+    customer: str
+    description: str
+    last_payment_error: Unused
+    latest_charge: str
+    metadata: dict[str, str]
+    next_action: Unused
+    payment_method: str
+    receipt_email: str
+    setup_future_usage: Unused
+    shipping: Unused
+    statement_descriptor: str
+    statement_descriptor_suffix: str
+    status: Literal["requires_payment_method", "requires_confirmation", "requires_action", "processing", "requires_capture", "canceled", "succeeded"]
+    invoice: str
