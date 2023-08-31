@@ -24,9 +24,11 @@
 
 
 {% include "portal/stripe.htm.j2" %}
+{#
 {% if item.subscription %}
   {% include "portal/paypal_subscription.htm.j2" %}
 {% else %}
   {% include "portal/paypal_item.htm.j2" %}
 {% endif %}
+#}
 {% endblock main %}
