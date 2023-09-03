@@ -7,11 +7,12 @@
 <div
     class="item{% if disabled %} disabled{% endif %}"
     data-id="{{ item.id }}"
+    {% if purchase %}data-purchase-id="{{ purchase.id }}"{% endif %}
     style="order: {{ item.order }};" >
   <p class="name">
     {{ item.name }}
     {% if purchase and purchase.discord_guild_id %}
-      ({{ purchase.discord_guild_id }})
+      <span class="guild">(<span class="id">{{ purchase.discord_guild_id }}</span>)</span>
     {% endif %}
   </p>
   {% if item.description %}

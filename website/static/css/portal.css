@@ -47,6 +47,26 @@ p {
     margin-left: 1.5em;
 }
 
+#current-items button {
+    margin-left: 1em;
+    height: 2em;
+    margin-top: 0.4em;
+    font-size: 1rem;
+    width: 2em;
+}
+
+#current-items[data-empty] button {
+    display: none;
+}
+
+#current-items .hidden {
+    display: none;
+}
+
+#current-items[data-empty] .items {
+    display: inherit;
+}
+
 .button.unsubscribe {
     border-color: red;
 }

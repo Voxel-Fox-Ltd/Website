@@ -5,9 +5,12 @@
 {% block main %}
 {% include "portal/preamble.htm.j2" %}
 
-<div id="current-items">
-  <h1 class="title">Your Purchases</h1>
-  <div class="items">
+<div id="current-items" data-empty="">
+  <div style="display: flex;">
+    <h1 class="title">Your Purchases</h1>
+    <button onclick="toggleShownCurrent();">&darr;</button>
+  </div>
+  <div class="items hidden">
     {% if user_purchases is none %}
       <form>
         <input type="hidden" name="login" />
@@ -18,6 +21,10 @@
         {% for purchase in user_purchases %}
           {{ display_item(purchase._item, purchase) }}
         {% endfor %}
+        <script>
+          items = document.querySelector("#current-items");
+          items.removeAttribute("data-empty");
+        </script>
       {% else %}
         <p>No items purchased.</p>
       {% endif %}
@@ -52,6 +59,16 @@
 dayjs.extend(dayjs_plugin_relativeTime)
 for(let d of document.querySelectorAll(".expiry_time")) {
   d.textContent = dayjs(d.dataset.expiry).fromNow();
+}
+async function toggleShownCurrent() {
+  let base = document.querySelector("#current-items");
+  let items = base.querySelector(".items");
+  items.classList.toggle("hidden");
+  if(items.classList.contains("hidden")) {
+    base.querySelector("button").textContent = "\u2193";
+  } else {
+    base.querySelector("button").textContent = "\u2191";
+  }
 }
 </script>
 {% endblock main %}
