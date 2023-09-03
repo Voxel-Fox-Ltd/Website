@@ -380,6 +380,8 @@ class CheckoutItem:
         'purchased_quantity',
         'required_logins',
         'images',
+        'visible',
+        'available',
     )
 
     def __init__(
@@ -402,7 +404,9 @@ class CheckoutItem:
             order: int,
             description: str,
             required_logins: RequiredLogins,
-            images: list[str]):
+            images: list[str],
+            visible: bool,
+            available: bool):
         self._id = id
         self._creator_id = creator_id
         self.name: str = product_name
@@ -414,6 +418,9 @@ class CheckoutItem:
         self.paypal_plan_id: Optional[str] = paypal_plan_id
         self.webhook: str = transaction_webhook
         self.webhook_auth: str = transaction_webhook_authorization
+
+        self.visible = visible
+        self.available = available
 
         self.product_group: str = product_group
         self.base_product_id: str | None = base_product_id
@@ -555,6 +562,8 @@ class CheckoutItem:
             description=row['description'],
             required_logins=RequiredLogins(row.get('required_logins', 1)),
             images=row.get("images", list()),
+            visible=row["visible"],
+            available=row["available"],
         )
 
     @classmethod

@@ -41,6 +41,8 @@ CREATE TABLE IF NOT EXISTS checkout_items(
 
     -- Product information
     product_name CITEXT NOT NULL,
+    available BOOLEAN NOT NULL DEFAULT TRUE,
+    visible BOOLEAN NOT NULL DEFAULT TRUE,
     subscription BOOLEAN NOT NULL DEFAULT FALSE,
     success_url TEXT,
     cancel_url TEXT,

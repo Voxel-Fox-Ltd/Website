@@ -36,10 +36,12 @@
   <h1 class="title">Available for Purchase</h1>
   <div class="items">
     {% for item in available_items %}
-      {% if item in unavailable_items %}
-        {{ display_item(item, disabled=true) }}
-      {% else %}
-        {{ display_item(item) }}
+      {% if item.visible %}
+        {% if item in unavailable_items %}
+          {{ display_item(item, disabled=true) }}
+        {% else %}
+          {{ display_item(item) }}
+        {% endif %}
       {% endif %}
     {% endfor %}
   </div>
