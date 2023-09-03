@@ -47,7 +47,7 @@ p {
     margin-left: 1.5em;
 }
 
-#current-items button {
+#current-items > div > button {
     margin-left: 1em;
     height: 2em;
     margin-top: 0.4em;
@@ -55,7 +55,7 @@ p {
     width: 2em;
 }
 
-#current-items[data-empty] button {
+#current-items[data-empty] > div > button {
     display: none;
 }
 
@@ -63,7 +63,8 @@ p {
     display: none;
 }
 
-#current-items[data-empty] .items {
+#current-items[data-empty] .items,
+#current-items[data-empty] form button {
     display: inherit;
 }
 
