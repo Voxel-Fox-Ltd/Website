@@ -9,17 +9,10 @@
 
 <div id="current-items">
   <div class="items">
-    <div class="item" data-id="{{ item.id }}">
-      <h1 class="title">{{ item.name }}</h1>
-      <div class="block">
-        {% if item.description %}
-          <p class="description">{{ item.description | markdown | safe }}</p>
-        {% endif %}
-        <div id="stripe-button" class="button-holder block"></div>
-        <div id="paypal-button" class="button-holder block"></div>
-      </div>
-    </div>
+    {{ display_item(item, show_buy_button=false) }}
   </div>
+  <div id="stripe-button" class="button-holder block"></div>
+  <div id="paypal-button" class="button-holder block"></div>
 </div>
 
 
