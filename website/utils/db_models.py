@@ -379,6 +379,7 @@ class CheckoutItem:
         'quantity',
         'purchased_quantity',
         'required_logins',
+        'images',
     )
 
     def __init__(
@@ -400,7 +401,8 @@ class CheckoutItem:
             per_guild: bool,
             order: int,
             description: str,
-            required_logins: RequiredLogins):
+            required_logins: RequiredLogins,
+            images: list[str]):
         self._id = id
         self._creator_id = creator_id
         self.name: str = product_name
@@ -422,6 +424,7 @@ class CheckoutItem:
         self.required_logins = required_logins
 
         self.description: str = description
+        self.images: list[str] = images
 
         self.quantity: int = 1
         self.purchased_quantity: int = 1
@@ -551,6 +554,7 @@ class CheckoutItem:
             multiple=row.get('multiple', False),
             description=row['description'],
             required_logins=RequiredLogins(row.get('required_logins', 1)),
+            images=row.get("images", list()),
         )
 
     @classmethod

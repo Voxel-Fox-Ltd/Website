@@ -45,6 +45,8 @@ CREATE TABLE IF NOT EXISTS checkout_items(
     success_url TEXT,
     cancel_url TEXT,
     required_logins INTEGER NOT NULL DEFAULT 0,
+    description TEXT,
+    images TEXT[] NOT NULL DEFAULT '{}',
 
     -- Information on the product IDs
     stripe_product_id TEXT NOT NULL,
@@ -52,6 +54,9 @@ CREATE TABLE IF NOT EXISTS checkout_items(
     paypal_plan_id TEXT,
 
     -- Webhooks to send to when there's a purchase been made
+    -- Generally not needed for new items being added, but is here for
+    -- things like MarriageBot Gold, which uses its own database to
+    -- keep track of subscribed guilds
     transaction_webhook TEXT,
     transaction_webhook_authorization TEXT NOT NULL DEFAULT '',
 
@@ -69,9 +74,6 @@ CREATE TABLE IF NOT EXISTS checkout_items(
     -- Whether or not the product can be purchased multiple times. Ignored if
     -- the product is a subscription.
     multiple BOOLEAN NOT NULL DEFAULT FALSE,
-
-    -- Text to be displayed on the portal page.
-    description TEXT,
 
     -- Add our constraints
     UNIQUE (creator_id, product_name)
