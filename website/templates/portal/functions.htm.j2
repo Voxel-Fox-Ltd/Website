@@ -18,6 +18,13 @@
   {% if item.description %}
     <div class="description">{{ item.description | markdown | safe }}</div>
   {% endif %}
+  {% if item.images %}
+    <div class="images">
+      {% for im in item.images %}
+        <img src="{{ im }}" />
+      {% endfor %}
+    </div>
+  {% endif %}
   <p class="price">
     Price: <span>{{ item.currency_symbol }}{{ item.price }}</span>
   </p>
