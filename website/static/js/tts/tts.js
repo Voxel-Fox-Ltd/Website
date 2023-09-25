@@ -6,7 +6,7 @@
 const WB = `(^|$|\\s|\\.|!|\\?|,)`;
 
 // Patterns that are replaced via regex
-const REGEX_REPLACEMENTS = [
+var REGEX_REPLACEMENTS = [
     ["^[\\? ]+$", "huh?"],
     ["^[\\! ]+$", "woah"],
     ["^\\.\\.\\.$", "umm"],
@@ -23,11 +23,11 @@ const REGEX_REPLACEMENTS = [
     ["^\\^+$", "Yeah, agreed!"],
     ["^</3$", ""],
     // ["kae", "Kay"],
-    [`(^|[\W\s])(kae)($|[\W\s])`, "$1Kay$3"],
+    [/(^|[\W\s])(kae)($|[\W\s])/, "$1Kay$3"],
 ]
 
 // Patterns that are replaced word-for-word
-const WORD_REPLACEMENTS = [
+var WORD_REPLACEMENTS = [
     ["twat", "twaaat"],
     ["cmon", "come on"],
     ["epicer", "epic er"],
@@ -135,7 +135,7 @@ const WORD_REPLACEMENTS = [
 
 
 // Users that get ignored by TTS
-const IGNORED_USERS = [
+var IGNORED_USERS = [
     "cloudbot",
     "streamlabs",
     "streamelements",
