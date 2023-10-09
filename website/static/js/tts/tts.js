@@ -244,24 +244,31 @@ async function sayMessageSE(twitchMessage) {
 }
 
 
+function getAvailableTTSNodes() {
+    let audio = document.querySelectorAll("audio.tts");
+    let validAudio = [];
+    for(node of audio) {
+        if(node.ended || node.src == "" || (node.error && node.error.code == 4)) {
+            validAudio.push(node);
+        }
+    }
+    return validAudio;
+}
+
+
 var audioQueue = [];
 function queueAudio(url) {
-    let audio = document.querySelector("audio.tts");
     audioQueue.push(url);
-    if(audio.ended || audio.src == "" || (audio.error && audio.error.code == 4)) {
-        playNextTTSTrack();
-    }
+    let audio = getAvailableTTSNodes();
+    if(audio) playNextTTSTrack();
 }
 function playNextTTSTrack() {
-    let audio = document.querySelector("audio.tts");
+    let audio = getAvailableTTSNodes();
     if(audioQueue.length > 0) {
         let url = audioQueue.shift();
-        audio.src = url;
-        audio.play();
-    }
-    else {
-        audio.removeAttribute("src");
+        audio[0].src = url;
+        audio[0].play();
     }
 }
-document.querySelector("audio.tts").addEventListener("ended", playNextTTSTrack);
-document.querySelector("audio.tts").addEventListener("pause", playNextTTSTrack);
+document.querySelectorAll("audio.tts").forEach(a => a.addEventListener("ended", playNextTTSTrack));
+document.querySelectorAll("audio.tts").forEach(a => a.addEventListener("pause", playNextTTSTrack));
