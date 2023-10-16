@@ -1124,7 +1124,7 @@ class Purchase:
             """,
             user.id,  # user_id
             product.id,  # product_id
-            int(discord_guild_id) if discord_guild_id is not None else discord_guild_id,  # discord_guild_id
+            int(discord_guild_id) if discord_guild_id is not None and discord_guild_id != "" else None,  # discord_guild_id
             expiry_time,  # expiry_time
             cancel_url,  # cancel_url
             timestamp or dt.utcnow(),  # timestamp
