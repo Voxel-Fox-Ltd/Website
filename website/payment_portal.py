@@ -99,8 +99,10 @@ async def index(request: Request):
         assert i._item
         if i._item.multiple:
             continue
+        if i._item.per_guild:
+            continue
         for p in available_items:
-            if p.base_product_id == i._item.base_product_id: # and i._item > p:
+            if p.base_product_id == i._item.base_product_id:
                 unavailable_items.add(p)
 
     # Render the template
