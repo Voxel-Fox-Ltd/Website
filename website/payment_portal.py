@@ -50,6 +50,11 @@ async def index(request: Request):
             CheckoutItem.from_row(row)
             for row in item_rows
         ]
+
+        # If there aren't any items then let's just redirect back to the index
+        if not available_items:
+            return HTTPFound("/")
+
         for i in available_items:
             await i.fetch_user(db)
         item_ids = {i.id: i for i in available_items}
@@ -87,10 +92,6 @@ async def index(request: Request):
                 available_items.remove(i._item)
             except ValueError:
                 pass
-
-    # If there aren't any items then let's just redirect back to the index
-    if not available_items:
-        return HTTPFound("/")
 
     # Work out what we have unabailable
     unavailable_items: set[CheckoutItem] = set()
