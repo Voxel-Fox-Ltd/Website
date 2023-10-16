@@ -29,8 +29,8 @@ ET = TypeVar("ET")  # Event type
 ETO = TypeVar("ETO")  # Event type
 
 
-class EventTypeObject(TypedDict):
-    object: object
+class EventTypeObject(TypedDict, Generic[ETO]):
+    object: ETO
     previous_attributes: NotRequired[dict[str, Any]]
 
 
