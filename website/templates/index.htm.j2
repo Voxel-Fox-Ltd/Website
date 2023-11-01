@@ -20,6 +20,7 @@
     <div
             id="{{ name }}"
             class="content hidable {{ classes }}"
+            data-name="{{ name }}"
             data-hidden="{% if hidden %}1{% else %}0{% endif %}"
             >
         {% include "index/" + name + ".htm.j2" %}
@@ -49,12 +50,26 @@ function changeContentString(hash) {
         h.dataset.hidden = hash == h.id ? "0" : "1";
         found = hash == h.id || found;
     }
-    if(!found) document.querySelector("#main").dataset.hidden = "0";
+    if(!found) {
+        document.querySelector("#main").dataset.hidden = "0";
+        return false;
+    }
+    return true;
 }
-changeContentString(window.location.hash.slice(1));
+changeContentString(window.location.pathname.slice(1));
 window.addEventListener('hashchange', function() {
-    changeContentString(window.location.hash.slice(1));
+    let valid = changeContentString(window.location.hash.slice(1));
+    window.history.pushState(
+        {"html": document.documentElement.innerHTML},
+        "",
+        valid ? `/${window.location.hash.slice(1)}` : "/",
+    );
 });
+window.onpopstate = function(e) {
+    if(e.state) {
+        document.getElementById("content").innerHTML = e.state.html;
+    }
+};
 
 
 function createImageOver(image) {

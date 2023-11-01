@@ -150,3 +150,22 @@ async def markdown(request: Request):
         "filename": filename.split("/")[-1][:-3],
         "content": content,
     }
+
+
+@routes.get("/{_}")
+@template("index.htm.j2")
+async def index_double(_: Request):
+    """
+    Index page for the website. Fallback for missing `/`
+    """
+
+    target = pathlib.Path("./website/static/docs")
+    markdown_files: dict[str, str] = {}
+    if target.exists():
+        for fn in target.rglob("*.md"):
+            with fn.open() as a:
+                markdown_files[fn.name.split(".")[0]] = a.read()
+
+    return {
+        "mdfiles": markdown_files,
+    }
