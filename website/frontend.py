@@ -13,6 +13,8 @@ routes = RouteTableDef()
 
 
 @routes.get("/")
+@routes.get("/main")
+@routes.get("/contact")
 @routes.get("/projects")
 @routes.get("/commissions")
 @routes.get("/branding")
