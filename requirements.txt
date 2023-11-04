@@ -1,4 +1,4 @@
-novus[vbu]>=0.1.0
+novus[vbu]>=0.1.0,<1.0.0
 markdown2
 pytz
 pyopenssl

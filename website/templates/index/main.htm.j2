@@ -1,38 +1,8 @@
-{% macro create_link(href, icon, kwargs=none) %}
-<li>
-  <a
-      href="{{ href }}"
-      target="_blank"
-      {% for k, v in (kwargs or {}).items() %}
-        {{ k }}="{{ v }}"
-      {% endfor %}
-      >
-    <icon {{ icon }}></icon>
-  </a>
-</li>
-{% endmacro %}
-
-{% set index_logo_url = (
-  [
-    '/images/_voxelfox/gay.svg',
-    '/images/_voxelfox/trans.svg',
-    '/images/_voxelfox/bi.svg',
-  ] | random) %}
-{% set index_logo_url = '/images/_voxelfox/white.svg' %}
-
-{% set index_logo = static(index_logo_url) %}
-
-<img class="logo" src="{{ index_logo }}" />
+<img class="logo" src="{{ static('/images/_voxelfox/white.svg') }}" />
 <h1>Voxel Fox</h1>
 <h2>Web | Software | Streaming | Programming</h2>
-<ul class="contact-links">
-  {{ create_link("mailto:kae@voxelfox.co.uk", "at") }}
-  {{ create_link("https://discord.gg/VoxelFox", "discord") }}
-  {{ create_link("https://twitch.tv/VoxelFoxKae", "twitch") }}
-  {{ create_link("https://www.youtube.com/c/KaeVF", "youtube") }}
-  {{ create_link("https://github.com/4Kaylum", "github") }}
-  {{ create_link("https://github.com/Voxel-Fox-Ltd", "github") }}
-</ul>
-<p><a href="#projects">Projects</a></p>
-<p><a href="#commissions">Commissions</a></p>
-<p><a href="#branding">Branding</a></p>
+<p><a href="#projects">Programming</a></p>
+{# <p><a href="#event-hire">Event Hire</a></p> #}
+<p><a href="#contact">Contact</a></p>
+{# <p><a href="#commissions">Commissions</a></p> #}
+{# <p><a href="#branding">Branding</a></p> #}
