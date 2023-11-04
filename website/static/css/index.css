@@ -242,3 +242,20 @@ figure {
     padding: 10px;
     width: 100%;
 }
+
+#contact td:first-of-type {
+    text-align: right;
+}
+
+#contact td:nth-of-type(2) {
+    text-align: center;
+}
+
+#contact td a,
+#contact td a:visited {
+    padding: 0;
+}
+
+#contact td {
+    padding: 5px;
+}
