@@ -27,7 +27,7 @@
     </div>
 {%- endmacro -%}
 
-{{ section("main", "", false) }}
+{{ section("main") }}
 {{ section("projects") }}
 {{ section("project-novus", "project") }}
 {{ section("project-marriagebot", "project") }}
@@ -56,19 +56,19 @@ function changeContentString(hash) {
     return true;
 }
 changeContentString(window.location.pathname.slice(1));
-window.addEventListener('hashchange', function() {
-    let valid = changeContentString(window.location.hash.slice(1));
-    window.history.pushState(
-        {"html": document.documentElement.innerHTML},
-        "",
-        valid ? `/${window.location.hash.slice(1)}` : "/",
-    );
-});
-window.onpopstate = function(e) {
-    if(e.state) {
-        document.getElementById("content").innerHTML = e.state.html;
-    }
-};
+// window.addEventListener('hashchange', function() {
+//     let valid = changeContentString(window.location.hash.slice(1));
+//     window.history.pushState(
+//         {"html": document.documentElement.innerHTML},
+//         "",
+//         valid ? `/${window.location.hash.slice(1)}` : "/",
+//     );
+// });
+// window.onpopstate = function(e) {
+//     if(e.state) {
+//         document.getElementById("content").innerHTML = e.state.html;
+//     }
+// };
 
 
 function createImageOver(image) {
