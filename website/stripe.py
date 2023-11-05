@@ -110,6 +110,7 @@ async def create_checkout_session(request: Request):
                 "quantity": quantity,
             },
         ],
+        "allow_promotion_codes": True,
         "metadata": post_data,
     }
     if user.stripe_customer_id:
