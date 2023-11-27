@@ -110,9 +110,12 @@ ul {
     gap: 0.8em;
 }
 
-.project-date {
+.project-date,
+.project-short-description {
     filter: opacity(0.6);
     font-size: 0.7em;
+    display: block;
+    line-height: 0.7em;
 }
 
 .project-date:before {
