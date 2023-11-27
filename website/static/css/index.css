@@ -115,12 +115,16 @@ ul {
     filter: opacity(0.6);
     font-size: 0.7em;
     display: block;
-    line-height: 0.7em;
+    line-height: 1.2em;
+}
+
+.project-short-description {
+    margin-top: 0.5em;
 }
 
 .project-date:before {
     content: "\a(";
-    white-space: pre;
+/*    white-space: pre;*/
 }
 
 .project-date:after {
