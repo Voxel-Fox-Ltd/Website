@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Interval and Current Timing</title>
+</head>
+<body>
+
+<style type="text/css">
+html {
+    font-size: 16px;
+    font-family: "Century Gothic";
+    color: white;
+}
+body {
+    background: black;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100vh;
+    width: 100hw;
+}
+#container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+#current-time {
+    font-size: 10rem;
+    font-weight: bold;
+}
+#interval-time,
+#call-time {
+    font-size: 2.5rem;
+    filter: opacity(0.4);
+}
+#spacer {
+    height: 5rem;
+    filter: opacity(0);
+}
+</style>
+
+<div id="container">
+    <div id="current-time">Loading...</div>
+    <div id="interval-time">interval end <span class="time">...</span></div>
+    <div id="call-time">call time <span class="time">...</span></div>
+    <div id="spacer"></div>
+</div>
+
+<script type="text/javascript">
+const INTERVAL_TIME = 20;  // minutes
+
+function loop() {
+    let t = new Date();
+    let ie = new Date(t);
+    let ct = new Date(t);
+    ie.setMinutes(ie.getMinutes() + INTERVAL_TIME);
+    ct.setMinutes(ct.getMinutes() + INTERVAL_TIME - 5);
+    document.querySelector("#current-time").innerText = t.toLocaleTimeString();
+    document.querySelector("#interval-time .time").innerText = ie.toLocaleTimeString();
+    document.querySelector("#call-time .time").innerText = ct.toLocaleTimeString();
+    setTimeout(loop, 100);
+}
+loop();
+</script>
+
+</body>
+</html>
