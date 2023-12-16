@@ -46,6 +46,12 @@ body {
     filter: opacity(0);
     display: none;
 }
+.paused:before {
+    content: "- ";
+}
+.paused:after {
+    content: " -";
+}
 </style>
 
 <div id="container">
@@ -57,6 +63,7 @@ body {
 
 <script type="text/javascript">
 const INTERVAL_TIME = 20;  // minutes
+var timePaused = false;
 
 function loop() {
     let t = new Date();
@@ -65,10 +72,18 @@ function loop() {
     ie.setMinutes(ie.getMinutes() + INTERVAL_TIME);
     ct.setMinutes(ct.getMinutes() + INTERVAL_TIME - 5);
     document.querySelector("#current-time").innerText = t.toLocaleTimeString();
-    document.querySelector("#interval-time .time").innerText = ie.toLocaleTimeString();
-    document.querySelector("#call-time .time").innerText = ct.toLocaleTimeString();
+    if(!timePaused) {
+        document.querySelector("#interval-time .time").innerText = ie.toLocaleTimeString();
+        document.querySelector("#call-time .time").innerText = ct.toLocaleTimeString();
+    }
     setTimeout(loop, 100);
 }
+window.addEventListener("keydown", (event) => {
+    if(!(event.key == "p" || event.key == " ")) return;
+    document.querySelector("#interval-time").classList.toggle("paused");
+    document.querySelector("#call-time").classList.toggle("paused");
+    timePaused = !timePaused;
+})
 loop();
 </script>
 
