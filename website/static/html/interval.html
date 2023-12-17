@@ -71,10 +71,18 @@ function loop() {
     let ct = new Date(t);
     ie.setMinutes(ie.getMinutes() + INTERVAL_TIME);
     ct.setMinutes(ct.getMinutes() + INTERVAL_TIME - 5);
+    if(ie.getSeconds() >= 30) {
+        ie.setMinutes(ie.getMinutes() + 1);
+        ct.setMinutes(ct.getMinutes() + 1);
+    }
     document.querySelector("#current-time").innerText = t.toLocaleTimeString();
     if(!timePaused) {
-        document.querySelector("#interval-time .time").innerText = ie.toLocaleTimeString();
-        document.querySelector("#call-time .time").innerText = ct.toLocaleTimeString();
+        let ies = ie.toLocaleTimeString();
+        ies = ies.substring(0, ies.length - 3);
+        let cts = ct.toLocaleTimeString();
+        cts = cts.substring(0, cts.length - 3);
+        document.querySelector("#interval-time .time").innerText = ies;
+        document.querySelector("#call-time .time").innerText = cts;
     }
     setTimeout(loop, 100);
 }
