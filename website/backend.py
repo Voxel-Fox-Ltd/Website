@@ -291,7 +291,11 @@ async def calendar_filter(request: Request):
 
     url = request.query.get("url")
     if url is None:
-        return Response(body="Missing URL param.", status=400)
+        return Response(
+            body="Missing URL param.",
+            status=400,
+            headers={"Access-Control-Allow-Origin": "*"},
+        )
 
     async with aiohttp.ClientSession() as session:
         site = await session.get(url, headers={"User-Agent": "Voxel Fox calendar filter kae@vfl.gg"})
@@ -300,7 +304,13 @@ async def calendar_filter(request: Request):
 
     filters = request.query.getall("filter")
     if not filters:
-        return Response(body=calendar.serialize(), headers={"Content-Type": "text/calendar"})
+        return Response(
+            body=calendar.serialize(),
+            headers={
+                "Content-Type": "text/calendar",
+                "Access-Control-Allow-Origin": "*",
+            },
+        )
 
     new_calendar = ics.Calendar()
     for event in calendar.events:
@@ -312,4 +322,10 @@ async def calendar_filter(request: Request):
         if not add:
             continue
         new_calendar.events.add(event)
-    return Response(body=new_calendar.serialize(), headers={"Content-Type": "text/calendar"})
+    return Response(
+        body=new_calendar.serialize(),
+        headers={
+            "Content-Type": "text/calendar",
+            "Access-Control-Allow-Origin": "*",
+        },
+    )
