@@ -8,3 +8,4 @@ asyncpg
 vf-flags
 beautifulsoup4
 imgkit
+ics

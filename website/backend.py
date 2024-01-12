@@ -3,18 +3,18 @@ import io
 from typing import Tuple
 import smtplib
 import asyncio
-import html
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import aiohttp
 
 from aiohttp.web import Request, RouteTableDef, Response, json_response
 from aiohttp_jinja2 import render_string
 import htmlmin
 from PIL import Image
-from discord.ext import vbu
 from bs4 import BeautifulSoup, Tag
 import imgkit
 import markdown2
+import ics
 
 
 routes = RouteTableDef()
@@ -281,3 +281,35 @@ async def send_email(request: Request):
         },
         status=200,
     )
+
+
+@routes.get("/calendar_filter")
+async def calendar_filter(request: Request):
+    """
+    Filter certain things within a calendar.
+    """
+
+    url = request.query.get("url")
+    if url is None:
+        return Response(body="Missing URL param.", status=400)
+
+    async with aiohttp.ClientSession() as session:
+        site = await session.get(url, headers={"User-Agent": "Voxel Fox calendar filter kae@vfl.gg"})
+        calendar_raw = await site.text()
+    calendar = ics.Calendar(calendar_raw)
+
+    filters = request.query.getall("filter")
+    if not filters:
+        return Response(body=calendar.serialize(), headers={"Content-Type": "text/calendar"})
+
+    new_calendar = ics.Calendar()
+    for event in calendar.events:
+        add = True
+        for f in filters:
+            if f.casefold() in event.name.casefold():
+                add = False
+                break
+        if not add:
+            continue
+        new_calendar.events.add(event)
+    return Response(body=new_calendar.serialize(), headers={"Content-Type": "text/calendar"})
