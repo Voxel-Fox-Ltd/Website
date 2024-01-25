@@ -10,7 +10,7 @@ var REGEX_REPLACEMENTS = [
     ["^[\\? ]+$", "huh?"],
     ["^[\\! ]+$", "woah"],
     ["^\\.\\.\\.$", "umm"],
-    ["^LL$", "Skill issue."],
+    ["^LL$", "Krill issue."],
     ["(?:^|\\W)>:D(?:$|\\W)", "evil face"],
     ["(?:^|\\W)>[:=]\\((?:$|\\W)", "angry face"],
     ["(?:^|\\W)[:=]\\((?:$|\\W)", "sad face"],
