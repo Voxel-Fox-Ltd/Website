@@ -25,7 +25,7 @@ stripe_webhook_signing_secret = ""
 
 
 [database]
-    enabled = true
+    enabled = false
     user = ""
     password = ""
     database = ""

@@ -1,0 +1,102 @@
+{% extends "partials/page.htm.j2" %}
+
+
+{% macro create_download(fp, caption) %}
+<li>
+  <a href="{{ static(fp) }}" download>{{ caption }}</a>
+</li>
+{% endmacro %}
+
+
+{% block body %}
+<div id="branding" class="content">
+  <a href="/">
+    <img class="logo" src="{{ static('/images/_voxelfox/white.svg') }}" />
+  </a>
+  <h1>Branding</h1>
+  <div class="brand">
+    <h2>Voxel Fox</h2>
+    <p>
+      The Voxel Fox logo. The logo may not be deformed, rotated, or
+      flipped. The image <i>may</i> be recoloured, provided the fill and
+      outline are colours that stand out against each other. Use your
+      own discretion.
+    </p>
+    <div class="figures">
+      <figure>
+        <img src="{{ static('/images/_voxelfox/black.svg') }}" />
+        <ul>
+          {{ create_download('/images/_voxelfox/logo.png', 'PNG100px') }}
+          {{ create_download('/images/_voxelfox/black.svg', 'SVG') }}
+        </ul>
+        <figcaption>
+          Orange (<code>#f17824</code>) fill, black outline. The
+          normal logo for use on light backgrounds.
+        </figcaption>
+      </figure>
+      <figure>
+        <img src="{{ static('/images/_voxelfox/white.svg') }}" />
+        <ul>
+          {{ create_download('/images/_voxelfox/white.svg', 'SVG') }}
+        </ul>
+        <figcaption>
+          Orange (<code>#f17824</code>) fill, white outline. The
+          normal logo for use on dark backgrounds.
+        </figcaption>
+      </figure>
+      <figure>
+        <img src="{{ static('/images/_voxelfox/gayBlack.svg') }}" />
+        <ul>
+          {{ create_download('/images/_voxelfox/gayBlack.svg', 'SVG') }}
+        </ul>
+        <figcaption>Gay pride fill, black outline.</figcaption>
+      </figure>
+      <figure>
+        <img src="{{ static('/images/_voxelfox/gay.svg') }}" />
+        <ul>
+          {{ create_download('/images/_voxelfox/gay.svg', 'SVG') }}
+        </ul>
+        <figcaption>Gay pride fill, white outline.</figcaption>
+      </figure>
+      <figure>
+        <img src="{{ static('/images/_voxelfox/transBlack.svg') }}" />
+        <ul>
+          {{ create_download('/images/_voxelfox/transBlack.svg', 'SVG') }}
+        </ul>
+        <figcaption>Trans pride fill, black outline.</figcaption>
+      </figure>
+      <figure>
+        <img src="{{ static('/images/_voxelfox/trans.svg') }}" />
+        <ul>
+          {{ create_download('/images/_voxelfox/trans.svg', 'SVG') }}
+        </ul>
+        <figcaption>Trans pride fill, white outline.</figcaption>
+      </figure>
+    </div>
+  </div>
+  <div class="brand">
+    <h2>MarriageBot</h2>
+    <p>
+      The MarriageBot logo. The logo may not be deformed, rotated,
+      flipped, or recoloured.
+    </p>
+    <div class="figures">
+      <figure>
+        <img src="{{ static('/images/marriagebot/rings.png') }}" />
+        <ul>
+          {{ create_download('/images/marriagebot/rings.png', 'PNG1200px') }}
+        </ul>
+        <figcaption>The MarriageBot logo without a background.</figcaption>
+      </figure>
+      <figure>
+        <img src="{{ static('/images/marriagebot/MarriageBot.150.png') }}" />
+        <ul>
+          {{ create_download('/images/marriagebot/MarriageBot.png', 'PNG1280px') }}
+          {{ create_download('/images/marriagebot/MarriageBot.150.png', 'PNG150px') }}
+        </ul>
+        <figcaption>The MarriageBot logo with the normal bot background.</figcaption>
+      </figure>
+    </div>
+  </div>
+</div>
+{% endblock %}

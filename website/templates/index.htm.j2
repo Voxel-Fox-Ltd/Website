@@ -1,108 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="{{ static('/images/_voxelfox/logo.png') }}" />
-    <link rel="stylesheet" href="{{ static('/css/index.css') }}" />
-    <link rel="stylesheet" href="{{ static('/css/fonts.css') }}" />  <!-- icomoon.io -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:site" content="@VoxelFoxKae" />
-    <meta name="twitter:title" content="Voxel Fox" />
-    <meta name="twitter:description" content="Designing digital experiences." />
-    <meta property="og:image" content="{{ static('/images/_voxelfox/logo.png') }}" />
-    <meta name="theme-color" content="#f17824">
-    <title>Voxel Fox</title>
-</head>
-<body>
-{% set logo = static('/images/_voxelfox/white.svg') %}
-{%- macro section(name, classes="", hidden=true) -%}
-    <div
-            id="{{ name }}"
-            class="content hidable {{ classes }}"
-            data-name="{{ name }}"
-            data-hidden="{% if hidden %}1{% else %}0{% endif %}"
-            >
-        {% include "index/" + name + ".htm.j2" %}
-    </div>
-{%- endmacro -%}
+{% extends "partials/page.htm.j2" %}
 
-{{ section("main") }}
-{{ section("projects") }}
-{{ section("project-novus", "project") }}
-{{ section("project-marriagebot", "project") }}
-{{ section("project-flower", "project") }}
-{{ section("project-age", "project") }}
-{{ section("project-profile", "project") }}
-{{ section("project-titlescraper", "project") }}
-{{ section("project-cerberus", "project") }}
-{{ section("project-streamlink", "project") }}
-{{ section("project-tck", "project") }}
-{{ section("contact") }}
-{{ section("branding") }}
-
-<script type="text/javascript">
-function changeContentString(hash) {
-    let hidables = document.querySelectorAll(".hidable");
-    let found = false;
-    for(h of hidables) {
-        h.dataset.hidden = hash == h.id ? "0" : "1";
-        found = hash == h.id || found;
-    }
-    if(!found) {
-        document.querySelector("#main").dataset.hidden = "0";
-        return false;
-    }
-    return true;
-}
-changeContentString(window.location.pathname.slice(1));
-// window.addEventListener('hashchange', function() {
-//     let valid = changeContentString(window.location.hash.slice(1));
-//     window.history.pushState(
-//         {"html": document.documentElement.innerHTML},
-//         "",
-//         valid ? `/${window.location.hash.slice(1)}` : "/",
-//     );
-// });
-// window.onpopstate = function(e) {
-//     if(e.state) {
-//         document.getElementById("content").innerHTML = e.state.html;
-//     }
-// };
-
-
-function createImageOver(image) {
-    let selected = document.querySelector("#mouse-over-image");
-    if(selected) {
-        selected.src = image;
-        return selected;
-    }
-    let created = document.createElement("img");
-    created.id = "mouse-over-image";
-    created.src = image;
-    document.body.append(created);
-    return created;
-}
-
-
-function destroyImageOver() {
-    let selected = document.querySelector("#mouse-over-image");
-    if(!selected) return;
-    selected.remove();
-}
-
-
-for(let node of document.querySelectorAll("span[data-hover-image]")) {
-    node.addEventListener("mousemove", (event) => {
-        let image = createImageOver(node.dataset.hoverImage);
-        image.style.left = `${event.pageX - (image.width / 2)}px`;
-        image.style.top = `${event.pageY - image.height - 20}px`;
-    });
-    node.addEventListener("mouseout", (event) => {
-        destroyImageOver();
-    });
-}
-</script>
-
-</body>
-</html>
+{% block body %}
+<div id="main" class="content" data-name="main">
+  <img class="logo" src="{{ static('/images/_voxelfox/white.svg') }}" />
+  <h1>Voxel Fox</h1>
+  <h2>Web | Software | Streaming | Programming</h2>
+  <p><a href="/projects">Programming</a></p>
+  <p><a href="/contact">Contact</a></p>
+  <p><a href="/branding">Branding</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "partials/page.htm.j2" %}
+
+
+{% macro project(name, href, icon, description, date=none) %}
+<p>
+  <a href="{{ href }}">{{ name }} <icon {{ icon }}></icon></a>
+  <span class="project-short-description">{{ description }}</span>
+  {% if date %}<span class="project-date">{{ date }}</span>{% endif %}
+</p>
+{% endmacro %}
+
+
+{% block body %}
+<div id="projects" class="content">
+  <a href="/">
+    <img class="logo" src="{{ static('/images/_voxelfox/white.svg') }}" />
+  </a>
+  <div class="project-list">
+    {{ project("Novus", "/projects/novus", "discord", "A Python library for the Discord API.", "August 2021 - present") }}
+    {{ project("MarriageBot", "/projects/marriagebot", "discord", "A roleplay Discord bot.", "July 2018 - present") }}
+    {{ project("Flower", "/projects/flower", "discord", "A discord bot for growing virtual flowers.", "August 2019 - present") }}
+    {{ project("Age Checker", "/projects/age", "link", "Simple website for 18+ date verification.") }}
+    {{ project("Profile", "/projects/profile", "discord", "A Discord moderation bot for user information storage.", "July 2019 - present") }}
+    {{ project("TitleScraper", "/projects/titlescraper", "computer", "A simple program to copy the title of a window into a TXT file.") }}
+    {{ project("TCK.gg", "/projects/tck", "link", "An affiliate website made for a streamer.", "July 2022 - September 2022") }}
+    {{ project("Cerberus", "/projects/cerberus", "discord", "A Discord activity tracker.", "November 2019 - present") }}
+    {{ project("Streamlink", "/projects/streamlink", "link", "A simple Twitch chat TTS and sound effect processor.") }}
+  </div>
+</div>
+{% endblock %}

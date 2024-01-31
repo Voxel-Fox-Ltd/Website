@@ -2,18 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url><loc>https://voxelfox.co.uk</loc></url>
     <url><loc>https://voxelfox.co.uk/contact</loc></url>
+    <url><loc>https://voxelfox.co.uk/branding</loc></url>
     <url><loc>https://voxelfox.co.uk/projects</loc></url>
-    <url><loc>https://voxelfox.co.uk/event-hire</loc></url>
 
-    <url><loc>https://voxelfox.co.uk/project-novus</loc></url>
-    <url><loc>https://voxelfox.co.uk/project-marriagebot</loc></url>
-    <url><loc>https://voxelfox.co.uk/project-flower</loc></url>
-    <url><loc>https://voxelfox.co.uk/project-age</loc></url>
-    <url><loc>https://voxelfox.co.uk/project-profile</loc></url>
-    <url><loc>https://voxelfox.co.uk/project-titlescraper</loc></url>
-    <url><loc>https://voxelfox.co.uk/project-tck</loc></url>
-    <url><loc>https://voxelfox.co.uk/project-cerberus</loc></url>
-    <url><loc>https://voxelfox.co.uk/project-streamlink</loc></url>
+    <url><loc>https://voxelfox.co.uk/projects/novus</loc></url>
+    <url><loc>https://voxelfox.co.uk/projects/marriagebot</loc></url>
+    <url><loc>https://voxelfox.co.uk/projects/flower</loc></url>
+    <url><loc>https://voxelfox.co.uk/projects/age</loc></url>
+    <url><loc>https://voxelfox.co.uk/projects/profile</loc></url>
+    <url><loc>https://voxelfox.co.uk/projects/titlescraper</loc></url>
+    <url><loc>https://voxelfox.co.uk/projects/tck</loc></url>
+    <url><loc>https://voxelfox.co.uk/projects/cerberus</loc></url>
+    <url><loc>https://voxelfox.co.uk/projects/streamlink</loc></url>
 
     <url><loc>https://voxelfox.co.uk/18</loc></url>
     <url><loc>https://voxelfox.co.uk/tts</loc></url>

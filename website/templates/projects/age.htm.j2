@@ -1,0 +1,29 @@
+{% extends "partials/page.htm.j2" %}
+
+
+{% block body %}
+<div class="content project">
+  <a href="/projects">
+    <img class="logo" src="{{ static('/images/_voxelfox/white.svg') }}" />
+  </a>
+
+  <h1>Over 18 Age Checker</h1>
+  <p>
+    A tiny page with a tiny script on it to show you the required date of
+    birth for someone if they are presently 18 years old.
+  </p>
+  <p>Made for a nightclub's ticket office.</p>
+  <ul class="links">
+    <li>
+      <a href="/18" target="_blank">
+        Website <icon link></icon>
+      </a>
+    </li>
+    <li>
+      <a href="https://github.com/Voxel-Fox-Ltd/Website/blob/master/website/templates/18.html.j2" target="_blank">
+        Github <icon github></icon>
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}

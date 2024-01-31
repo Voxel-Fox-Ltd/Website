@@ -149,6 +149,7 @@ span[data-hover-image] {
     border-radius: 20px;
     position: fixed;
     border: 1px solid white;
+    background: white;
 }
 
 @media (hover: none) {
@@ -189,66 +190,6 @@ figure {
     width: 150px;
 }
 
-#commissions:not(h1,img) {
-    font-size: 1.5rem;
-}
-
-#commission-form {
-    margin-top: 20px;
-    width: 60%;
-    align-content: center;
-    border: 1px solid darkgray;
-    padding: 30px;
-    border-radius: 10px;
-}
-
-#commission-form p {
-    text-align: left;
-}
-
-#commission-form > div {
-    width: 100%;
-    padding-bottom: 20px;
-}
-
-#commission-form .commission-form-email-div input,
-#commission-form textarea,
-#commission-form button {
-    font-size: 1.3rem;
-    font-family: inherit;
-    border-radius: 5px;
-    border: none;
-    padding: 2px 10px;
-    display: block;
-    width: calc(100% - 20px);
-    margin-top: 5px;
-}
-
-#commission-form input:not([type="radio"]):invalid,
-#commission-form textarea:invalid {
-    border: 2px solid red;
-    width: calc(100% - 20px - 4px);
-}
-
-#commission-form .commission-form-radio-div label {
-    margin-left: 20px;
-}
-
-#commission-form .commission-form-content-div * {
-    display: block;
-}
-
-#commission-form textarea {
-    height: 16em;
-    min-height: 16em;
-    resize: vertical;
-}
-
-#commission-form button {
-    padding: 10px;
-    width: 100%;
-}
-
 #contact td:first-of-type {
     text-align: right;
 }
@@ -264,37 +205,4 @@ figure {
 
 #contact td {
     padding: 5px;
-}
-
-#hire-inventory {
-    display: flex;
-    margin-top: 10px;
-}
-
-#hire-inventory .hire-item {
-    border: 1px solid white;
-    padding: 10px;
-    border-radius: 15px;
-    max-width: 400px;
-    background: rgba(255, 255, 255, 0.1)
-}
-
-#hire-inventory img {
-    border-radius: 5px;
-    max-width: 100%;
-}
-
-#hire-inventory p {
-    text-align: left;
-}
-
-#hire-inventory .name {
-    font-weight: bold;
-    font-size: 1.4em;
-}
-
-#hire-inventory .price {
-    filter: opacity(0.7);
-    font-size: 0.8em;
-    font-style: italic;
 }

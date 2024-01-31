@@ -1,0 +1,50 @@
+{% extends "partials/page.htm.j2" %}
+
+
+{% block body %}
+<div class="content project">
+  <a href="/projects">
+    <img class="image" src="{{ static('/images/marriagebot/rings.png') }}" />
+  </a>
+
+  <h1>MarriageBot</h1>
+  <h2>The most popular family tree bot on Discord.</h2>
+  <p>MarriageBot is a chatbot for users to get virually married to other users.</p>
+  <p>
+    There are a few other bots on Discord that allow users to "get married" and "have children" as this does, but MarriageBot was the first bot that allowed users to <span data-hover-image="https://marriagebot.xyz/static/images/tree.png">generate a family tree</span> dynamically based on that family.
+  </p>
+
+  <div class="technology">
+    <icon python></icon>
+    <icon postgres></icon>
+  </div>
+
+  <ul class="links">
+    <li>
+      <a href="https://marriagebot.xyz" target="_blank">
+        Website <icon link></icon>
+      </a>
+    </li>
+    <li>
+      <a href="https://github.com/Voxel-Fox-Ltd/MarriageBot" target="_blank">
+        Github <icon github></icon>
+      </a>
+    </li>
+    <li>
+      <a href="/portal/marriagebot" target="_blank">
+        Donate <icon banknote></icon>
+      </a>
+    </li>
+    <li>
+      <a href="/md/privacy_policy/MarriageBot.md" target="_blank">
+        Privacy Policy <icon link></icon>
+      </a>
+    </li>
+    <li>
+      <a href="/md/terms_of_service/MarriageBot.md" target="_blank">
+        Terms of Service <icon link></icon>
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}

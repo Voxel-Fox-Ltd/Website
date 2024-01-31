@@ -12,38 +12,32 @@ from .utils.login import requires_login
 routes = RouteTableDef()
 
 
-@routes.get("/")
-@routes.get("/main")
-@routes.get("/contact")
-@routes.get("/event-hire")
-@routes.get("/projects")
-# @routes.get("/commissions")
-# @routes.get("/branding")
-@routes.get("/project-novus")
-@routes.get("/project-marriagebot")
-@routes.get("/project-flower")
-@routes.get("/project-age")
-@routes.get("/project-profile")
-@routes.get("/project-titlescraper")
-@routes.get("/project-tck")
-@routes.get("/project-cerberus")
-@routes.get("/project-streamlink")
-@template("index.htm.j2")
-async def index(_: Request):
-    """
-    Index page for the website.
-    """
+def page_builder(page_name: str, template_name: str):
+    @routes.get(page_name)
+    @template(template_name)
+    async def wrapped(_: Request):
+        return {}
+    return wrapped
 
-    target = pathlib.Path("./website/static/docs")
-    markdown_files: dict[str, str] = {}
-    if target.exists():
-        for fn in target.rglob("*.md"):
-            with fn.open() as a:
-                markdown_files[fn.name.split(".")[0]] = a.read()
 
-    return {
-        "mdfiles": markdown_files,
-    }
+page_builder("/", "index.htm.j2")
+page_builder("/main", "index.htm.j2")
+page_builder("/index", "index.htm.j2")
+page_builder("/contact", "contact.htm.j2")
+page_builder("/branding", "branding.htm.j2")
+page_builder("/projects", "projects.htm.j2")
+page_builder("/projects/novus", "projects/novus.htm.j2")
+page_builder("/projects/marriagebot", "projects/marriagebot.htm.j2")
+page_builder("/projects/flower", "projects/flower.htm.j2")
+page_builder("/projects/age", "projects/age.htm.j2")
+page_builder("/projects/profile", "projects/profile.htm.j2")
+page_builder("/projects/titlescraper", "projects/titlescraper.htm.j2")
+page_builder("/projects/tck", "projects/tck.htm.j2")
+page_builder("/projects/cerberus", "projects/cerberus.htm.j2")
+page_builder("/projects/streamlink", "projects/streamlink.htm.j2")
+
+page_builder("/18", "18.html.j2")
+page_builder("/tts", "tts.htm.j2")
 
 
 @routes.get("/gforms")
@@ -110,27 +104,6 @@ async def gforms(request: Request):
         f"https://docs.google.com/forms/d/e/{form_id}"
         f"/viewform?{urlencode(params)}"
     )
-
-
-@routes.get("/18")
-@template("18.html.j2")
-async def over_18(_: Request):
-    """
-    A page that shows when a person must have been born to be 18 on this
-    current day.
-    """
-
-    return {}
-
-
-@routes.get("/tts")
-@template("tts.htm.j2")
-async def twitch_tts(_: Request):
-    """
-    Twitch TTS moment.
-    """
-
-    return {}
 
 
 @routes.get("/md/{filename:.+}")
