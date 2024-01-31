@@ -15,6 +15,10 @@
     margin: 1em 0;
 }
 
+.project summary {
+    cursor: pointer;
+}
+
 .project img {
     max-width: 100%;
 }
