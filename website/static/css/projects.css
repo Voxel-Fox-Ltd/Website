@@ -1,0 +1,56 @@
+#content {
+    display: flex;
+    flex-direction: column;
+}
+
+.project {
+    background: #ffffff22;
+    padding: 1em;
+    margin: 0.5em;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.project label {
+    color: lightblue;
+}
+
+.project img {
+    max-width: 100%;
+}
+
+.project .top {
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: space-between
+}
+
+.project .date {
+    font-size: 0.9rem;
+    filter: opacity(0.6);
+    margin: 0;
+}
+
+.project input[type=checkbox] {
+    display: none;
+}
+
+.project .long-description {
+    height: 0px;
+    overflow: hidden;
+}
+
+.project .long-description,
+.project .short-description {
+    transition: 0.3s ease all;
+}
+
+.project input[type=checkbox]:checked ~ .long-description {
+    height: fit-content;
+}
+
+.project input[type=checkbox]:checked ~ .short-description {
+    height: 0px;
+    margin: 0px;
+    overflow: hidden;
+}

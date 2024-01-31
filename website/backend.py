@@ -76,7 +76,7 @@ async def discord_handler(request: Request):
     with open("website/static/css/discord/dark.min.css") as a:
         dark_css = a.read()
     rendered_template: str = render_string(
-        "discord_page.html.j2",
+        "project-pages/discord_page.html.j2",
         request,
         {
             "data": (await request.json()),

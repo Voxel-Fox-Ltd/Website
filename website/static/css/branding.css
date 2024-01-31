@@ -1,0 +1,33 @@
+.brand .figures {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.brand figure {
+    padding: 10px;
+    border-radius: 15px;
+    text-align: center;
+    background: #1f1f1f;
+    width: 400px;
+}
+
+figure {
+    margin: 5px;
+}
+
+.brand ul {
+    padding: 0;
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.brand img {
+    width: 150px;
+}
+
+.brand li {
+    padding: 0 0.5em;
+}

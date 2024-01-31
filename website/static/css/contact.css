@@ -1,0 +1,48 @@
+table {
+    font-size: 1.3em;
+    width: 100%;
+}
+
+td:first-of-type {
+    text-align: right;
+    width: 45%;
+}
+
+td:nth-of-type(2) {
+    text-align: center;
+    width: 10%;
+}
+
+td:nth-of-type(2) * {
+    margin: 0 0.5em;
+}
+
+td:last-of-type {
+    text-align: left;
+    width: 45%;
+}
+
+@media screen and (max-width: 770px) {
+    table, tbody {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    tr {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1.2em;
+    }
+
+    td {
+        display: block;
+        width: 100% !important;
+        text-align: center !important;
+        margin: 0;
+    }
+
+    td:nth-of-type(2) {
+        display: none;
+    }
+}

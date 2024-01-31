@@ -1,30 +1,285 @@
 {% extends "partials/page.htm.j2" %}
 
 
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ static('/css/projects.css') }}" />
+{% endblock %}
+
+
 {% macro project(name, href, icon, description, date=none) %}
-<p>
-  <a href="{{ href }}">{{ name }} <icon {{ icon }}></icon></a>
-  <span class="project-short-description">{{ description }}</span>
-  {% if date %}<span class="project-date">{{ date }}</span>{% endif %}
-</p>
 {% endmacro %}
 
 
-{% block body %}
-<div id="projects" class="content">
-  <a href="/" class="logo-box">
-    <img class="logo" src="{{ static('/images/_voxelfox/white.svg') }}" />
+{% macro link(label, url, icon=none) %}
+<li>
+  <a href="{{ url }}" target="_blank">
+    {% if icon %}<icon {{ icon }}></icon> {% endif %}{{ label }}
   </a>
-  <div class="project-list">
-    {{ project("Novus", "/projects/novus", "discord", "A Python library for the Discord API.", "August 2021 - present") }}
-    {{ project("MarriageBot", "/projects/marriagebot", "discord", "A roleplay Discord bot.", "July 2018 - present") }}
-    {{ project("Flower", "/projects/flower", "discord", "A discord bot for growing virtual flowers.", "August 2019 - present") }}
-    {{ project("Age Checker", "/projects/age", "link", "Simple website for 18+ date verification.") }}
-    {{ project("Profile", "/projects/profile", "discord", "A Discord moderation bot for user information storage.", "July 2019 - present") }}
-    {{ project("TitleScraper", "/projects/titlescraper", "computer", "A simple program to copy the title of a window into a TXT file.") }}
-    {{ project("TCK.gg", "/projects/tck", "link", "An affiliate website made for a streamer.", "July 2022 - September 2022") }}
-    {{ project("Cerberus", "/projects/cerberus", "discord", "A Discord activity tracker.", "November 2019 - present") }}
-    {{ project("Streamlink", "/projects/streamlink", "link", "A simple Twitch chat TTS and sound effect processor.") }}
+</li>
+{% endmacro %}
+{% macro discord_link(id) %}
+<li>
+  <a target="_blank" data-discord-id="{{ id }}">
+    <icon discord></icon> Discord Invite
+  </a>
+</li>
+{% endmacro %}
+
+
+{% block content %}
+<div class="project">  <!-- novus -->
+  <input type="checkbox" id="novus-cb" />
+  <div class="top">
+    <label class="name" for="novus-cb">Novus</label>
+    <div>
+      <icon discord></icon>
+      <icon python></icon>
+    </div>
   </div>
-</div>
+  <p class="short-description">A Python library for the Discord API.</p>
+  <div class="long-description">
+    <p>
+      Novus is a fast and low-intensity API wrapper written to help other developers interact with the Discord API.
+    </p>
+    <p>
+      Written from the ground up following the discontinuation of Discord.py, Novus is an interaction-centric library written in Python to interact with Discord. It implements command handling and syncing, rate limiting, websocket <i>and</i> webserver-based event handling, as well as an easy-to-use plugin system for extendability.
+    </p>
+    <ul class="links">
+      {{ link("Github", "https://github.com/Voxel-Fox-Ltd/Novus", "github") }}
+    </ul>
+  </div>
+  <p class="date">August 2021 - present</p>
+</div>  <!-- /novus -->
+
+
+<div class="project">  <!-- marriagebot -->
+  <input type="checkbox" id="marriagebot-cb" />
+  <div class="top">
+    <label class="name" for="marriagebot-cb">MarriageBot</label>
+    <div>
+      <icon discord></icon>
+      <icon python></icon>
+      <icon postgres></icon>
+    </div>
+  </div>
+  <p class="short-description">Discord's most popular family tree bot.</p>
+  <div class="long-description">
+    <p>
+      MarriageBot is a chatbot for users to start virtual families with other users.
+    </p>
+    <p>
+      There are a few other bots on Discord that allow users to "get married" and "have children" as this does, but MarriageBot was the first bot that allowed users to generate a family tree dynamically based on that family.
+    </p>
+    <img src="https://marriagebot.xyz/static/images/tree.png" />
+    <ul class="links">
+      {{ discord_link(468281173072805889) }}
+      {{ link("Website", "https://marriagebot.xyz", "link") }}
+      {{ link("Github", "https://github.com/Voxel-Fox-Ltd/MarriageBot", "github") }}
+      {{ link("Donate", "/portal/marriagebot", "banknote") }}
+      {{ link("Privacy Policy", "/md/privacy_policy/MarriageBot.md", "link") }}
+      {{ link("Terms of Service", "/md/terms_of_service/MarriageBot.md", "link") }}
+    </ul>
+  </div>
+  <p class="date">July 2018 - present</p>
+</div>  <!-- /marriagebot -->
+
+
+<div class="project">  <!-- flower -->
+  <input type="checkbox" id="flower-cb" />
+  <div class="top">
+    <label class="name" for="flower-cb">Flower</label>
+    <div>
+      <icon discord></icon>
+      <icon python></icon>
+      <icon postgres></icon>
+    </div>
+  </div>
+  <p class="short-description">A Discord bot for growing virtual flowers.</p>
+  <div class="long-description">
+    <p>
+      Flower allows you to grow plants right from inside your Discord server. You can adopt plants, water them, watch them grow, show them off to others, and more!
+    </p>
+    <ul class="links">
+      {{ discord_link(731736201400418314) }}
+      {{ link("Github", "https://github.com/Voxel-Fox-Ltd/Flower", "github") }}
+      {{ link("Donate", "/portal/flower", "banknote") }}
+      {{ link("Privacy Policy", "/md/privacy_policy/Flower.md", "link") }}
+      {{ link("Terms of Service", "/md/terms_of_service/Flower.md", "link") }}
+    </ul>
+  </div>
+  <p class="date">August 2019 - present</p>
+</div>  <!-- /flower -->
+
+
+<div class="project">  <!-- profile -->
+  <input type="checkbox" id="profile-cb" />
+  <div class="top">
+    <label class="name" for="profile-cb">Profile</label>
+    <div>
+      <icon discord></icon>
+      <icon python></icon>
+      <icon postgres></icon>
+    </div>
+  </div>
+  <p class="short-description">An incredibly modular user forms bot on Discord.</p>
+  <div class="long-description">
+    <p>
+      There are a few bots out there for allowing users to create forms to fill in, but by far Profile is the most modular of all of them.
+    </p>
+    <p>
+      With Profile, server moderators can set up forms for their users to fill out, which can be pulled back up at will. This sort of system lends itself very well to roleplay character profiles, user bios, applications, and more.
+    </p>
+    <p>
+      Normally this kind of system would only be possible through external sites (Typeform and Google Forms) but the versitility of Profile and its customisability within the platform allows it to be a very powerful and diverse tool.
+    </p>
+    <ul class="links">
+      {{ discord_link(598553427592871956) }}
+      {{ link("Github", "https://github.com/Voxel-Fox-Ltd/Profile", "github") }}
+      {{ link("Donate", "/portal/profile", "banknote") }}
+      {{ link("Privacy Policy", "/md/privacy_policy/Profile.md", "link") }}
+      {{ link("Terms of Service", "/md/terms_of_service/Profile.md", "link") }}
+    </ul>
+  </div>
+  <p class="date">July 2019 - present</p>
+</div>  <!-- /profile -->
+
+
+<div class="project">  <!-- age -->
+  <input type="checkbox" id="age-cb" />
+  <div class="top">
+    <label class="name" for="age-cb">Age Checker</label>
+    <div>
+      <icon link></icon>
+      <icon html5></icon>
+      <icon css3></icon>
+      <icon javascript></icon>
+    </div>
+  </div>
+  <p class="short-description">A simple Javascript page for date verification.</p>
+  <div class="long-description">
+    <p>
+      Originally made for a nightclub's ticketing office in order to speed up age checks on IDs, this is just a simple Javascript page for showing the date that someone needs to be born to have passed their 18th birthday.
+    </p>
+    <ul class="links">
+      {{ link("Website", static("/html/18.html"), "link") }}
+    </ul>
+  </div>
+</div>  <!-- /age -->
+
+
+<div class="project">  <!-- titlescraper -->
+  <input type="checkbox" id="titlescraper-cb" />
+  <div class="top">
+    <label class="name" for="titlescraper-cb">TitleScraper</label>
+    <div>
+      <icon computer></icon>
+    </div>
+  </div>
+  <p class="short-description">A simple program to copy the title of a window into a TXT file.</p>
+  <div class="long-description">
+    <p>A simple program to find an open window and write its title to a file.</p>
+    <p>Written to scrape Spotify's currently playing song for use on a livestream.</p>
+    <ul class="links">
+      {{ link("Github", "https://github.com/Voxel-Fox-Ltd/TitleScraper", "github") }}
+    </ul>
+  </div>
+</div>  <!-- /titlescraper -->
+
+
+<div class="project">  <!-- tck -->
+  <input type="checkbox" id="tck-cb" />
+  <div class="top">
+    <label class="name" for="tck-cb">TCK.gg</label>
+    <div>
+      <icon link></icon>
+      <icon html5></icon>
+      <icon css3></icon>
+      <icon javascript></icon>
+      <icon python></icon>
+    </div>
+  </div>
+  <p class="short-description">An affiliate website made for a streamer.</p>
+  <div class="long-description">
+    <p>I built both the frontend and backend for the website associated with the Twitch streamer TCK.</p>
+    <ul class="links">
+      {{ link("Website", "https://web.archive.org/web/20230704205010/https://tck.gg/", "link") }}
+    </ul>
+  </div>
+  <p class="date">July 2022 - September 2022</p>
+</div>  <!-- /tck -->
+
+
+<div class="project">  <!-- cerberus -->
+  <input type="checkbox" id="cerberus-cb" />
+  <div class="top">
+    <label class="name" for="cerberus-cb">Cerberus</label>
+    <div>
+      <icon discord></icon>
+      <icon python></icon>
+      <icon postgres></icon>
+    </div>
+  </div>
+  <p class="short-description">An activity tracking bot for Discord users.</p>
+  <div class="long-description">
+    <p>
+      Cerberus is a bot designed to listen for chat messages and activity and - basically - count them.
+    </p>
+    <p>
+      There's a couple of caveats built into that though: there's an inbuilt spam filter, and there are blacklists for different channels, but for the most part the bot just counts messages.
+    </p>
+    <p>
+      In terms of other activity, the bot will also keep track of user activity in voice channels, allowing you to have a more accurate gague of the total activity of a user in your guild.
+    </p>
+    <p>
+      Unlike many other acitvity bots, Cerberus takes a hard stance that acivity is something that decays rather than a permanent attribute of your user. Thus, activity points decay from a user over [a configurable amount of] time. In addition to this decay feature, you're able to see how many points a user has at any given point in time.
+    </p>
+    <img src="{{ static('/images/cerberus/7-day-graph.png') }}" />
+    <ul class="links">
+      {{ discord_link(647301314732097560) }}
+      {{ link("Github", "https://github.com/Voxel-Fox-Ltd/Cerberus", "github") }}
+      {{ link("Privacy Policy", "/md/privacy_policy/Cerberus.md", "link") }}
+      {{ link("Terms of Service", "/md/terms_of_service/Cerberus.md", "link") }}
+    </ul>
+  </div>
+  <p class="date">November 2019 - present</p>
+</div>  <!-- /cerberus -->
+
+
+<div class="project">  <!-- streamlink -->
+  <input type="checkbox" id="streamlink-cb" />
+  <div class="top">
+    <label class="name" for="streamlink-cb">Streamlink</label>
+    <div>
+      <icon link></icon>
+      <icon html5></icon>
+      <icon css3></icon>
+      <icon javascript></icon>
+    </div>
+  </div>
+  <p class="short-description">A simple Twitch chat TTS and sound effect processor written in pure JS.</p>
+  <div class="long-description">
+    <p>
+      Cerberus is a bot designed to listen for chat messages and activity and - basically - count them.
+    </p>
+    <p>
+      There's a couple of caveats built into that though: there's an inbuilt spam filter, and there are blacklists for different channels, but for the most part the bot just counts messages.
+    </p>
+    <p>
+      In terms of other activity, the bot will also keep track of user activity in voice channels, allowing you to have a more accurate gague of the total activity of a user in your guild.
+    </p>
+    <p>
+      Unlike many other acitvity bots, Cerberus takes a hard stance that acivity is something that decays rather than a permanent attribute of your user. Thus, activity points decay from a user over [a configurable amount of] time. In addition to this decay feature, you're able to see how many points a user has at any given point in time.
+    </p>
+    <ul class="links">
+      {{ link("Website", "/tts", "link") }}
+    </ul>
+  </div>
+</div>  <!-- /streamlink -->
+
+<!-- Rather than disabling cache control completely, we'll just reset inputs here -->
+<script type="text/javascript">
+for(let node of document.querySelectorAll(".project input")) {
+  node.checked = false;
+}
+</script>
 {% endblock %}

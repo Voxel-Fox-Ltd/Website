@@ -1,12 +1,10 @@
 {% extends "partials/page.htm.j2" %}
 
-{% block body %}
-<div id="main" class="content" data-name="main">
-  <img class="logo" src="{{ static('/images/_voxelfox/white.svg') }}" />
-  <h1>Voxel Fox</h1>
-  <h2>Web | Software | Streaming | Programming</h2>
-  <p><a href="/projects">Programming</a></p>
-  <p><a href="/contact">Contact</a></p>
-  <p><a href="/branding">Branding</a></p>
-</div>
+{% block content %}
+<img class="logo" src="{{ static('/images/_voxelfox/white.svg') }}" />
+<h1>Voxel Fox</h1>
+<h2>Software | Streaming | Programming</h2>
+<h2><a href="/projects">Projects</a></h2>
+<h2><a href="/contact">Contact</a></h2>
+<h2><a href="/branding">Branding</a></h2>
 {% endblock %}
