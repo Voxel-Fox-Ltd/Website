@@ -69,10 +69,34 @@ code {
     margin-top: 15px;
 }
 
-.logo, .project .image {
+.logo {
     width: 300px;
     margin-bottom: 20px;
+    grid-column: 1;
+    grid-row: 1;
 }
+
+.logo-box {
+    display: grid;
+    margin-top: 10px;
+}
+
+.logo-box::before {
+    content: "← go back";
+    padding: 3px;
+    background: white;
+    color: black;
+    border-radius: 5px;
+    position: relative;
+    left: -20px;
+    top: -15px;
+    display: inline;
+    width: fit-content;
+    grid-column: 1;
+    grid-row: 1;
+    height: fit-content;
+}
+
 
 img.rounded {
     border-radius: 15px;

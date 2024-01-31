@@ -30,4 +30,11 @@ for(let node of document.querySelectorAll("span[data-hover-image]")) {
         destroyImageOver();
     });
 }
+
+
+for(let node of document.querySelectorAll("a[data-discord-id]")) {
+    let botId = node.dataset.discordId;
+    let base = "https://discord.com/api/oauth2/authorize"
+    node.href = `${base}?client_id=${botId}&scope=bot%20applications.commands`
+}
 </script>
