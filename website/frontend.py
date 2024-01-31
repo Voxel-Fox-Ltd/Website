@@ -36,7 +36,7 @@ page_builder("/projects/tck", "projects/tck.htm.j2")
 page_builder("/projects/cerberus", "projects/cerberus.htm.j2")
 page_builder("/projects/streamlink", "projects/streamlink.htm.j2")
 
-page_builder("/18", "18.html.j2")
+page_builder("/18", "18.htm.j2")
 page_builder("/tts", "tts.htm.j2")
 
 
@@ -118,7 +118,8 @@ async def markdown(request: Request):
 
     # Get the user's target file as a path
     try:
-        assert ".." not in filename
+        if ".." in filename:
+            raise AssertionError
     except AssertionError:
         return Response(status=401)
     filename = filename.lstrip("/")
