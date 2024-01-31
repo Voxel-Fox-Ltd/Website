@@ -1,19 +1,15 @@
 import functools
 import io
 from typing import Tuple
-import smtplib
 import asyncio
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 import aiohttp
 
-from aiohttp.web import Request, RouteTableDef, Response, json_response
+from aiohttp.web import Request, RouteTableDef, Response
 from aiohttp_jinja2 import render_string
 import htmlmin
 from PIL import Image
 from bs4 import BeautifulSoup, Tag
 import imgkit
-import markdown2
 import ics
 
 
