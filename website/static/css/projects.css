@@ -25,6 +25,10 @@
     justify-content: space-between
 }
 
+.project .name {
+    margin: 0;
+}
+
 .project .date {
     font-size: 0.9rem;
     filter: opacity(0.6);
