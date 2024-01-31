@@ -1,4 +1,14 @@
-<input type="checkbox" id="hamburger-checkbox" />
+<script type="text/javascript">
+function blockHamburgerScroll(node) {
+    if(node.checked) {
+        document.body.style.overflow = "hidden";
+    }
+    else {
+        document.body.style.overflow = "scroll";
+    }
+}
+</script>
+<input type="checkbox" id="hamburger-checkbox" onchange="blockHamburgerScroll(this);" />
 <div id="nav">
     <a href="/"><img src="{{ static('/images/_voxelfox/white.svg') }}" /></a>
     <div class="buttons">

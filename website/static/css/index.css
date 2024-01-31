@@ -128,9 +128,10 @@ label {
         left: 0;
         top: 0;
         width: 100vw;
-        height: 100vh;
+        height: 200vh;
         background: #000000cc;
         transition: 0.3s ease background;
+        z-index: 900;
     }
 
     #hamburger-checkbox:checked + #nav label:after {
