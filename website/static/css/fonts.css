@@ -1,10 +1,10 @@
 @font-face {
     font-family: 'icomoon';
-    src:  url('/static/fonts/icomoon.eot?k3lfrf');
-    src:  url('/static/fonts/icomoon.eot?k3lfrf#iefix') format('embedded-opentype'),
-        url('/static/fonts/icomoon.ttf?k3lfrf') format('truetype'),
-        url('/static/fonts/icomoon.woff?k3lfrf') format('woff'),
-        url('/static/fonts/icomoon.svg?k3lfrf#icomoon') format('svg');
+    src:  url('/static/fonts/icomoon.eot?h63ir3');
+    src:  url('/static/fonts/icomoon.eot?h63ir3#iefix') format('embedded-opentype'),
+        url('/static/fonts/icomoon.ttf?h63ir3') format('truetype'),
+        url('/static/fonts/icomoon.woff?h63ir3') format('woff'),
+        url('/static/fonts/icomoon.svg?h63ir3#icomoon') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: block;
@@ -33,6 +33,7 @@ icon[postgres]:before {content: "\e909";}
 
 icon[node]:before {content: "\e907";}
 icon[python]:before {content: "\e90c";}
+icon[go]:before {content: "\e90d";}
 
 icon[banknote]:before {content: "\e901";}
 icon[computer]:before {content: "\e956";}
