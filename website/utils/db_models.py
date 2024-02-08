@@ -923,6 +923,10 @@ class Purchase:
                 WHERE
                     {0} = $1
                     AND checkout_items.id = $2
+                    AND (
+                        purchases.expiry_time IS NULL
+                        OR purchases.expiry_time <= TIMEZONE('UTC', NOW())
+                    )
                 ORDER BY
                     timestamp DESC
                 """.format(check),
