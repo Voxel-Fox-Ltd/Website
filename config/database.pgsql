@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS checkout_items(
     -- Information on the product IDs
     stripe_product_id TEXT NOT NULL,
     stripe_price_id TEXT NOT NULL,
+    stripe_ideal_price_id TEXT,
     paypal_plan_id TEXT,
 
     -- Webhooks to send to when there's a purchase been made

@@ -14,14 +14,16 @@ var button = document.getElementById(ss.dataset.button);
   button.innerHTML = `<button class="button">Checkout via Stripe</button>`;
 {% endif %}
 button.onclick = () => {
+  let data = {
+    product_id: ss.dataset.productId,
+    user_id: ss.dataset.userId,
+    discord_guild_id: ss.dataset.discordGuildId,
+    quantity: {{ item.quantity }},
+    ideal: !!(new URL(window.location)).searchParams.get("ideal"),
+  }
   fetch("/webhooks/stripe/create_checkout_session", {
     method: "POST",
-    body: JSON.stringify({
-      product_id: ss.dataset.productId,
-      user_id: ss.dataset.userId,
-      discord_guild_id: ss.dataset.discordGuildId,
-      quantity: {{ item.quantity }},
-    }),
+    body: JSON.stringify(data),
   }).then(function (response) {
     return response.json();
   }).then(function (session) {

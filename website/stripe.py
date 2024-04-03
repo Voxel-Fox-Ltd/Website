@@ -76,6 +76,7 @@ async def create_checkout_session(request: Request):
     post_data: CheckoutSessionJson = await request.json()
     product_id: str = post_data.pop("product_id", None)  # pyright: ignore
     quantity: int = post_data.pop("quantity", 1)  # pyright: ignore
+    ideal: bool = post_data.pop("ideal", False)  # pyright: ignore
 
     # Get the user's login details for metadata
     if "user_id" not in post_data:
@@ -101,12 +102,12 @@ async def create_checkout_session(request: Request):
     # Make params to send to Stripe
     json_data = {
         "cancel_url": item.cancel_url,
-        "payment_method_types": ["card"],
+        "payment_method_types": ["card", "ideal"] if ideal else ["card"],
         "success_url": item.success_url,
         "mode": "subscription" if item.subscription else "payment",
         "line_items": [
             {
-                "price": item.stripe_price_id,
+                "price": item.stripe_ideal_price_id if ideal else item.stripe_price_id,
                 "quantity": quantity,
             },
         ],

@@ -361,6 +361,7 @@ class CheckoutItem:
         'subscription',
         'stripe_product_id',
         'stripe_price_id',
+        'stripe_ideal_price_id',
         'paypal_plan_id',
         'webhook',
         'webhook_auth',
@@ -394,6 +395,7 @@ class CheckoutItem:
             subscription: bool,
             stripe_product_id: str,
             stripe_price_id: str,
+            stripe_ideal_price_id: str,
             paypal_plan_id: Optional[str],
             transaction_webhook: str,
             transaction_webhook_authorization: str,
@@ -415,6 +417,7 @@ class CheckoutItem:
         self.subscription: bool = subscription
         self.stripe_product_id: str = stripe_product_id
         self.stripe_price_id: str = stripe_price_id
+        self.stripe_ideal_price_id: str = stripe_ideal_price_id
         self.paypal_plan_id: Optional[str] = paypal_plan_id
         self.webhook: str = transaction_webhook
         self.webhook_auth: str = transaction_webhook_authorization
@@ -551,6 +554,7 @@ class CheckoutItem:
             subscription=row['subscription'],
             stripe_product_id=row['stripe_product_id'],
             stripe_price_id=row['stripe_price_id'],
+            stripe_ideal_price_id=row['stripe_ideal_price_id'],
             paypal_plan_id=row['paypal_plan_id'],
             transaction_webhook=row['transaction_webhook'],
             transaction_webhook_authorization=row['transaction_webhook_authorization'],
