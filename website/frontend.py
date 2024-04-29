@@ -21,13 +21,20 @@ def page_builder(page_name: str, template_name: str):
 
 
 page_builder("/", "index.htm.j2")
-page_builder("/main", "index.htm.j2")
-page_builder("/index", "index.htm.j2")
+# page_builder("/main", "index.htm.j2")
+# page_builder("/index", "index.htm.j2")
 page_builder("/contact", "contact.htm.j2")
 page_builder("/branding", "branding.htm.j2")
 page_builder("/projects", "projects.htm.j2")
+page_builder("/commissions", "commissions.htm.j2")
 
 page_builder("/tts", "project-pages/tts.htm.j2")
+
+
+@routes.get("/main")
+@routes.get("/index")
+async def slash_redirect(request: Request):
+    return HTTPFound("/")
 
 
 @routes.get("/gforms")
