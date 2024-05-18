@@ -230,9 +230,16 @@ async function sayMessageSE(twitchMessage) {
     if(voice === undefined) voice = VOICES[0];
 
     // Get TTS URL
+    let text = twitchMessage.filteredMessage;
+    let rate = 1;
+    let match = /^([\d\.])\|(.*)$/g.exec(text);
+    if(match) {
+        text = match[2];
+        rate = Math.max(0.2, Math.min(parseFloat(match[1]), 5));
+    }
     let usp = new URLSearchParams({
         "voice": voice.name,
-        "text": twitchMessage.filteredMessage,
+        "text": text,
     });
     let voiceUrl = (
         "https://api.streamelements.com/kappa/v2/speech?"
@@ -240,7 +247,7 @@ async function sayMessageSE(twitchMessage) {
     );
 
     // Add to queue
-    queueAudio(voiceUrl)
+    queueAudio(voiceUrl, rate)
 }
 
 
@@ -257,16 +264,17 @@ function getAvailableTTSNodes() {
 
 
 var audioQueue = [];
-function queueAudio(url) {
-    audioQueue.push(url);
+function queueAudio(url, rate=1) {
+    audioQueue.push([url, rate]);
     let audio = getAvailableTTSNodes();
     if(audio) playNextTTSTrack();
 }
 function playNextTTSTrack() {
     let audio = getAvailableTTSNodes();
     if(audioQueue.length > 0) {
-        let url = audioQueue.shift();
+        let [url, rate] = audioQueue.shift();
         audio[0].src = url;
+        audio[0].playbackRate = rate;
         audio[0].play();
     }
 }
