@@ -5,6 +5,10 @@
 // Regex for a word boundary
 const WB = `(^|$|\\s|\\.|!|\\?|,)`;
 
+// Playback rate min and max
+var RATE_MIN = 0.01;  // 0.2;
+var RATE_MAX = 10.0;  // 5.0;
+
 // Patterns that are replaced via regex
 var REGEX_REPLACEMENTS = [
     ["^[\\? ]+$", "huh?"],
@@ -235,7 +239,7 @@ async function sayMessageSE(twitchMessage) {
     let match = /^(\d+|(?:\d+\.\d+))\|(.*)$/g.exec(text);
     if(match) {
         text = match[2];
-        rate = Math.max(0.2, Math.min(parseFloat(match[1]), 5));
+        rate = Math.max(RATE_MIN, Math.min(parseFloat(match[1]), RATE_MAX));
     }
     let usp = new URLSearchParams({
         "voice": voice.name,
