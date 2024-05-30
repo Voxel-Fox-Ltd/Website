@@ -259,7 +259,7 @@ function getAvailableTTSNodes() {
     let audio = document.querySelectorAll("audio.tts");
     let validAudio = [];
     for(node of audio) {
-        if(node.ended || node.src == "" || (node.error && node.error.code == 4)) {
+        if(node.ended || node.src == "" || node.paused || (node.error && node.error.code == 4)) {
             validAudio.push(node);
         }
     }
