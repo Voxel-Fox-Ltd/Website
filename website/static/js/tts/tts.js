@@ -6,7 +6,7 @@
 const WB = `(^|$|\\s|\\.|!|\\?|,)`;
 
 // Playback rate min and max
-var RATE_MIN = 0.01;  // 0.2;
+var RATE_MIN = 0.07;  // 0.2;
 var RATE_MAX = 10.0;  // 5.0;
 
 // Patterns that are replaced via regex
@@ -236,7 +236,7 @@ async function sayMessageSE(twitchMessage) {
     // Get TTS URL
     let text = twitchMessage.filteredMessage;
     let rate = 1;
-    let match = /^(\d+|(?:\d+\.\d+))\|(.*)$/g.exec(text);
+    let match = /^(-?\d+|-?(?:\d+\.\d+))\|(.*)$/g.exec(text);
     if(match) {
         text = match[2];
         rate = Math.max(RATE_MIN, Math.min(parseFloat(match[1]), RATE_MAX));
