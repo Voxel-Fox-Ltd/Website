@@ -232,7 +232,7 @@ async function sayMessageSE(twitchMessage) {
     // Get TTS URL
     let text = twitchMessage.filteredMessage;
     let rate = 1;
-    let match = /^([\d\.])\|(.*)$/g.exec(text);
+    let match = /^(\d+|(?:\d+\.\d+))\|(.*)$/g.exec(text);
     if(match) {
         text = match[2];
         rate = Math.max(0.2, Math.min(parseFloat(match[1]), 5));
