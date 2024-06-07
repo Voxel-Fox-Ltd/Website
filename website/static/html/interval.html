@@ -62,7 +62,8 @@ body {
 </div>
 
 <script type="text/javascript">
-const INTERVAL_TIME = 20;  // minutes
+var INTERVAL_TIME = parseInt(location.search.slice(1));  // minutes
+if(isNaN(INTERVAL_TIME)) INTERVAL_TIME = 20;
 var timePaused = false;
 
 function loop() {
