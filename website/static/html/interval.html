@@ -36,6 +36,7 @@ body {
     font-size: 10rem;
     font-weight: bold;
 }
+#pause-time,
 #interval-time,
 #call-time {
     font-size: 2.5rem;
@@ -52,12 +53,16 @@ body {
 .paused:after {
     content: " -";
 }
+.time-holder:not(.paused) .time {
+    font-style: italic;
+}
 </style>
 
 <div id="container">
     <div id="current-time">Loading...</div>
-    <div id="interval-time">interval end <span class="time">...</span></div>
-    <div id="call-time">call time <span class="time">...</span></div>
+    <div id="pause-time" class="time-holder">paused at <span class="time">...</span></div>
+    <div id="interval-time" class="time-holder">interval end <span class="time">...</span></div>
+    <div id="call-time" class="time-holder">call time <span class="time">...</span></div>
     <div id="spacer"></div>
 </div>
 
@@ -67,15 +72,20 @@ if(isNaN(INTERVAL_TIME)) INTERVAL_TIME = 20;
 var timePaused = false;
 
 function loop() {
+    // make dts
     let t = new Date();
     let ie = new Date(t);
     let ct = new Date(t);
+
+    // set times
     ie.setMinutes(ie.getMinutes() + INTERVAL_TIME);
     ct.setMinutes(ct.getMinutes() + INTERVAL_TIME - 5);
     if(ie.getSeconds() >= 30) {
         ie.setMinutes(ie.getMinutes() + 1);
         ct.setMinutes(ct.getMinutes() + 1);
     }
+
+    // set times
     document.querySelector("#current-time").innerText = t.toLocaleTimeString();
     if(!timePaused) {
         let ies = ie.toLocaleTimeString();
@@ -84,11 +94,21 @@ function loop() {
         cts = cts.substring(0, cts.length - 3);
         document.querySelector("#interval-time .time").innerText = ies;
         document.querySelector("#call-time .time").innerText = cts;
+
+        document.querySelector("#pause-time").innerText = "press space to pause";
     }
-    setTimeout(loop, 100);
+
+    // repeat
+    setTimeout(loop, 50);
 }
+
+// pause on spacebar
 window.addEventListener("keydown", (event) => {
     if(!(event.key == "p" || event.key == " ")) return;
+    let t = new Date();
+    let pts = t.toLocaleTimeString();
+    document.querySelector("#pause-time").innerText = `paused at ${pts}`;
+    document.querySelector("#pause-time").classList.toggle("paused");
     document.querySelector("#interval-time").classList.toggle("paused");
     document.querySelector("#call-time").classList.toggle("paused");
     timePaused = !timePaused;
