@@ -17,6 +17,7 @@
         * 10_000px = 1m
         I don't know why I did this but it's too lage to change now.
     */
+
     --calc-m-to-px: 10000px;  /* Set as px for multiplication */
     --calc-mm-to-px: 10px;  /* Set as px for multiplication */
     --calc-ft-to-px: 3048px;  /* Set as px for multiplication */
@@ -59,9 +60,11 @@
     --table-colour: #4747c0;
     --danger-colour: red;
 }
+
 html {
     margin: 0;
 }
+
 body {
     --zoom-amount: calc(24 / 3500);  /* Full height on a 1080p screen */
     zoom: var(--zoom-amount);
@@ -70,12 +73,14 @@ body {
     margin: 0;
     font-family: 'Century Gothic', sans-serif;
 }
+
 #floor-plan {
     --room-margin: 20px;
     margin: 10px 10px 10px calc(var(--door-indicator-width) + 2000px);
     box-sizing: content-box;
     position: relative;
 }
+
 .item {
     position: absolute;
     display: flex;
@@ -83,6 +88,7 @@ body {
     align-items: center;
     background: rgb(255, 34, 255);  /* Make it obvious what isn't coloured */
 }
+
 .item[data-label]:after {
     content: attr(data-label);
     font-size: 2000px;
@@ -96,20 +102,29 @@ body {
         1px -1px 1000px black,
         -1px -1px 1000px black;
 }
+
 .draggable {
     box-sizing: border-box;
     border-bottom: 400px solid black;
 }
+
 .draggable:hover {
     cursor: grab;
 }
+
+.hidden {
+    display: none;
+}
+
 #line-markings {
     position: relative;
 }
+
 #line-markings * {
     position: absolute;
     z-index: 5;
 }
+
 #line-markings .vertical-centre {
     height: calc(var(--room-length) + var(--stair-depth) - 1000px);
     border: 100px dotted black;
@@ -122,20 +137,27 @@ body {
     );
     filter: opacity(0.2);
 }
+
 #floor {
     height: calc(var(--room-length) + var(--stair-depth));
     width: var(--room-width);
     background: var(--floor-colour);
     z-index: 0;
 }
+
 #stage {
     top: 0;
     left: var(--stair-to-wall);
     height: var(--stair-depth);
-    width: calc(var(--stage-width) + var(--stair-length-stageleft) + var(--stair-length-stageright));
+    width: calc(
+        var(--stage-width)
+        + var(--stair-length-stageleft)
+        + var(--stair-length-stageright)
+    );
     background: var(--wood-colour);
     z-index: 10;
 }
+
 #stage-right-stairs {
     top: 0;
     left: var(--stair-to-wall);
@@ -144,6 +166,7 @@ body {
     background: var(--wood-highlight-colour);
     z-index: 20;
 }
+
 #stage-left-stairs {
     top: 0;
     left: calc(var(--stair-to-wall) + var(--stage-width) + var(--stair-length-stageright));
@@ -152,6 +175,7 @@ body {
     background: var(--wood-highlight-colour);
     z-index: 20;
 }
+
 #fire-exit {
     top: var(--stage-to-fire-exit);
     left: var(--room-width);
@@ -160,6 +184,7 @@ body {
     background: var(--danger-colour);
     z-index: 0;
 }
+
 #bar-exit {
     top: calc(var(--stair-depth) + var(--room-length) - var(--rake-to-bar-door));
     left: calc(var(--door-indicator-width) * -1);
@@ -168,6 +193,7 @@ body {
     background: var(--danger-colour);
     z-index: 0;
 }
+
 #rake {
     top: var(--room-length);
     left: var(--rake-walkway-width-stageright);
@@ -177,40 +203,37 @@ body {
     z-index: 20;
 }
 
+.small-table {
+    width: calc(0.91 * var(--calc-m-to-px));
+    height: calc(0.745 * var(--calc-m-to-px));
+    z-index: 100;
+    background: beige;
+}
 
-#false-wall {
-    height: calc(500 * var(--calc-mm-to-px));
-    width: calc(28 * var(--calc-ft-to-px));
-    top: calc(
-        var(--room-width)
-        - (500 * var(--calc-mm-to-px))
-    );
-    left: calc(
-        var(--rake-walkway-width-stageright)
-        + (0.5 * var(--calc-m-to-px))
-    );
+.large-table {
+    width: calc(1.83 * var(--calc-m-to-px));
+    height: calc(0.69 * var(--calc-m-to-px));
     z-index: 100;
     background: lightblue;
 }
 
+.round-table {
+    width: calc(1.5 * var(--calc-m-to-px));
+    height: calc(1.5 * var(--calc-m-to-px));
+    border-radius: 50%;
+    z-index: 100;
+    background: darkblue;
+}
 
-.floor-display {
-    height: var(--floor-display-length);
-    width: var(--floor-display-width);
-    z-index: 100;
-    background: var(--table-colour);
-}
-.chair {
-    width: calc(0.55 * var(--calc-m-to-px));
-    height: calc(0.63 * var(--calc-m-to-px));
-    z-index: 100;
-    background: beige;
-}
-.sofa {
-    width: calc(1.85 * var(--calc-m-to-px));
-    height: calc(1.00 * var(--calc-m-to-px));
-    z-index: 100;
-    background: beige;
+@media print {
+    *:not(.hidden) {
+        border: 1px solid black;
+    }
+
+    .item[data-label]:after {
+        text-shadow: none;
+        color: black;
+    }
 }
 </style>
 
@@ -227,36 +250,66 @@ body {
         <div class="vertical-centre"></div>
     </div>
 
-    <div id="false-wall" class="item" data-label="Banksy Wall"></div>
+    <!-- <div id="false-wall" class="item" data-label="Banksy Wall"></div> -->
+    <!-- <div class="item floor-display draggable" data-name="urban-1" data-label="Display 1"></div> -->
 
-    <div class="item floor-display draggable" data-name="urban-1" data-label="Display 1"></div>
-    <div class="item floor-display draggable" data-name="urban-2" data-label="Display 2"></div>
-    <div class="item floor-display draggable" data-name="urban-3" data-label="Display 3"></div>
-    <div class="item floor-display draggable" data-name="urban-4" data-label="Display 4"></div>
-    <div class="item floor-display draggable" data-name="urban-5" data-label="Display 5"></div>
-    <div class="item floor-display draggable" data-name="urban-6" data-label="Display 6"></div>
-    <div class="item chair draggable" data-name="chair-1" data-label="Chair"></div>
-    <div class="item chair draggable" data-name="chair-2" data-label="Chair"></div>
-    <div class="item chair draggable" data-name="chair-3" data-label="Chair"></div>
-    <div class="item chair draggable" data-name="chair-4" data-label="Chair"></div>
-    <div class="item chair draggable" data-name="chair-5" data-label="Chair"></div>
-    <div class="item sofa draggable" data-name="chair-6" data-label="Sofa"></div>
+    <div class="item small-table draggable hidden" data-name="small-table-1" data-label="Table"></div>
+    <div class="item small-table draggable hidden" data-name="small-table-2" data-label="Table"></div>
+    <div class="item small-table draggable hidden" data-name="small-table-3" data-label="Table"></div>
+    <div class="item small-table draggable hidden" data-name="small-table-4" data-label="Table"></div>
+    <div class="item small-table draggable hidden" data-name="small-table-5" data-label="Table"></div>
+    <div class="item small-table draggable hidden" data-name="small-table-6" data-label="Table"></div>
+    <div class="item small-table draggable hidden" data-name="small-table-7" data-label="Table"></div>
+    <div class="item small-table draggable hidden" data-name="small-table-8" data-label="Table"></div>
+    <div class="item small-table draggable hidden" data-name="small-table-9" data-label="Table"></div>
+    <div class="item small-table draggable hidden" data-name="small-table-10" data-label="Table"></div>
+    <div class="item small-table draggable hidden" data-name="small-table-11" data-label="Table"></div>
+
+    <div class="item large-table draggable hidden" data-name="large-table-1" data-label="Table"></div>
+    <div class="item large-table draggable hidden" data-name="large-table-2" data-label="Table"></div>
+    <div class="item large-table draggable hidden" data-name="large-table-3" data-label="Table"></div>
+    <div class="item large-table draggable hidden" data-name="large-table-4" data-label="Table"></div>
+    <div class="item large-table draggable hidden" data-name="large-table-5" data-label="Table"></div>
+    <div class="item large-table draggable hidden" data-name="large-table-6" data-label="Table"></div>
+    <div class="item large-table draggable hidden" data-name="large-table-7" data-label="Table"></div>
+    <div class="item large-table draggable hidden" data-name="large-table-8" data-label="Table"></div>
+    <div class="item large-table draggable hidden" data-name="large-table-9" data-label="Table"></div>
+    <div class="item large-table draggable hidden" data-name="large-table-10" data-label="Table"></div>
+    <div class="item large-table draggable hidden" data-name="large-table-11" data-label="Table"></div>
+    <div class="item large-table draggable hidden" data-name="large-table-12" data-label="Table"></div>
+    <div class="item large-table draggable hidden" data-name="large-table-13" data-label="Table"></div>
+    <div class="item large-table draggable hidden" data-name="large-table-14" data-label="Table"></div>
+    <div class="item large-table draggable hidden" data-name="large-table-15" data-label="Table"></div>
+    <div class="item large-table draggable hidden" data-name="large-table-16" data-label="Table"></div>
+    <div class="item large-table draggable hidden" data-name="large-table-17" data-label="Table"></div>
+    <div class="item large-table draggable hidden" data-name="large-table-18" data-label="Table"></div>
+
+    <div class="item round-table draggable hidden" data-name="round-table-1" data-label="Table"></div>
+    <div class="item round-table draggable hidden" data-name="round-table-2" data-label="Table"></div>
+    <div class="item round-table draggable hidden" data-name="round-table-3" data-label="Table"></div>
+    <div class="item round-table draggable hidden" data-name="round-table-4" data-label="Table"></div>
+    <div class="item round-table draggable hidden" data-name="round-table-5" data-label="Table"></div>
+    <div class="item round-table draggable hidden" data-name="round-table-6" data-label="Table"></div>
+    <div class="item round-table draggable hidden" data-name="round-table-7" data-label="Table"></div>
+    <div class="item round-table draggable hidden" data-name="round-table-8" data-label="Table"></div>
 </div>
 
 
 <script>
-// Because I insisted on a dumb scale
 const ZOOM_LEVEL = 24 / 3500;
-
-// No accidental draggings
-var SHIFT_HELD = false;
+const REQUIRE_SHIFT_KEY = false;
 
 
 function setHash() {
     itemLocations = {};
     for(let d of document.querySelectorAll(".draggable")) {
         if(!(d.dataset.position && d.dataset.rotation)) continue;
-        itemLocations[d.dataset.name] = `${d.dataset.position},${d.dataset.rotation}`;
+        if(d.dataset.position == "" || d.classList.contains("hidden")) {
+            itemLocations[d.dataset.name] = "";
+        }
+        else {
+            itemLocations[d.dataset.name] = `${d.dataset.position},${d.dataset.rotation}`;
+        }
     }
     location.hash = encodeURIComponent(JSON.stringify(itemLocations));
     console.log(itemLocations);
@@ -272,11 +325,17 @@ function fromHash() {
     }
     for(let d in itemLocations) {
         split = itemLocations[d].split(",");
-        if(split.length != 3) continue;
+        node = document.querySelector(`.draggable[data-name='${d}']`);
+        if(split.length != 3) {
+            node.classList.add("hidden");
+            continue;
+        }
+        else {
+            node.classList.remove("hidden");
+        }
         x = parseInt(split[0]);
         y = parseInt(split[1]);
         r = parseInt(split[2]);
-        node = document.querySelector(`.draggable[data-name='${d}']`);
         if(!node) continue;
         node.style.top = `${y}px`;
         node.style.left = `${x}px`;
@@ -291,22 +350,23 @@ function fromHash() {
 for(let i of document.querySelectorAll(".draggable")) {
 
     // Set initial values that we can do maths on later
-    i.style.top = "10000px";
-    i.style.left = "10000px";
-    i.dataset.position = "10000,10000";
+    let start = "-10000,-10000" // i.dataset.start;
+    i.style.left = start.split(",")[0] + "px";
+    i.style.top = start.split(",")[1] + "px";
+    i.dataset.position = start;
     i.dataset.rotation = "0";
     i.style.transform = "rotate(0deg)";
 
     // When an item is clicked, say it's clicked
     i.addEventListener("mousedown", (event) => {
-        if(!event.shiftKey) return;
+        if(!event.shiftKey && REQUIRE_SHIFT_KEY) return;
         event.target.classList.add("being-dragged");
         console.log(`Starting coords are (${event.target.style.left}, ${event.target.style.top})`);
     })
 
     // Rotation support
     i.addEventListener("wheel", (event) => {
-        if(!event.shiftKey) return;
+        if(!event.shiftKey && REQUIRE_SHIFT_KEY) return;
         target = event.target;
         currentRotation = parseFloat(target.style.transform.match(/\d+/)[0])
         newRotation = currentRotation + (15 * (event.deltaY < 0 ? 1 : -1));
@@ -328,7 +388,7 @@ for(let i of document.querySelectorAll(".draggable")) {
 document.addEventListener("mousemove", (event) => {
 
     // Make sure we're actually clicking something
-    if(!event.shiftKey) return;
+    if(!event.shiftKey && REQUIRE_SHIFT_KEY) return;
     if(event.buttons != 1) return;
     target = document.querySelector(".being-dragged");
     if(target === null) return;
@@ -352,6 +412,32 @@ document.addEventListener("mousemove", (event) => {
         target.dataset.position = `${locationX},${locationY}`;
         // console.log(`Current (${currentX}, ${currentY}), moving (${moveX}, ${moveY}), set to (${locationX}, ${locationY})`);
     }
+});
+
+
+// Spawn tables on keydown
+document.addEventListener("keydown", (event) => {
+    let node = null;
+    switch(event.key) {
+        case "s":
+            node = document.querySelector(".small-table.hidden");
+            break;
+        case "r":
+            node = document.querySelector(".round-table.hidden");
+            break;
+        case "l":
+            node = document.querySelector(".large-table.hidden");
+            break;
+        case "Delete":
+            node = document.querySelector(".being-dragged");
+            if(node !== null) node.classList.add("hidden");
+            return;
+    }
+    if(node === null) return;
+    node.style.left = "10000px"
+    node.style.top = "10000px"
+    node.dataset.position = "10000,10000";
+    node.classList.remove("hidden");
 });
 
 
