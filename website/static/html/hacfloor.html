@@ -305,13 +305,14 @@ function setHash() {
     for(let d of document.querySelectorAll(".draggable")) {
         if(!(d.dataset.position && d.dataset.rotation)) continue;
         if(d.dataset.position == "" || d.classList.contains("hidden")) {
-            itemLocations[d.dataset.name] = "";
+            // itemLocations[d.dataset.name] = "";
         }
         else {
             itemLocations[d.dataset.name] = `${d.dataset.position},${d.dataset.rotation}`;
         }
     }
-    location.hash = encodeURIComponent(JSON.stringify(itemLocations));
+    if(Object.keys(itemLocations).length == 0) location.hash = "";
+    else location.hash = encodeURIComponent(JSON.stringify(itemLocations));
     console.log(itemLocations);
 }
 function fromHash() {
