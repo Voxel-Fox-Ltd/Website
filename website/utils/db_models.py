@@ -40,6 +40,8 @@ class User:
     facebook_user_id : str | None
     facebook_refresh_token : str | None
     stripe_customer_id : str | None
+    blocked : bool
+        Whether the user is blocked from making purchases or not.
     """
 
     __slots__ = (
@@ -51,6 +53,7 @@ class User:
         'facebook_user_id',
         'facebook_refresh_token',
         'stripe_customer_id',
+        'blocked',
     )
 
     def __init__(
@@ -63,7 +66,8 @@ class User:
             google_refresh_token: str | None = None,
             facebook_user_id: str | None = None,
             facebook_refresh_token: str | None = None,
-            stripe_customer_id: str | None = None):
+            stripe_customer_id: str | None = None,
+            blocked: bool = False):
         self._id = id
         self.discord_user_id = discord_user_id
         self.discord_refresh_token = discord_refresh_token
@@ -72,6 +76,7 @@ class User:
         self.facebook_user_id = facebook_user_id
         self.facebook_refresh_token = facebook_refresh_token
         self.stripe_customer_id = stripe_customer_id
+        self.blocked = blocked
 
     @classmethod
     def from_row(cls, row: dict[str, Any]):
@@ -84,6 +89,7 @@ class User:
             facebook_user_id=row.get("facebook_user_id"),
             facebook_refresh_token=row.get("facebook_refresh_token"),
             stripe_customer_id=row.get("stripe_customer_id"),
+            blocked=row.get("blocked", False),
         )
 
     @property

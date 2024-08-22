@@ -6,6 +6,7 @@ from aiohttp.web import (
     HTTPFound,
     Request,
     RouteTableDef,
+    Response,
 )
 from aiohttp_jinja2 import render_template, template
 import aiohttp_session
@@ -64,6 +65,8 @@ async def index(request: Request):
         if "id" in session:
             user = await User.fetch(db, id=session["id"])
             assert user
+            if user.blocked:
+                return Response(text="This account has been blocked from making purchases.")
             item_ids = {i.id: i for i in available_items}
             user_purchases = [
                 i for i in await Purchase.fetch_by_user(db, user)
