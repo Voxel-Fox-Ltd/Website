@@ -243,7 +243,10 @@ async def discord(request: Request):
         f"{token_json['expires_in'] + int(time.time() - 60)}:"
         f"{token_json['access_token']}"
     )
-    storage['discord']['username'] = f"{user_json['username']}#{user_json['discriminator']}"
+    if user_json["discriminator"] != "0":
+        storage["discord"]["username"] = f"{user_json['username']}#{user_json['discriminator']}"
+    else:
+        storage["discord"]["username"] = f"{user_json['username']}"
 
 
 @routes.get('/login/google')
