@@ -110,6 +110,7 @@ async def index(request: Request):
 
     # Render the template
     v = {
+        "user_name": session.get()
         "logged_in": session.get("id") is not None,
         "available_items": available_items,
         "unavailable_items": unavailable_items,
