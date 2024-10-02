@@ -56,8 +56,22 @@ body {
 .time-holder:not(.paused) .time {
     font-style: italic;
 }
+
+#topline, #topline p, #topline a {
+    color: #ffffff99;
+    text-decoration: none;
+    font-size: 1.2em;
+    margin: 0;
+}
+
+#topline {
+    margin-top: 1em;
+}
 </style>
 
+<div id="topline">
+    <p><a data-time="15" href="?15">15m</a> | <a data-time="20" href="?20">20m</a></p>
+</div>
 <div id="container">
     <div id="current-time">Loading...</div>
     <div id="pause-time" class="time-holder">paused at <span class="time">...</span></div>
@@ -70,6 +84,8 @@ body {
 var INTERVAL_TIME = parseInt(location.search.slice(1));  // minutes
 if(isNaN(INTERVAL_TIME)) INTERVAL_TIME = 20;
 var timePaused = false;
+let timeSelected = document.querySelector(`#topline a[data-time="${INTERVAL_TIME}"]`);
+if(timeSelected !== null) timeSelected.style.fontWeight = "bold";
 
 function loop() {
     // make dts
