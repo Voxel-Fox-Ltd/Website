@@ -67,39 +67,60 @@ body {
 #topline {
     margin-top: 1em;
 }
+
+.selected {
+    font-weight: bold;
+}
 </style>
 
 <div id="topline">
     <p>
-        <a data-time="10" href="?10">10m</a>
+        <a data-time="10" href="#" onclick="setIntervalTime(this);">10m</a>
         |
-        <a data-time="15" href="?15">15m</a>
+        <a data-time="15" href="#" onclick="setIntervalTime(this);">15m</a>
         |
-        <a data-time="20" href="?20">20m</a>
+        <a data-time="20" href="#" onclick="setIntervalTime(this);" class="selected">20m</a>
         |
-        <a data-time="25" href="?25">25m</a>
+        <a data-time="25" href="#" onclick="setIntervalTime(this);">25m</a>
         |
-        <a data-time="30" href="?30">30m</a>
+        <a data-time="30" href="#" onclick="setIntervalTime(this);">30m</a>
     </p>
 </div>
 <div id="container">
     <div id="current-time">Loading...</div>
-    <div id="pause-time" class="time-holder">paused at <span class="time">...</span></div>
+    <div id="pause-time" class="time-holder">press space to pause</div>
     <div id="interval-time" class="time-holder">interval end <span class="time">...</span></div>
     <div id="call-time" class="time-holder">call time <span class="time">...</span></div>
     <div id="spacer"></div>
 </div>
 
 <script type="text/javascript">
-var INTERVAL_TIME = parseInt(location.search.slice(1));  // minutes
-if(isNaN(INTERVAL_TIME)) INTERVAL_TIME = 20;
+var INTERVAL_TIME = 20
 var timePaused = false;
+var forceTimeUpdate = false;
 let timeSelected = document.querySelector(`#topline a[data-time="${INTERVAL_TIME}"]`);
-if(timeSelected !== null) timeSelected.style.fontWeight = "bold";
+
+
+function setIntervalTime(node) {
+    INTERVAL_TIME = parseInt(node.dataset.time);
+    let currentSelection = document.querySelectorAll("#topline .selected");
+    for(let i of currentSelection) {
+        i.classList.remove("selected");
+    }
+    node.classList.add("selected");
+    forceTimeUpdate = true;
+}
+
 
 function loop() {
     // make dts
-    let t = new Date();
+    let t;
+    if(timePaused) {
+        t = new Date(document.querySelector("#pause-time").dataset.pauseTime);
+    }
+    else {
+        t = new Date();
+    }
     let ie = new Date(t);
     let ct = new Date(t);
 
@@ -112,16 +133,15 @@ function loop() {
     }
 
     // set times
-    document.querySelector("#current-time").innerText = t.toLocaleTimeString();
-    if(!timePaused) {
+    document.querySelector("#current-time").innerText = (new Date()).toLocaleTimeString();
+    if(!timePaused || forceTimeUpdate) {
         let ies = ie.toLocaleTimeString();
         ies = ies.substring(0, ies.length - 3);
         let cts = ct.toLocaleTimeString();
         cts = cts.substring(0, cts.length - 3);
         document.querySelector("#interval-time .time").innerText = ies;
         document.querySelector("#call-time .time").innerText = cts;
-
-        document.querySelector("#pause-time").innerText = "press space to pause";
+        forceTimeUpdate = false;
     }
 
     // repeat
@@ -131,13 +151,21 @@ function loop() {
 // pause on spacebar
 window.addEventListener("keydown", (event) => {
     if(!(event.key == "p" || event.key == " ")) return;
+    timePaused = !timePaused;
     let t = new Date();
     let pts = t.toLocaleTimeString();
-    document.querySelector("#pause-time").innerText = `paused at ${pts}`;
-    document.querySelector("#pause-time").classList.toggle("paused");
+    let ptn = document.querySelector("#pause-time");
+    if(timePaused) {
+        ptn.innerText = `paused at ${pts}`;
+        ptn.dataset.pauseTime = t.toISOString();
+    }
+    else {
+        ptn.innerText = "press space to pause";
+        ptn.dataset.pauseTime = "";
+    }
+    ptn.classList.toggle("paused");
     document.querySelector("#interval-time").classList.toggle("paused");
     document.querySelector("#call-time").classList.toggle("paused");
-    timePaused = !timePaused;
 })
 loop();
 </script>
