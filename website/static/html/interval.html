@@ -62,6 +62,7 @@ body {
     text-decoration: none;
     font-size: 1.2em;
     margin: 0;
+    user-select: none;
 }
 
 #topline {
@@ -79,7 +80,7 @@ body {
         |
         <a data-time="15" href="#" onclick="setIntervalTime(this);">15m</a>
         |
-        <a data-time="20" href="#" onclick="setIntervalTime(this);" class="selected">20m</a>
+        <a data-time="20" href="#" onclick="setIntervalTime(this);">20m</a>
         |
         <a data-time="25" href="#" onclick="setIntervalTime(this);">25m</a>
         |
@@ -95,10 +96,10 @@ body {
 </div>
 
 <script type="text/javascript">
-var INTERVAL_TIME = 20
+var INTERVAL_TIME = parseInt(location.search.slice(1));
+if(isNaN(INTERVAL_TIME)) INTERVAL_TIME = 20;
 var timePaused = false;
 var forceTimeUpdate = false;
-let timeSelected = document.querySelector(`#topline a[data-time="${INTERVAL_TIME}"]`);
 
 
 function setIntervalTime(node) {
@@ -107,9 +108,12 @@ function setIntervalTime(node) {
     for(let i of currentSelection) {
         i.classList.remove("selected");
     }
-    node.classList.add("selected");
+    if(node !== null) {
+        node.classList.add("selected");
+    }
     forceTimeUpdate = true;
 }
+setIntervalTime(document.querySelector(`#topline a[data-time="${INTERVAL_TIME}"]`));
 
 
 function loop() {
