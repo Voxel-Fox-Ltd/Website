@@ -218,11 +218,11 @@ def calendar_names_are_similar(name1: str, name2: str) -> Literal[False] | str:
     universal_shifts = set(["Meeting", "Auditorium Turnaround", "Training"])
     tech_shifts = set(["Tech", "Tech projection", "Tech Usher", "Followspot", "Outside Steward"])
     dm_shifts = set(["Duty Manager"])
-    shift1 = set(match1.group(2).split(","))
-    shift2 = set(match2.group(2).split(","))
+    shift1 = set([i.strip() for i in match1.group(2).split(",")])
+    shift2 = set([i.strip() for i in match2.group(2).split(",")])
 
-    joined_shift = match1.group(2).split(",")
-    for i in match2.group(2).split(","):
+    joined_shift = [i.strip() for i in match1.group(2).split(",")]
+    for i in [i.strip() for i in match2.group(2).split(",")]:
         if i not in joined_shift:
             joined_shift.append(i)
     joined_name = f"{match1.group(1)} ({', '.join(joined_shift)})"
