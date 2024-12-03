@@ -1,8 +1,10 @@
 import functools
 import io
-from typing import Tuple
+from typing import Literal, Tuple
 import asyncio
 import aiohttp
+import re
+from datetime import datetime
 
 from aiohttp.web import Request, RouteTableDef, Response
 from aiohttp_jinja2 import render_string
@@ -192,6 +194,40 @@ async def colour(request: Request):
     return Response(body=file.read(), headers=headers)
 
 
+def calendar_names_are_similar(name1: str, name2: str) -> Literal[False] | str:
+    """
+    Return whether or not two calendar event names are "similar" (mostly according to Dylan's
+    Rotacloud rules)
+    """
+
+    if name1 == name2:
+        return name1
+
+    regex = r"(.+) \((.+)\)"
+    match1 = re.search(regex, name1)
+    if match1 is None:
+        return False
+    match2 = re.search(regex, name2)
+    if match2 is None:
+        return False
+    if match1.group(1) != match2.group(1):
+        return False
+
+    # everything from now will have the same group 1
+
+    universal_shifts = set(["Meeting", "Auditorium Turnaround"])
+    tech_shifts = set(["Tech", "Tech projection", "Tech Usher", "Followspot", "Outside Steward"])
+    dm_shifts = set(["Duty Manager"])
+    shift1 = set(match1.group(2).split(","))
+    shift2 = set(match2.group(2).split(","))
+    if tech_shifts.intersection(shift1) and tech_shifts.union(universal_shifts).intersection(shift2):
+        return f"{match1.group(1)} ({', '.join(shift1)}, {', '.join(shift2)})"
+    if dm_shifts.intersection(shift1) and dm_shifts.union(universal_shifts).intersection(shift2):
+        return f"{match1.group(1)} ({', '.join(shift1)}, {', '.join(shift2)})"
+
+    return False
+
+
 @routes.get("/calendar_filter")
 async def calendar_filter(request: Request):
     """
@@ -207,32 +243,50 @@ async def calendar_filter(request: Request):
         )
 
     async with aiohttp.ClientSession() as session:
-        site = await session.get(url, headers={"User-Agent": "Voxel Fox calendar filter kae@vfl.gg"})
+        headers = {"User-Agent": "Voxel Fox calendar filter kae@voxelfox.co.uk"}
+        site = await session.get(url, headers=headers)
         calendar_raw = await site.text()
     calendar = ics.Calendar(calendar_raw)
 
     filters = request.query.getall("filter")
-    if not filters:
-        return Response(
-            body=calendar.serialize(),
-            headers={
-                "Content-Type": "text/calendar",
-                "Access-Control-Allow-Origin": "*",
-            },
-        )
+    if filters:
+        new_calendar = ics.Calendar()
+        for event in calendar.events:
+            add = True
+            for f in filters:
+                if f.casefold() in event.name.casefold():
+                    add = False
+                    break
+            if not add:
+                continue
+            new_calendar.events.add(event)
+        calendar = new_calendar
 
-    new_calendar = ics.Calendar()
-    for event in calendar.events:
-        add = True
-        for f in filters:
-            if f.casefold() in event.name.casefold():
-                add = False
-                break
-        if not add:
-            continue
-        new_calendar.events.add(event)
+    combine_similar = request.query.get("combine_similar") is not None
+    if combine_similar:
+        new_calendar = ics.Calendar()
+        previous: ics.Event | None = None
+        for event in sorted(calendar.events, key=lambda e: e.begin):
+            if previous is None:
+                previous = event
+                continue
+            assert previous is not None
+            new_name = calendar_names_are_similar(previous.name, event.name)
+            if new_name is not False and previous.end == event.begin:
+                if not isinstance(previous.description, str):
+                    previous.description = ""
+                previous.name = new_name
+                previous.description += "\n----------\n" + (event.description or "")
+                previous.end = event.end
+            else:
+                new_calendar.events.add(previous)
+                previous = event
+        if previous is not None:
+            new_calendar.events.add(previous)
+        calendar = new_calendar
+
     return Response(
-        body=new_calendar.serialize(),
+        body=calendar.serialize(),
         headers={
             "Content-Type": "text/calendar",
             "Access-Control-Allow-Origin": "*",
