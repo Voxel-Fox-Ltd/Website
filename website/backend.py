@@ -220,12 +220,19 @@ def calendar_names_are_similar(name1: str, name2: str) -> Literal[False] | str:
     dm_shifts = set(["Duty Manager"])
     shift1 = set(match1.group(2).split(","))
     shift2 = set(match2.group(2).split(","))
+
+    joined_shift = match1.group(2).split(",")
+    for i in match2.group(2).split(","):
+        if i not in joined_shift:
+            joined_shift.append(i)
+    joined_name = f"{match1.group(1)} ({', '.join(joined_shift)})"
+
     if tech_shifts.union(universal_shifts).intersection(shift1) and tech_shifts.union(universal_shifts).intersection(shift2):
-        return f"{match1.group(1)} ({', '.join(shift1.union(shift2))})"
+        return joined_name
     if dm_shifts.union(universal_shifts).intersection(shift1) and dm_shifts.union(universal_shifts).intersection(shift2):
-        return f"{match1.group(1)} ({', '.join(shift1.union(shift2))})"
+        return joined_name
     if universal_shifts.intersection(shift1) and tech_shifts.union(dm_shifts).intersection(shift2):
-        return f"{match1.group(1)} ({', '.join(shift1.union(shift2))})"
+        return joined_name
 
     return False
 
