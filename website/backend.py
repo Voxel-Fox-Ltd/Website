@@ -215,7 +215,7 @@ def calendar_names_are_similar(name1: str, name2: str) -> Literal[False] | str:
 
     # everything from now will have the same group 1
 
-    universal_shifts = set(["Meeting", "Auditorium Turnaround"])
+    universal_shifts = set(["Meeting", "Auditorium Turnaround", "Training"])
     tech_shifts = set(["Tech", "Tech projection", "Tech Usher", "Followspot", "Outside Steward"])
     dm_shifts = set(["Duty Manager"])
     shift1 = set(match1.group(2).split(","))
