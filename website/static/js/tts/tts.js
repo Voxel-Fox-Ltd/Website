@@ -136,6 +136,7 @@ var WORD_REPLACEMENTS = [
     // ["chatgpt", "chat GPT"],
     ["chatgpt", "chatgăpît"],
     ["istg", "I swear to God"],
+    ["LFG", "let's fucking go"],
 ]
 
 
