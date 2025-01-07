@@ -135,6 +135,7 @@ var WORD_REPLACEMENTS = [
     ["wha", "waa"],
     // ["chatgpt", "chat GPT"],
     ["chatgpt", "chatgăpît"],
+    ["istg", "I swear to God"],
 ]
 
 
