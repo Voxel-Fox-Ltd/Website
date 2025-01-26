@@ -174,16 +174,7 @@ function loop() {
 }
 
 // pause on spacebar
-window.addEventListener("keydown", (event) => {
-    if(!(event.key == "p" || event.key == " " || event.key == "+" || event.key == "-")) return;
-    if(event.key == "+") {
-        setIntervalTime(INTERVAL_TIME + (event.shiftKey ? 1 : 5));
-        return;
-    }
-    else if(event.key == "-") {
-        setIntervalTime(INTERVAL_TIME - (event.shiftKey ? 1 : 5));
-        return;
-    }
+function pause() {
     timePaused = !timePaused;
     let t = new Date();
     let pts = t.toLocaleTimeString();
@@ -199,7 +190,24 @@ window.addEventListener("keydown", (event) => {
     ptn.classList.toggle("paused");
     document.querySelector("#interval-time").classList.toggle("paused");
     document.querySelector("#call-time").classList.toggle("paused");
+};
+
+window.addEventListener("keydown", (event) => {
+    if(!(event.key == "p" || event.key == " " || event.key == "+" || event.key == "-")) return;
+    if(event.key == "+") {
+        setIntervalTime(INTERVAL_TIME + (event.shiftKey ? 1 : 5));
+        return;
+    } else if(event.key == "-") {
+        setIntervalTime(INTERVAL_TIME - (event.shiftKey ? 1 : 5));
+        return;
+    }
+    pause();
 });
+
+window.addEventListener("click", (event) => {
+    pause();
+});
+
 loop();
 
 
