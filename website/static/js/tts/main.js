@@ -9,21 +9,27 @@ const CLIENT_ID = "eatw6619xc67g5udj97dmx096vyxb7";
 var irc = null;
 var pubsub = null;
 async function connectTTS() {
+
+    let channelConnectTextarea = document.querySelector(`[name="connect"]`);
+    let loginButton = document.querySelector(`#login-button`);
+
     if(irc === null || pubsub === null) {
         saveInputs();
-        document.querySelector(`[name="connect"]`).disabled = true;
-        document.querySelector(`#login-button`).disabled = true;
+        channelConnectTextarea.disabled = true;
+        loginButton.disabled = true;
         let accessToken = document.querySelector(`[name="at"]`).value.trim();
-        let connectChannels = document.querySelector(`[name="connect"]`).value.trim().split("\n");
+        let connectChannels = channelConnectTextarea.value.trim().split("\n");
         if(irc === null) {
             irc = new TwitchIRC(accessToken, connectChannels);
             await irc.connect();
             if(irc.socket === null) {
                 irc = null;
                 alert("Failed to connect to Twitch via IRC.")
+                channelConnectTextarea.disabled = false;
+                loginButton.disabled = false;
             }
         }
-        if(pubsub === null) {
+        if(pubsub === null && irc !== null) {
             pubsub = new TwitchPubSub(accessToken, irc.userId, CLIENT_ID);
             pubsub.connect();
             for(let b of document.querySelectorAll("#modify-all-point-rewards button")) b.disabled = false;
@@ -32,8 +38,8 @@ async function connectTTS() {
     else {
         irc.close();
         pubsub.close();
-        document.querySelector(`[name="connect"]`).disabled = false;
-        document.querySelector(`#login-button`).disabled = false;
+        channelConnectTextarea.disabled = false;
+        loginButton.disabled = false;
         for(let b of document.querySelectorAll("#modify-all-point-rewards button")) b.disabled = true;
         irc = null;
         pubsub = null;
