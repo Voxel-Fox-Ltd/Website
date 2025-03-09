@@ -131,6 +131,10 @@ class TwitchIRC {
                 },
             },
         );
+        if(!site.ok) {
+            return;
+        }
+
         let data = await site.json();
         this.name = data["preferred_username"];
         this.userId = data["sub"];

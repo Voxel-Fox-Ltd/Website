@@ -18,6 +18,10 @@ async function connectTTS() {
         if(irc === null) {
             irc = new TwitchIRC(accessToken, connectChannels);
             await irc.connect();
+            if(irc.socket === null) {
+                irc = null;
+                alert("Failed to connect to Twitch via IRC.")
+            }
         }
         if(pubsub === null) {
             pubsub = new TwitchPubSub(accessToken, irc.userId, CLIENT_ID);
