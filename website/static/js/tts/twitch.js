@@ -61,8 +61,10 @@ class TwitchMessage {
 
             // Filter URLs
             try {
-                new URL(i);
-                continue;
+                let possibleUrl = new URL(i);
+                if(possibleUrl.host.toLowerCase() == "http" || possibleUrl.host.toLowerCase() == "https") {
+                    continue;
+                }
             }
             catch (e) {
             }
