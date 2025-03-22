@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Interval and Current Timing</title>
+
+    <link rel="icon" href="https://voxelfox.co.uk/static/images/_voxelfox/logo.png" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@VoxelFoxKae" />
+    <meta name="twitter:title" content="Interval Timer - Voxel Fox" />
+    <meta name="twitter:description" content="A simple interval timer and clock." />
+    <meta name="theme-color" content="#f17824">
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PQ8G2HYX6H"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-PQ8G2HYX6H');
+    </script>
+</head>
+<body>
+
+<style type="text/css">
+html {
+    font-size: 16px;
+    font-family: "Century Gothic";
+    color: white;
+}
+body {
+    background: black;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100vh;
+    width: 100hw;
+}
+#container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+#current-time {
+    font-size: 10rem;
+    font-weight: bold;
+}
+#pause-time,
+#interval-time,
+#call-time {
+    font-size: 2.5rem;
+    filter: opacity(0.4);
+}
+#spacer {
+    height: 5rem;
+    filter: opacity(0);
+    display: none;
+}
+.paused:before {
+    content: "- ";
+}
+.paused:after {
+    content: " -";
+}
+.time-holder:not(.paused) .time {
+    font-style: italic;
+}
+
+#topline, #topline p, #topline a, #topline span {
+    color: #ffffff99;
+    text-decoration: none;
+    font-size: 1.2em;
+    margin: 0;
+    user-select: none;
+}
+
+#topline {
+    margin-top: 1em;
+}
+
+.selected {
+    font-weight: bold;
+}
+
+#current-interval-duration {
+    font-weight: bold;
+}
+</style>
+
+<div id="topline">
+    <p>
+        <!-- ( -->
+        <!-- <a data-time="15" href="#" onclick="setIntervalTime(this);">15m</a> -->
+        <!-- | -->
+        <!-- <a data-time="20" href="#" onclick="setIntervalTime(this);">20m</a> -->
+        <!-- ) -->
+        <a href="#" onclick="setIntervalTime(INTERVAL_TIME - 5)" style="margin-right: 5px;">-</a>
+        <span id="current-interval-duration" data-time="20" href="#">20m</span>
+        <a href="#" onclick="setIntervalTime(INTERVAL_TIME + 5)">+</a>
+        <!-- ( -->
+        <!-- <a data-time="25" href="#" onclick="setIntervalTime(this);">25m</a> -->
+        <!-- | -->
+        <!-- <a data-time="30" href="#" onclick="setIntervalTime(this);">30m</a> -->
+        <!-- ) -->
+    </p>
+</div>
+<div id="container">
+    <div id="current-time">Loading...</div>
+    <div id="pause-time" class="time-holder">press space to pause</div>
+    <div id="interval-time" class="time-holder">interval end <span class="time">...</span></div>
+    <div id="call-time" class="time-holder">call time <span class="time">...</span></div>
+    <div id="spacer"></div>
+</div>
+
+<script type="text/javascript">
+if(location.pathname != "/interval") {
+    location.replace(location.toString().replace(location.pathname, "/interval"));
+}
+
+var INTERVAL_TIME = parseInt(location.search.slice(1));
+if(isNaN(INTERVAL_TIME)) INTERVAL_TIME = 20;
+var timePaused = false;
+var forceTimeUpdate = false;
+
+
+function setIntervalTime(node) {
+    if(typeof node === "number") {
+        INTERVAL_TIME = node;
+        if(INTERVAL_TIME <= 0) {
+            INTERVAL_TIME = 0
+        }
+        node = document.querySelector(`#topline a[data-time="${INTERVAL_TIME}"]`)
+    }
+    else {
+        INTERVAL_TIME = parseInt(node.dataset.time);
+    }
+    let currentDisplay = document.querySelector("#current-interval-duration");
+    currentDisplay.dataset.time = INTERVAL_TIME;
+    currentDisplay.innerText = `${INTERVAL_TIME}m`;
+    let currentSelection = document.querySelectorAll("#topline .selected");
+    for(let i of currentSelection) {
+        i.classList.remove("selected");
+    }
+    if(node !== null) {
+        node.classList.add("selected");
+    }
+    forceTimeUpdate = true;
+    window.history.replaceState(null, document.title, `?${INTERVAL_TIME}`)
+}
+setIntervalTime(INTERVAL_TIME);
+
+
+function loop() {
+    // make dts
+    let t;
+    if(timePaused) {
+        t = new Date(document.querySelector("#pause-time").dataset.pauseTime);
+    }
+    else {
+        t = new Date();
+    }
+    let ie = new Date(t);
+    let ct = new Date(t);
+
+    // set times
+    ie.setMinutes(ie.getMinutes() + INTERVAL_TIME);
+    ct.setMinutes(ct.getMinutes() + INTERVAL_TIME - 5);
+    if(ie.getSeconds() >= 30) {
+        ie.setMinutes(ie.getMinutes() + 1);
+        ct.setMinutes(ct.getMinutes() + 1);
+    }
+
+    // set times
+    document.querySelector("#current-time").innerText = (new Date()).toLocaleTimeString();
+    if(!timePaused || forceTimeUpdate) {
+        let ies = ie.toLocaleTimeString();
+        ies = ies.substring(0, ies.length - 3);
+        let cts = ct.toLocaleTimeString();
+        cts = cts.substring(0, cts.length - 3);
+        document.querySelector("#interval-time .time").innerText = ies;
+        document.querySelector("#call-time .time").innerText = cts;
+        forceTimeUpdate = false;
+    }
+
+    // repeat
+    setTimeout(loop, 50);
+}
+
+// pause on spacebar
+window.addEventListener("keydown", (event) => {
+    if(!(event.key == "p" || event.key == " " || event.key == "+" || event.key == "-")) return;
+    if(event.key == "+") {
+        setIntervalTime(INTERVAL_TIME + (event.shiftKey ? 1 : 5));
+        return;
+    }
+    else if(event.key == "-") {
+        setIntervalTime(INTERVAL_TIME - (event.shiftKey ? 1 : 5));
+        return;
+    }
+    timePaused = !timePaused;
+    let t = new Date();
+    let pts = t.toLocaleTimeString();
+    let ptn = document.querySelector("#pause-time");
+    if(timePaused) {
+        ptn.innerText = `paused at ${pts}`;
+        ptn.dataset.pauseTime = t.toISOString();
+    }
+    else {
+        ptn.innerText = "press space to pause";
+        ptn.dataset.pauseTime = "";
+    }
+    ptn.classList.toggle("paused");
+    document.querySelector("#interval-time").classList.toggle("paused");
+    document.querySelector("#call-time").classList.toggle("paused");
+});
+loop();
+
+
+window.addEventListener("popstate", (event) => {
+    var INTERVAL_TIME = parseInt(location.search.slice(1));
+    if(isNaN(INTERVAL_TIME)) INTERVAL_TIME = 20;
+    setIntervalTime(INTERVAL_TIME);
+});
+</script>
+
+</body>
+</html>
