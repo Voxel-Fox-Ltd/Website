@@ -119,6 +119,10 @@ body {
 </div>
 
 <script type="text/javascript">
+if(location.pathname != "/interval") {
+    location.replace(location.toString().replace(location.pathname, "/interval"));
+}
+
 var INTERVAL_TIME = parseInt(location.search.slice(1));
 if(isNaN(INTERVAL_TIME)) INTERVAL_TIME = 20;
 var timePaused = false;

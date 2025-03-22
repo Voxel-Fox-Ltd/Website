@@ -29,6 +29,7 @@ page_builder("/projects", "projects.htm.j2")
 page_builder("/commissions", "commissions.htm.j2")
 
 page_builder("/tts", "project-pages/tts.htm.j2")
+page_builder("/interval", "static/html/interval.html")
 
 
 @routes.get("/main")
