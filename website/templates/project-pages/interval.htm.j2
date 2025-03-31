@@ -125,8 +125,30 @@ if(location.pathname != "/interval") {
 
 var INTERVAL_TIME = parseInt(location.search.slice(1));
 if(isNaN(INTERVAL_TIME)) INTERVAL_TIME = 20;
+
 var timePaused = false;
 var forceTimeUpdate = false;
+let validKeys = ["p", " ", "+", "-", "m"]
+
+
+function createMidiInterface(err) {
+    navigator.requestMIDIAccess().then((access) => {
+        midi = access
+        midi.inputs.forEach((entry) => {
+            entry.onmidimessage = onMIDIMessage;
+        });
+    }, err);
+}
+
+
+var midi = null;
+var midiButtonHeld = false;
+var midiDevice = localStorage.getItem("midiDevice");
+var midiNote = localStorage.getItem("midiNote");
+if(midiDevice !== null) createMidiInterface((err) => {
+    localStorage.removeItem("midiDevice");
+    localStorage.removeItem("midiNote");
+});
 
 
 function setIntervalTime(node) {
@@ -192,9 +214,28 @@ function loop() {
     setTimeout(loop, 50);
 }
 
-// pause on spacebar
+
+function onMIDIMessage(event) {
+    if((event.data[0] & 0x90) != 0x90) return;  // only listen to note on
+    if(!(midiButtonHeld || event.target.id == midiDevice)) return;
+    if(midiButtonHeld) {
+        midiDevice = event.target.id;
+        midiNote = event.data[1]
+        localStorage.setItem("midiDevice", midiDevice);
+        localStorage.setItem("midiNote", midiNote);
+        console.log(`Setting MIDI pause button to device "${midiDevice}" with note "${midiNote}"`)
+    }
+    else if(event.target.id == midiDevice && event.data[1] == midiNote) {
+        handlePauseUnpause();
+    }
+}
+
+
+// handle keypress
 window.addEventListener("keydown", (event) => {
-    if(!(event.key == "p" || event.key == " " || event.key == "+" || event.key == "-")) return;
+    if(!validKeys.includes(event.key)) return;
+
+    // add/remove interval time
     if(event.key == "+") {
         setIntervalTime(INTERVAL_TIME + (event.shiftKey ? 1 : 5));
         return;
@@ -203,6 +244,28 @@ window.addEventListener("keydown", (event) => {
         setIntervalTime(INTERVAL_TIME - (event.shiftKey ? 1 : 5));
         return;
     }
+
+    // handle midi
+    else if(event.key == "m") {
+        midiButtonHeld = true;
+        if(midi === null) {
+            createMidiInterface();
+        }
+        return;
+    }
+
+    // otherwise we're [un]pausing
+    handlePauseUnpause()
+});
+window.addEventListener("keyup", (event) => {
+    if(!validKeys.includes(event.key)) return;
+    if(event.key == "m") {
+        midiButtonHeld = false;
+    }
+})
+
+
+function handlePauseUnpause() {
     timePaused = !timePaused;
     let t = new Date();
     let pts = t.toLocaleTimeString();
@@ -218,7 +281,7 @@ window.addEventListener("keydown", (event) => {
     ptn.classList.toggle("paused");
     document.querySelector("#interval-time").classList.toggle("paused");
     document.querySelector("#call-time").classList.toggle("paused");
-});
+}
 loop();
 
 
