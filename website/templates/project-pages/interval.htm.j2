@@ -235,7 +235,7 @@ function loop() {
 
 
 function onMIDIMessage(event) {
-    if((event.data[0] & 0x90) != 0x90) return;  // only listen to note on
+    // if((event.data[0] & 0x90) != 0x90) return;  // only listen to note on
     if(!(midiButtonHeld || event.target.id == midiDevice)) return;
     if(midiButtonHeld) {
         midiDevice = event.target.id;
