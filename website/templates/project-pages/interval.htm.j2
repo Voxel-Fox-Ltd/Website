@@ -151,7 +151,7 @@ let validKeys = ["p", " ", "+", "-", "m"]
 
 
 function createMidiInterface(err) {
-    navigator.requestMIDIAccess().then((access) => {
+    navigator.requestMIDIAccess({sysex: true}).then((access) => {
         midi = access
         midi.inputs.forEach((entry) => {
             entry.onmidimessage = onMIDIMessage;
