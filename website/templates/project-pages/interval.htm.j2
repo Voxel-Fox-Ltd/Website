@@ -25,7 +25,7 @@
 <style type="text/css">
 html {
     font-size: 16px;
-    font-family: "Century Gothic";
+    font-family: "Century Gothic", sans-serif;
     color: white;
 }
 body {
@@ -91,23 +91,39 @@ body {
 #current-interval-duration {
     font-weight: bold;
 }
+
+#mobile-button {
+    display: none;
+}
+
+@media screen and (max-width: 500px) {
+    :root {
+        font-size: 8px;
+    }
+
+    #pause-time,
+    #interval-time,
+    #call-time,
+    #topline {
+        font-size: 3em;
+    }
+
+    #mobile-button {
+        margin-top: 2em;
+        display: block;
+    }
+
+    #mobile-button button {
+        font-size: 2.2em;
+    }
+}
 </style>
 
 <div id="topline">
     <p>
-        <!-- ( -->
-        <!-- <a data-time="15" href="#" onclick="setIntervalTime(this);">15m</a> -->
-        <!-- | -->
-        <!-- <a data-time="20" href="#" onclick="setIntervalTime(this);">20m</a> -->
-        <!-- ) -->
         <a href="#" onclick="setIntervalTime(INTERVAL_TIME - 5)" style="margin-right: 5px;">-</a>
         <span id="current-interval-duration" data-time="20" href="#">20m</span>
         <a href="#" onclick="setIntervalTime(INTERVAL_TIME + 5)">+</a>
-        <!-- ( -->
-        <!-- <a data-time="25" href="#" onclick="setIntervalTime(this);">25m</a> -->
-        <!-- | -->
-        <!-- <a data-time="30" href="#" onclick="setIntervalTime(this);">30m</a> -->
-        <!-- ) -->
     </p>
 </div>
 <div id="container">
@@ -115,6 +131,9 @@ body {
     <div id="pause-time" class="time-holder">press space to pause</div>
     <div id="interval-time" class="time-holder">interval end <span class="time">...</span></div>
     <div id="call-time" class="time-holder">call time <span class="time">...</span></div>
+    <div id="mobile-button">
+        <button onclick="handlePauseUnpause();">toggle pause</button>
+    </div>
     <div id="spacer"></div>
 </div>
 
