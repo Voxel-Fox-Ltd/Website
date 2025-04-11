@@ -236,15 +236,15 @@ function loop() {
 
 function onMIDIMessage(event) {
     // if((event.data[0] & 0x90) != 0x90) return;  // only listen to note on
-    if(!(midiButtonHeld || event.target.id == midiDevice)) return;
+    // if(!(midiButtonHeld || event.target.id == midiDevice)) return;
     if(midiButtonHeld) {
         midiDevice = event.target.id;
-        midiNote = event.data[1]
+        midiNote = event.data
         localStorage.setItem("midiDevice", midiDevice);
         localStorage.setItem("midiNote", midiNote);
         console.log(`Setting MIDI pause button to device "${midiDevice}" with note "${midiNote}"`)
     }
-    else if(event.target.id == midiDevice && event.data[1] == midiNote) {
+    else if(event.data == midiNote) {
         handlePauseUnpause();
     }
 }
