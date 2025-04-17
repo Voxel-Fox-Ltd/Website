@@ -9,6 +9,11 @@
     margin: 0.5em;
     border-radius: 5px;
     text-align: left;
+    transition: 0.2s ease all;
+}
+
+.project:has(details:open) {
+    background: #ffffff33;
 }
 
 .project details {
