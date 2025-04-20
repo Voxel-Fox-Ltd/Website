@@ -67,7 +67,7 @@
       <p>
         There are a few other bots on Discord that allow users to "get married" and "have children" as this does, but MarriageBot was the first bot that allowed users to generate a family tree dynamically based on that family.
       </p>
-      <img src="https://marriagebot.xyz/static/images/tree.png" />
+      <img src="https://marriagebot.xyz/static/images/tree.png" loading="lazy" />
       <ul class="links">
         {{ discord_link(468281173072805889) }}
         {{ link("Website", "https://marriagebot.xyz", "link") }}
@@ -80,6 +80,32 @@
   </details>
   <p class="date">July 2018 - present</p>
 </div>  <!-- /marriagebot -->
+
+
+<div class="project">  <!-- interval timer -->
+  <div class="top">
+    <p class="name">Interval Timer</p>
+    <div>
+      <icon link></icon>
+      <icon html5></icon>
+      <icon css3></icon>
+      <icon javascript></icon>
+    </div>
+  </div>
+  <details>
+    <summary>A small page for tracking how long a theatre interval is.</summary>
+    <div class="long-description">
+      <p>
+        Made as a simple HTML-only page to keep track of an interval end time for a theatre, this page has become a mainstay of several touring technicians in order to simply keep track of intervals and call times.
+      </p>
+      <img src="{{ static('/images/interval/interval-timer.png') }}" loading="lazy" />
+      <ul class="links">
+        {{ link("Website", "/interval", "link") }}
+      </ul>
+    </div>
+  </details>
+  <p class="date">December 2023 - present</p>
+</div>  <!-- /interval timer -->
 
 
 <div class="project">  <!-- flower -->
@@ -236,7 +262,7 @@
       <p>
         Unlike many other acitvity bots, Cerberus takes a hard stance that acivity is something that decays rather than a permanent attribute of your user. Thus, activity points decay from a user over [a configurable amount of] time. In addition to this decay feature, you're able to see how many points a user has at any given point in time.
       </p>
-      <img src="{{ static('/images/cerberus/7-day-graph.png') }}" />
+      <img src="{{ static('/images/cerberus/7-day-graph.png') }}" loading="lazy" />
       <ul class="links">
         {{ discord_link(647301314732097560) }}
         {{ link("Github", "https://github.com/Voxel-Fox-Ltd/Cerberus", "github") }}
