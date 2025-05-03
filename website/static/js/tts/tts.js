@@ -182,7 +182,6 @@ const VOICES = [
     new Voice("Kimberly"),
     new Voice("Salli"),
     new Voice("Raveena"),
-
     new Voice("en-US-Wavenet-A", "en", "Carter"),
     new Voice("en-US-Wavenet-B", "en", "Paul"),
     new Voice("en-US-Wavenet-C", "en", "Evelyn"),
@@ -213,9 +212,8 @@ const VOICES = [
     new Voice("en-IN-Wavenet-B", "en", "Sundar"),
     new Voice("en-IN-Wavenet-C", "en", "Satya"),
     new Voice("Linda"),
-    new Voice("Heather"),
+    // new Voice("Heather"),
     new Voice("Sean"),
-
     new Voice("Enrique", "es"),
     new Voice("Conchita", "es"),
     new Voice("es-ES-Standard-A", "es", "Lucia"),
