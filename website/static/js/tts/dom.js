@@ -56,7 +56,7 @@ function serializeVoiceOverrides() {
     for(let voiceNode of voices) {
         let user = voiceNode.querySelector(".username").value;
         let voiceName = voiceNode.querySelector(".voices").value;
-        if(user == "" || voiceName == "") continue;
+        if(user == "") continue;
         selected[user] = voiceName;
     }
     return JSON.stringify(selected);
