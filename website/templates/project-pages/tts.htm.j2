@@ -65,27 +65,33 @@
     <!-- Selector for how voices should output -->
     <div id="tts-output-type" class="boxed mb" data-hidden="1">
       <label>Output Type</label>
-      <input
-          type="radio"
-          name="output-type"
-          value="simultaneous"
-          id="_output-type_simulataneous"
-          onchange="javascript:saveInputs();" />
-      <label for="_output-type_simulataneous">No message queueing</label>
-      <input
-          type="radio"
-          name="output-type"
-          value="by-user"
-          id="_output-type-by-user"
-          onchange="javascript:saveInputs();" />
-      <label for="_output-type-by-user">Messages are queued per user</label>
-      <input
-          type="radio"
-          name="output-type"
-          value="all-queued"
-          id="_output-type-all-queued"
-          onchange="javascript:saveInputs();" />
-      <label for="_output-type-all-queued">Messages are queued for all users</label>
+        <div>
+          <input
+              type="radio"
+              name="output-type"
+              value="simultaneous"
+              id="_output-type_simulataneous"
+              onchange="javascript:saveInputs();" />
+          <label for="_output-type_simulataneous">No message queueing</label>
+        </div>
+        <div>
+          <input
+              type="radio"
+              name="output-type"
+              value="by-user"
+              id="_output-type-by-user"
+              onchange="javascript:saveInputs();" />
+          <label for="_output-type-by-user">Messages are queued per user</label>
+        </div>
+        <div>
+          <input
+              type="radio"
+              name="output-type"
+              value="all-queued"
+              id="_output-type-all-queued"
+              onchange="javascript:saveInputs();" />
+          <label for="_output-type-all-queued">Messages are queued for all users</label>
+        </div>
     </div>  <!-- Box our connected TTS channels -->
 
     <!-- Box our connected TTS channels -->
