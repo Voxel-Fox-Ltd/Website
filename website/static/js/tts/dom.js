@@ -103,7 +103,7 @@ const BASIC_LOADS = {
     '[name="sound-redeems-enabled"]': () => {
         return JSON.parse(localStorage.getItem(`soundRedeemsEnabled`))
     },
-    '[name="output-type"]': () => document.querySelector(`[name="output-type"]`).value,
+    '[name="output-type"]': () => localStorage.getItem("outputType"),
 }
 function loadInputs() {
     for(let i in BASIC_LOADS) {
