@@ -62,6 +62,17 @@
       <audio class="tts" controls></audio>
     </div>  <!-- A container for the played audio -->
 
+    <!-- Selector for how voices should output -->
+    <div id="tts-output-type" class="boxed mb" data-hidden="1">
+      <label>Output Type</label>
+      <input type="radio" name="output-type" value="simultaneous" onchange="javascript:saveInputs();" />
+      <label for="simultaneous">No message queueing</label>
+      <input type="radio" name="output-type" value="by-user" onchange="javascript:saveInputs();" />
+      <label for="by-user">Messages are queued per user</label>
+      <input type="radio" name="output-type" value="all-queued" onchange="javascript:saveInputs();" />
+      <label for="all-queued">Messages are queued for all users</label>
+    </div>  <!-- Box our connected TTS channels -->
+
     <!-- Box our connected TTS channels -->
     <div id="tts-channels-box" class="boxed mb" data-hidden="1">
       <label for="connect">TTS Channels:</label>
@@ -86,7 +97,7 @@
       <!-- Container for the voices -->
       <div id="voices" class="item-grid" data-hidden="1">
 
-        <table id="voice-table" class="boxed">
+        <table id="voice-table" class="boxed mb">
           <tbody></tbody>
         </table>
 

@@ -85,6 +85,7 @@ const BASIC_SAVES = {
     "voiceOverrides": serializeVoiceOverrides,
     "soundRedeemsEnabled": () => document.querySelector(`[name="sound-redeems-enabled"]`).checked,
     "soundRedeems": serializeSoundRedeems,
+    "outputType": () => document.querySelector(`[name="output-type"][checked]`).value,
 }
 function saveInputs() {
     for(let i in BASIC_SAVES) {
@@ -102,6 +103,7 @@ const BASIC_LOADS = {
     '[name="sound-redeems-enabled"]': () => {
         return JSON.parse(localStorage.getItem(`soundRedeemsEnabled`))
     },
+    '[name="output-type"]': () => document.querySelector(`[name="output-type"]`).value,
 }
 function loadInputs() {
     for(let i in BASIC_LOADS) {
@@ -109,6 +111,14 @@ function loadInputs() {
         let value = BASIC_LOADS[i]();
         if(node.type.toLowerCase() == "checkbox") {
             node.checked = value;
+        }
+        else if(node.type.toLowerCase() == "radio") {
+            let radios = document.querySelectorAll(`[name="${node.name}"]`);
+            for(let r of radios) {
+                if(r.value == value) {
+                    r.checked = true;
+                }
+            }
         }
         else {
             node.value = value;
