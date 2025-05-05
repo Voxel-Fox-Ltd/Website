@@ -92,13 +92,13 @@ button {
     margin-bottom: -10px;
 }
 
-#voices .username-holder {
-    display: flex;
+#voice-table {
+    width: 100%;
 }
 
-#voices .username-holder button {
-    width: 2em;
-    margin-left: 0.25em;
+#voice-table button {
+    font-size: initial;
+    border-radius: 0.3em;
 }
 
 [data-hidden="1"] {

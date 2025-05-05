@@ -86,33 +86,9 @@
       <!-- Container for the voices -->
       <div id="voices" class="item-grid" data-hidden="1">
 
-        <table id="voice-table">
-          <thead>
-            <tr>
-              <th>Username</th>
-              <th>Voice</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
+        <table id="voice-table" class="boxed">
           <tbody></tbody>
         </table>
-
-        <!-- Template voice -->
-        <div class="template boxed mb">
-
-          <!-- Username holder and button to change from dropdown to input -->
-          <div class="username-holder">
-            <select class="username" placeholder="Twitch Username" onchange="javascript:saveInputs();">
-              <option value="" selected></option>
-            </select>
-            <button type="button" onclick="javascript:switchSelect(this.parentNode);">+</button>
-          </div>
-          <select
-              class="voices"
-              placeholder="Voice"
-              onchange="javascript:saveInputs();">
-          </select>
-        </div>  <!-- Template voice -->
 
       </div>  <!-- Container for the voices -->
     </div>  <!-- Box our voice overrides -->
