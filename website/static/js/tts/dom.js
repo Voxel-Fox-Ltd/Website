@@ -29,7 +29,7 @@ function addNewVoiceOverride(twitchUsername, voice) {
     newVoice.classList.add("voice");
     newVoice.innerHTML = `
         <td>
-            <input placeholder="Twitcher Username" class="username" <!-- onchange="javascript:saveInputs();" --> />
+            <input placeholder="Twitcher Username" class="username" onchange="javascript:saveInputs();" />
         </td>
         <td>
             <select
@@ -38,7 +38,7 @@ function addNewVoiceOverride(twitchUsername, voice) {
                 onchange="javascript:saveInputs();">
             </select>
         </td>
-        <td><button class="delete" <!-- onclick="javascript:deleteVoice(this)" --> >Delete</button></td>`;
+        <td><button class="delete" onclick="javascript:deleteVoice(this)">Delete</button></td>`;
     if(twitchUsername !== null) newVoice.querySelector(`.username`).value = twitchUsername;
     addVoicesToDropdown(newVoice.querySelector(`.voices`));
     if(voice !== null) newVoice.querySelector(`.voices option[value="${voice}"]`).selected = true;
