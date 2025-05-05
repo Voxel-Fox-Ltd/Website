@@ -85,7 +85,7 @@ const BASIC_SAVES = {
     "voiceOverrides": serializeVoiceOverrides,
     "soundRedeemsEnabled": () => document.querySelector(`[name="sound-redeems-enabled"]`).checked,
     "soundRedeems": serializeSoundRedeems,
-    "outputType": () => document.querySelector(`[name="output-type"][checked]`).value,
+    "outputType": () => document.querySelector(`[name="output-type"]:checked`).value,
 }
 function saveInputs() {
     for(let i in BASIC_SAVES) {

@@ -92,6 +92,14 @@ button {
     margin-bottom: -10px;
 }
 
+#tts-output-type input {
+    width: initial;
+}
+
+#tts-output-type label {
+    display: initial;
+}
+
 #voice-table {
     width: 100%;
 }
