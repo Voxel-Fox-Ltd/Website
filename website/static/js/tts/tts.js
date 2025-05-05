@@ -290,7 +290,7 @@ function getAvailableTTSNodes(username=null) {
             audio = document.querySelectorAll("audio.tts[data-first]");
             break;
         case "by-user":
-            let temp = document.querySelectorAll(`audio.tts[username="${username}"]`);
+            let temp = document.querySelectorAll(`audio.tts[data-username="${username}"]`);
             if(temp.length > 0) {
                 audio = [];
                 break
@@ -321,7 +321,7 @@ function playNextTTSTrack() {
     let audio = getAvailableTTSNodes(audioQueue[0][2]);  // get available audio nodes for that user
     if(audio.length == 0) return;  // no available audio nodes - do nothing
     let [url, rate, username] = audioQueue.shift();  // get the next audio from the queue and play it
-    audio.dataset.username = username;
+    audio[0].dataset.username = username;
     audio[0].src = url;
     audio[0].playbackRate = rate;
     audio[0].play();
