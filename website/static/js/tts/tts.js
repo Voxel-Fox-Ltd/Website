@@ -297,7 +297,7 @@ function getAvailableTTSNodes(username=null) {
             }
         case "simultaneous":
         default:
-            let audio = document.querySelectorAll("audio.tts");
+            audio = document.querySelectorAll("audio.tts");
             break;
     }
     let validAudio = [];
