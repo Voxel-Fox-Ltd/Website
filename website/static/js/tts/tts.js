@@ -283,6 +283,33 @@ async function sayMessageSE(twitchMessage) {
 }
 
 
+function getAudioEnded(audio) {
+    return audio.ended || audio.src == "" || audio.paused || (audio.error && audio.error.code == 4)
+}
+
+
+function getNonPlayingAudioFromArray(audioArray) {
+    let validAudio = [];
+    for(node of audioArray) {
+        if(getAudioEnded(node)) {
+            validAudio.push(node);
+        }
+    }
+    return validAudio;
+}
+
+
+function getPlayingAudioFromArray(audioArray) {
+    let validAudio = [];
+    for(node of audioArray) {
+        if(!getAudioEnded(node)) {
+            validAudio.push(node);
+        }
+    }
+    return validAudio;
+}
+
+
 function getAvailableTTSNodes(username=null) {
     let audio = [];
     switch(document.querySelector("input[name='output-type']:checked").value) {
@@ -291,21 +318,14 @@ function getAvailableTTSNodes(username=null) {
             break;
         case "by-user":
             let temp = document.querySelectorAll(`audio.tts[data-username="${username}"]`);
-            if(temp.length > 0) {
-                audio = [];
-                break
-            }
+            let temp2 = getPlayingAudioFromArray(temp);
+            if(temp2.length > 0) return [];
         case "simultaneous":
         default:
             audio = document.querySelectorAll("audio.tts");
             break;
     }
-    let validAudio = [];
-    for(node of audio) {
-        if(node.ended || node.src == "" || node.paused || (node.error && node.error.code == 4)) {
-            validAudio.push(node);
-        }
-    }
+    let validAudio = getNonPlayingAudioFromArray(audio);
     return validAudio;
 }
 
