@@ -285,7 +285,7 @@ async function sayMessageSE(twitchMessage) {
 
 function getAvailableTTSNodes(username=null) {
     let audio = [];
-    switch(document.querySelector("output-type").value) {
+    switch(document.querySelector("input[name='output-type']:checked").value) {
         case "all-queued":
             audio = document.querySelectorAll("audio.tts[data-first]");
             break;

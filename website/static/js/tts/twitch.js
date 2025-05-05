@@ -522,7 +522,11 @@ class TwitchPubSub {
             if(data.error) {
                 console.log("Failed to connect to PubSub websocket");
                 console.log(data);
-                await self.close();
+                try {
+                    await self.close();
+                }
+                catch (e) {
+                }
             }
             return;
         }
