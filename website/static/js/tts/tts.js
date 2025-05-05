@@ -231,20 +231,14 @@ async function sayMessageSE(twitchMessage) {
     // Filter by username
     if(IGNORED_USERS.includes(twitchMessage.username.toLowerCase())) return;
 
-    // Log username
-    if(!chatUsers.includes(twitchMessage.username)) {
-        chatUsers.push(twitchMessage.username.toLowerCase());
-        updateVoiceUsernames();
-    }
-
     // Make sure we have something to say
     if(!twitchMessage.filteredMessage) return;
 
     // Get a voice
     let voice = undefined;
     let voiceOverride = "";
-    for(let v of document.querySelectorAll("#voices div")) {
-        if(v.querySelector(".username").value != twitchMessage.username.toLowerCase()) continue;
+    for(let v of document.querySelectorAll("#voice-table tbody tr")) {
+        if(v.querySelector(".username").value.toLowerCase() != twitchMessage.username.toLowerCase()) continue;
         voiceOverride = v.querySelector(".voices").value;
         if(voiceOverride == "") return;
         break;
@@ -285,12 +279,27 @@ async function sayMessageSE(twitchMessage) {
     );
 
     // Add to queue
-    queueAudio(voiceUrl, rate)
+    queueAudio(voiceUrl, rate, twitchMessage.username.toLowerCase())
 }
 
 
-function getAvailableTTSNodes() {
-    let audio = document.querySelectorAll("audio.tts");
+function getAvailableTTSNodes(username=null) {
+    let audio = [];
+    switch(document.querySelector("output-type").value) {
+        case "all-queued":
+            audio = document.querySelectorAll("audio.tts[data-first]");
+            break;
+        case "by-user":
+            let temp = document.querySelectorAll(`audio.tts[username="${username}"]`);
+            if(temp.length > 0) {
+                audio = [];
+                break
+            }
+        case "simultaneous":
+        default:
+            let audio = document.querySelectorAll("audio.tts");
+            break;
+    }
     let validAudio = [];
     for(node of audio) {
         if(node.ended || node.src == "" || node.paused || (node.error && node.error.code == 4)) {
@@ -302,19 +311,20 @@ function getAvailableTTSNodes() {
 
 
 var audioQueue = [];
-function queueAudio(url, rate=1) {
-    audioQueue.push([url, rate]);
+function queueAudio(url, rate=1, username=null) {
+    audioQueue.push([url, rate, username]);
     let audio = getAvailableTTSNodes();
     if(audio) playNextTTSTrack();
 }
 function playNextTTSTrack() {
-    let audio = getAvailableTTSNodes();
-    if(audioQueue.length > 0) {
-        let [url, rate] = audioQueue.shift();
-        audio[0].src = url;
-        audio[0].playbackRate = rate;
-        audio[0].play();
-    }
+    if(audioQueue.length == 0) return;  // no queued audio - do nothing
+    let audio = getAvailableTTSNodes(audioQueue[0][2]);  // get available audio nodes for that user
+    if(audio.length == 0) return;  // no available audio nodes - do nothing
+    let [url, rate, username] = audioQueue.shift();  // get the next audio from the queue and play it
+    audio.dataset.username = username;
+    audio[0].src = url;
+    audio[0].playbackRate = rate;
+    audio[0].play();
 }
 document.querySelectorAll("audio.tts").forEach(a => a.addEventListener("ended", playNextTTSTrack));
 document.querySelectorAll("audio.tts").forEach(a => a.addEventListener("pause", playNextTTSTrack));
