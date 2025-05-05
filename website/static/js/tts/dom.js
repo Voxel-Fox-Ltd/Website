@@ -29,7 +29,7 @@ function addNewVoiceOverride(twitchUsername, voice) {
     newVoice.classList.add("voice");
     newVoice.innerHTML = `
         <td>
-            <input placeholder="Twitcher Username" class="username" onchange="javascript:saveInputs();" />
+            <input placeholder="Twitch Username" class="username" onchange="javascript:saveInputs();" />
         </td>
         <td>
             <select
@@ -113,8 +113,9 @@ function loadInputs() {
             node.checked = value;
         }
         else if(node.type.toLowerCase() == "radio") {
-            let radios = document.querySelectorAll(`[name="${node.name}"]`);
+            let radios = document.querySelectorAll(`${i}`);
             for(let r of radios) {
+                r.checked = false;
                 if(r.value == value) {
                     r.checked = true;
                 }
