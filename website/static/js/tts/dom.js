@@ -2,67 +2,48 @@
  * Functions and classes relating to the page DOM
  * */
 
-// A list of users who are in chat
-var chatUsers = [];
 
 /**
- * Update all of the username dropdowns for the page.
+ * Add voices to a given dropdown.
  * */
-function updateVoiceUsernames() {
-
-    // Get the voices from the template
-    let voiceSelect = document.querySelector("#voices .template .voices");
-
-    // Generate if none exist
-    if(voiceSelect.length == 0) {
-        let voiceOption = document.createElement("option");
-        voiceOption.innerText = "";
-        voiceOption.value = "";
-        voiceSelect.appendChild(voiceOption);
-        for(let v of VOICES) {
-            voiceOption = document.createElement("option");
-            voiceOption.innerText = v.display;
-            voiceOption.value = v.name;
-            voiceSelect.appendChild(voiceOption);
-        }
-    }
-
-    // Populate any user dropdowns that are empty
-    let allUserSelect = document.querySelectorAll("#voices .username");
-    for(let userSelect of allUserSelect) {
-        for(let user of chatUsers) {
-            if(userSelect.querySelector(`option[value="${user}"]`) === null) {
-                let uOpt = document.createElement("option");
-                uOpt.value = user;
-                uOpt.innerText = user;
-                userSelect.appendChild(uOpt);
-            }
-        }
+function addVoicesToDropdown(dropdown) {
+    let voiceOption = document.createElement("option");
+    voiceOption.innerText = "";
+    voiceOption.value = "";
+    dropdown.appendChild(voiceOption);
+    for(let v of VOICES) {
+        voiceOption = document.createElement("option");
+        voiceOption.innerText = v.display;
+        voiceOption.value = v.name;
+        dropdown.appendChild(voiceOption);
     }
 }
-updateVoiceUsernames();
 
 
 /**
- * Add a new voice override node to the list.
+ * Add a new user voice override node to the list.
  * */
 function addNewVoiceOverride(twitchUsername, voice) {
-    if(twitchUsername !== null) {
-        if(document.querySelector(`#voices .template .username option[value="${twitchUsername}"]`) === null) {
-            chatUsers.push(twitchUsername);
-            updateVoiceUsernames();
-        }
-    }
-    let newVoice = document.querySelector("#voices .template").cloneNode(true);
-    newVoice.classList.remove("template");
-    for(let opt of newVoice.querySelectorAll("option")) opt.selected = false;
-    if(twitchUsername !== null) {
-        newVoice.querySelector(`.username option[value="${twitchUsername}"]`).selected = true;
-    }
-    if(voice !== null) {
-        newVoice.querySelector(`.voices option[value="${voice}"]`).selected = true;
-    }
-    document.querySelector("#voices").appendChild(newVoice);
+
+    let newVoice = document.createElement("tr");
+    newVoice.classList.add("voice");
+    newVoice.innerHTML = `
+        <td>
+            <input placeholder="Twitcher Username" class="username" <!-- onchange="javascript:saveInputs();" --> />
+        </td>
+        <td>
+            <select
+                class="voices"
+                placeholder="Voice"
+                onchange="javascript:saveInputs();">
+            </select>
+        </td>
+        <td><button class="delete" <!-- onclick="javascript:deleteVoice(this)" --> >Delete</button></td>`;
+    if(twitchUsername !== null) newVoice.querySelector(`.username`).value = twitchUsername;
+    addVoicesToDropdown(newVoice.querySelector(`.voices`));
+    if(voice !== null) newVoice.querySelector(`.voices option[value="${voice}"]`).selected = true;
+    let tbody = document.querySelector("#voice-table tbody");
+    tbody.insertBefore(newVoice, tbody.firstElementChild);
 }
 
 
@@ -70,7 +51,7 @@ function addNewVoiceOverride(twitchUsername, voice) {
  * Serialize all of the voice override nodes into a JSON string.
  * */
 function serializeVoiceOverrides() {
-    let voices = document.querySelectorAll("#voices > div");
+    let voices = document.querySelectorAll("#voice-table tbody tr");
     let selected = {};
     for(let voiceNode of voices) {
         let user = voiceNode.querySelector(".username").value;
@@ -136,10 +117,8 @@ function loadInputs() {
 
     // TTS voice overrides
     let voices = JSON.parse(localStorage.getItem(`voiceOverrides`));
-    let voiceDom = document.querySelector("#voices");
-    for(let vdo of voiceDom.children) {
-        if(!vdo.classList.contains("template")) vdo.remove();
-    }
+    let voiceDom = document.querySelector("#voice-table tbody");
+    voiceDom.innerHTML = "";
     for(let u in voices) {
         addNewVoiceOverride(u, voices[u]);
     }
@@ -150,29 +129,6 @@ function loadInputs() {
         for(let name in sounds) {
             document.querySelector(`.sound[data-name="${name}"] input[name=managed]`).checked = sounds[name];
         }
-    }
-}
-
-
-/**
- * Switch the username dropdown on a node to a text input.
- * */
-function switchSelect(usernameHolder) {
-    let input;
-    let select = usernameHolder.querySelector("select");
-    if(select === null) {
-        let input = usernameHolder.querySelector("input");
-        select = document.querySelector("#voices .template .username").cloneNode(true);
-        select.value = input.value;
-        usernameHolder.replaceChild(select, input);
-    }
-    else {
-        input = document.createElement("input");
-        input.classList.add("username");
-        input.placeholder = "Twitch Username";
-        input.onchange = saveInputs;
-        input.value = select.value;
-        usernameHolder.replaceChild(input, select);
     }
 }
 

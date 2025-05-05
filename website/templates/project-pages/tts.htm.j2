@@ -60,8 +60,6 @@
       <audio class="tts" controls></audio>
       <audio class="tts" controls></audio>
       <audio class="tts" controls></audio>
-      <audio class="tts" controls></audio>
-      <audio class="tts" controls></audio>
     </div>  <!-- A container for the played audio -->
 
     <!-- Box our connected TTS channels -->
@@ -88,6 +86,17 @@
       <!-- Container for the voices -->
       <div id="voices" class="item-grid" data-hidden="1">
 
+        <table id="voice-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Voice</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
         <!-- Template voice -->
         <div class="template boxed mb">
 
@@ -98,14 +107,13 @@
             </select>
             <button type="button" onclick="javascript:switchSelect(this.parentNode);">+</button>
           </div>
-
-          <!-- Voice dropdown -->
           <select
               class="voices"
               placeholder="Voice"
               onchange="javascript:saveInputs();">
           </select>
         </div>  <!-- Template voice -->
+
       </div>  <!-- Container for the voices -->
     </div>  <!-- Box our voice overrides -->
   </div>  <!-- TTS controls -->
