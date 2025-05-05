@@ -119,7 +119,12 @@ function loadInputs() {
     let voices = JSON.parse(localStorage.getItem(`voiceOverrides`));
     let voiceDom = document.querySelector("#voice-table tbody");
     voiceDom.innerHTML = "";
-    for(let u in voices) {
+    let sortedKeys = (
+        Object.keys(voices)
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+        .reverse()
+    );
+    for(let u of sortedKeys) {
         addNewVoiceOverride(u, voices[u]);
     }
 
