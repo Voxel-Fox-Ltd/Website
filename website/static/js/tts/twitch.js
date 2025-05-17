@@ -30,6 +30,28 @@ class TwitchMessage {
         // Filter commands
         if(workingMessage.startsWith("!")) return "";
 
+        // Filter by user type where applicable (eg mod/sub/vip/etc)
+        let userTypeFlags = 0;
+        for(let i of document.querySelectorAll(".output-user-type-checkbox")) {
+            if(i.checked) {
+                userTypeFlags |= parseInt(i.value);
+            }
+        }
+        let shouldContinue = false;
+        if(userTypeFlags && 1) {
+            shouldContinue = true;
+        }
+        if(userTypeFlags && 4) {
+            if(this.tags["subscriber"] == "1") shouldContinue = true;
+        }
+        if(userTypeFlags && 8) {
+            if(this.tags["vip"] == "1") shouldContinue = true;
+        }
+        if(userTypeFlags && 16) {
+            if(this.tags["mod"] == "1") shouldContinue = true;
+        }
+        if(!shouldContinue) return;
+
         // Remove emotes from message
         let toRemoveSlices = []; // list[list[int, int]]
         let emoteLocations = this.tags["emotes"]

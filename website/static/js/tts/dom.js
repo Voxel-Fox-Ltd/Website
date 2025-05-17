@@ -86,6 +86,13 @@ const BASIC_SAVES = {
     "soundRedeemsEnabled": () => document.querySelector(`[name="sound-redeems-enabled"]`).checked,
     "soundRedeems": serializeSoundRedeems,
     "outputType": () => document.querySelector(`[name="output-type"]:checked`).value,
+    "outputUserType": () => {
+        let output = 0;
+        for(let i of document.querySelectorAll(`[name="output-type"]:checked`)) {
+            output |= parseInt(i.value);
+        }
+        return output;
+    }
 }
 function saveInputs() {
     for(let i in BASIC_SAVES) {
@@ -144,6 +151,16 @@ function loadInputs() {
     if(sounds) {
         for(let name in sounds) {
             document.querySelector(`.sound[data-name="${name}"] input[name=managed]`).checked = sounds[name];
+        }
+    }
+
+    // Output type
+    let outputType = parseInt(localStorage.getItem("outputUserType"));
+    let checkboxes = document.querySelectorAll(`.output-user-type-checkbox`);
+    for(let i of checkboxes) {
+        i.checked = false;
+        if(outputType & parseInt(i.value)) {
+            i.checked = true;
         }
     }
 }

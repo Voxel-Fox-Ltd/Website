@@ -63,6 +63,61 @@
     </div>  <!-- A container for the played audio -->
 
     <!-- Selector for how voices should output -->
+    <div id="tts-output-user-type" class="boxed mb" data-hidden="1">
+      <label>Output User Type</label>
+        <div>
+          <input
+              type="checkbox"
+              name="output-user-type-everyone"
+              value=1
+              id="output-user-type-everyone"
+              class="output-user-type-checkbox"
+              onchange="javascript:saveInputs();" />
+          <label for="_output-user-type_everyone">Everyone</label>
+        </div>
+        <!-- <div>
+          <input
+              type="checkbox"
+              name="output-user-type-followers"
+              value=2
+              id="output-user-type-followers"
+              class="output-user-type-checkbox"
+              onchange="javascript:saveInputs();" />
+          <label for="output-user-type-followers">Followers</label>
+        </div> -->
+        <div>
+          <input
+              type="checkbox"
+              name="output-user-type"
+              value=4
+              id="output-user-type-subscribers"
+              class="output-user-type-checkbox"
+              onchange="javascript:saveInputs();" />
+          <label for="output-user-type-subscribers">Subscribers</label>
+        </div>
+        <div>
+          <input
+              type="checkbox"
+              name="output-user-type"
+              value=8
+              id="output-user-type-vips"
+              class="output-user-type-checkbox"
+              onchange="javascript:saveInputs();" />
+          <label for="output-user-type-vips">VIPs</label>
+        </div>
+        <div>
+          <input
+              type="checkbox"
+              name="output-user-type"
+              value=16
+              id="output-user-type-moderators"
+              class="output-user-type-checkbox"
+              onchange="javascript:saveInputs();" />
+          <label for="output-user-type-moderators">Moderators</label>
+        </div>
+    </div>  <!-- Box our connected TTS channels -->
+
+    <!-- Selector for how voices should output -->
     <div id="tts-output-type" class="boxed mb" data-hidden="1">
       <label>Output Type</label>
         <div>
