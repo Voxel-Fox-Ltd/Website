@@ -50,7 +50,7 @@ class TwitchMessage {
         if(userTypeFlags && 16) {
             if(this.tags["mod"] == "1") shouldContinue = true;
         }
-        if(!shouldContinue) return;
+        if(!shouldContinue) return "";
 
         // Remove emotes from message
         let toRemoveSlices = []; // list[list[int, int]]

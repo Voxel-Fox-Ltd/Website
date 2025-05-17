@@ -92,11 +92,13 @@ button {
     margin-bottom: -10px;
 }
 
-#tts-output-type input {
+#tts-output-type input,
+#tts-output-user-type input {
     width: initial;
 }
 
-#tts-output-type label {
+#tts-output-type label,
+#tts-output-user-type label {
     display: initial;
 }
 
