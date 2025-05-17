@@ -88,7 +88,7 @@ const BASIC_SAVES = {
     "outputType": () => document.querySelector(`[name="output-type"]:checked`).value,
     "outputUserType": () => {
         let output = 0;
-        for(let i of document.querySelectorAll(`[name="output-type"]:checked`)) {
+        for(let i of document.querySelectorAll(`.output-user-type-checkbox:checked`)) {
             output |= parseInt(i.value);
         }
         return output;
