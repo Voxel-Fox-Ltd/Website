@@ -63,6 +63,8 @@ CREATE TABLE IF NOT EXISTS checkout_items(
     -- keep track of subscribed guilds
     transaction_webhook TEXT,
     transaction_webhook_authorization TEXT NOT NULL DEFAULT '',
+    transaction_dsn TEXT,
+    transaction_sql TEXT,
 
     -- When this page is fetched, products from the same group will be shown
     -- together if there is one. If no group, then the product will not appear

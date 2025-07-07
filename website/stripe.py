@@ -17,6 +17,7 @@ from .utils import (
     CheckoutItem,
     Purchase,
     send_webhook,
+    send_sql,
 )
 
 
@@ -462,6 +463,7 @@ async def checkout_processor(
                     f"{STRIPE_BASE}/subscriptions/{data['subscription']}"
                 )
             asyncio.create_task(send_webhook(i, json_data))
+            asyncio.create_task(send_sql(i, json_data))
 
 
 async def set_customer_metadata(
@@ -570,3 +572,4 @@ async def subscription_deleted(
             "discord_guild_id": current[0].discord_guild_id,
         }
         asyncio.create_task(send_webhook(item, json_data))
+        asyncio.create_task(send_sql(item, json_data))

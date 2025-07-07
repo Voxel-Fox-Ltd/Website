@@ -17,6 +17,7 @@ __all__: tuple[str, ...] = (
     'requires_login',
     'requires_manager_login',
     'send_webhook',
+    'send_sql',
     'serialize',
     'types',
 )

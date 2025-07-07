@@ -16,6 +16,7 @@ from .utils import (
     types,
     User,
     Purchase,
+    send_sql,
 )
 
 
@@ -307,6 +308,7 @@ async def charge_captured(request: Request, data: types.IPNMessage):
                 "discord_guild_id": current.discord_guild_id,
             }
             await send_webhook(i, json_data)
+            await send_sql(i, json_data)
 
 
 async def subscription_created(request: Request, data: types.IPNMessage):
@@ -382,6 +384,7 @@ async def subscription_created(request: Request, data: types.IPNMessage):
             "discord_guild_id": current.discord_guild_id,
         }
         await send_webhook(item, json_data)
+        await send_sql(item, json_data)
 
 
 async def subscription_deleted(request: Request, data: types.IPNMessage):
@@ -448,3 +451,4 @@ async def subscription_deleted(request: Request, data: types.IPNMessage):
             "discord_guild_id": current[0].discord_guild_id,
         }
         await send_webhook(item, json_data)
+        await send_sql(item, json_data)

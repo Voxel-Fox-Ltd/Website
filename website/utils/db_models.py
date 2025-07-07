@@ -389,6 +389,8 @@ class CheckoutItem:
         'images',
         'visible',
         'available',
+        'dsn',
+        'sql',
     )
 
     def __init__(
@@ -405,6 +407,8 @@ class CheckoutItem:
             paypal_plan_id: Optional[str],
             transaction_webhook: str,
             transaction_webhook_authorization: str,
+            transaction_dsn: str,
+            transaction_sql: str,
             product_group: str,
             base_product_id: str | None,
             multiple: bool,
@@ -425,8 +429,11 @@ class CheckoutItem:
         self.stripe_price_id: str = stripe_price_id
         self.stripe_ideal_price_id: str = stripe_ideal_price_id
         self.paypal_plan_id: Optional[str] = paypal_plan_id
+
         self.webhook: str = transaction_webhook
         self.webhook_auth: str = transaction_webhook_authorization
+        self.dsn = transaction_dsn
+        self.sql = transaction_sql
 
         self.visible = visible
         self.available = available
@@ -564,6 +571,8 @@ class CheckoutItem:
             paypal_plan_id=row['paypal_plan_id'],
             transaction_webhook=row['transaction_webhook'],
             transaction_webhook_authorization=row['transaction_webhook_authorization'],
+            transaction_dsn=row['transaction_dsn'],
+            transaction_sql=row['transaction_sql'],
             product_group=row['product_group'],
             per_guild=row['per_guild'],
             base_product_id=row['base_product_id'],
@@ -746,6 +755,7 @@ class CheckoutItem:
         siblings.remove(self)  # remove created
         siblings.append(self)  # add self with cached items
         return sorted(siblings)  # sort and return
+
 
 class Purchase:
     """
