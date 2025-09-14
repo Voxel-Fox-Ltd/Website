@@ -1,0 +1,15 @@
+Fox orange f17824  -- f15a24
+Fox black 878787
+Fox white ffffff
+
+Void white ffffff
+Void gray e3e3e3
+Void black 000000
+
+Outline black 000000
+Outline white ffffff
+
+Valid combos:
+* Fox orange & outline black & void white
+* Fox orange & outline white & void black
+* Fox black & outline white & void gray

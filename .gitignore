@@ -7,6 +7,6 @@ _*
 !__init__.py
 !__main__.py
 !_/*
-!_voxelfox/
+!_voxelfox-20*/
 app.py
 .venv/

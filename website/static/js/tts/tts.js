@@ -44,6 +44,7 @@ var WORD_REPLACEMENTS = [
     [";-;", "crying"],
     ["im", "I'm"],
     ["em", "them"],
+    ["ehe", "hehe"],
     ["theres", "there's"],
     ["oml", "oh my lord"],
     ["ur", "your"],
