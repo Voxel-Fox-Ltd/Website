@@ -40,3 +40,8 @@ figure {
     background: #e1e1e1;
     border-radius: 10px;
 }
+
+.brand img.black {
+    background: #010101;
+    border-radius: 10px;
+}
