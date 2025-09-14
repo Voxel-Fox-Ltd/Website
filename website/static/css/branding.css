@@ -27,6 +27,9 @@ figure {
 .brand img {
     /* width: 150px; */
     max-width: 80%;
+
+    padding: 1em;
+    box-sizing: border-box;
 }
 
 .brand li {
@@ -36,9 +39,4 @@ figure {
 .brand img.white {
     background: #e1e1e1;
     border-radius: 10px;
-}
-
-.brand img.padded {
-    padding: 1em;
-    box-sizing: border-box;
 }
