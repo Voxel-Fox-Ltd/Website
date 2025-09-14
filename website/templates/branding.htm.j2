@@ -15,6 +15,7 @@
 
 {% block content %}
 <h1>Branding</h1>
+
 <div class="brand">
   <h2>Voxel Fox</h2>
   <p>
@@ -93,10 +94,36 @@
     </figure>
   </div>
 </div>
+
+<div class="brand">
+  <h2>MarriageBot</h2>
+  <p>
+    The MarriageBot logo. The logo may not be deformed, rotated,
+    flipped, or recoloured.
+  </p>
+  <div class="figures">
+    <figure>
+      <img src="{{ static('/images/marriagebot/rings.png') }}" />
+      <ul>
+        {{ create_download('/images/marriagebot/rings.png', 'PNG1200px') }}
+      </ul>
+      <figcaption>The MarriageBot logo without a background.</figcaption>
+    </figure>
+    <figure>
+      <img src="{{ static('/images/marriagebot/MarriageBot.150.png') }}" />
+      <ul>
+        {{ create_download('/images/marriagebot/MarriageBot.png', 'PNG1280px') }}
+        {{ create_download('/images/marriagebot/MarriageBot.150.png', 'PNG150px') }}
+      </ul>
+      <figcaption>The MarriageBot logo with the normal bot background.</figcaption>
+    </figure>
+  </div>
+</div>
+
 <div class="brand">
   <h2>Voxel Fox 2023-2025</h2>
   <p>
-    The Voxel Fox logo. The logo may not be deformed, rotated, or
+    The old Voxel Fox logo. The logo may not be deformed, rotated, or
     flipped. The image <i>may</i> be recoloured, provided the fill and
     outline are colours that stand out against each other. Use your
     own discretion.
@@ -150,30 +177,6 @@
         {{ create_download('/images/_voxelfox-2023/trans.svg', 'SVG') }}
       </ul>
       <figcaption>Trans pride fill, white outline.</figcaption>
-    </figure>
-  </div>
-</div>
-<div class="brand">
-  <h2>MarriageBot</h2>
-  <p>
-    The MarriageBot logo. The logo may not be deformed, rotated,
-    flipped, or recoloured.
-  </p>
-  <div class="figures">
-    <figure>
-      <img src="{{ static('/images/marriagebot/rings.png') }}" />
-      <ul>
-        {{ create_download('/images/marriagebot/rings.png', 'PNG1200px') }}
-      </ul>
-      <figcaption>The MarriageBot logo without a background.</figcaption>
-    </figure>
-    <figure>
-      <img src="{{ static('/images/marriagebot/MarriageBot.150.png') }}" />
-      <ul>
-        {{ create_download('/images/marriagebot/MarriageBot.png', 'PNG1280px') }}
-        {{ create_download('/images/marriagebot/MarriageBot.150.png', 'PNG150px') }}
-      </ul>
-      <figcaption>The MarriageBot logo with the normal bot background.</figcaption>
     </figure>
   </div>
 </div>
