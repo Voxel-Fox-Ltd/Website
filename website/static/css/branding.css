@@ -25,9 +25,20 @@ figure {
 }
 
 .brand img {
-    width: 150px;
+    /* width: 150px; */
+    max-width: 80%;
 }
 
 .brand li {
     padding: 0 0.5em;
+}
+
+.brand img.white {
+    background: #e1e1e1;
+    border-radius: 10px;
+}
+
+.brand img.padded {
+    padding: 1em;
+    box-sizing: border-box;
 }
