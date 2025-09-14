@@ -1,10 +1,10 @@
 @font-face {
     font-family: 'icomoon';
-    src:  url('/static/fonts/icomoon.eot?h63ir3');
-    src:  url('/static/fonts/icomoon.eot?h63ir3#iefix') format('embedded-opentype'),
-        url('/static/fonts/icomoon.ttf?h63ir3') format('truetype'),
-        url('/static/fonts/icomoon.woff?h63ir3') format('woff'),
-        url('/static/fonts/icomoon.svg?h63ir3#icomoon') format('svg');
+    src:  url('/static/fonts/icomoon.eot?mbv70s');
+    src:  url('/static/fonts/icomoon.eot?mbv70s#iefix') format('embedded-opentype'),
+        url('/static/fonts/icomoon.ttf?mbv70s') format('truetype'),
+        url('/static/fonts/icomoon.woff?mbv70s') format('woff'),
+        url('/static/fonts/icomoon.svg?mbv70s#icomoon') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: block;
@@ -48,3 +48,6 @@ icon[youtube]:before {content: "\e906";}
 icon[twitch]:before {content: "\e902";}
 icon[github]:before {content: "\e903";}
 icon[linkedin]:before {content: "\eaca";}
+
+icon[light-bulb]:before {content: "\e90f";}
+icon[spotlight]:before {content: "\e90e";}
