@@ -37,6 +37,20 @@
         disabled
         />
     <button id="login-button" onclick="redirectToLogin(); return false;">Login</button>
+    <label for="pak" style="margin-top: 0.5em;">Polly Access Key:</label>
+    <input
+        name="pak"
+        onchange="javascript:saveInputs();"
+        type="text"
+        title="Your AWS Polly access key."
+        />
+    <label for="psk" style="margin-top: 0.5em;">Polly Secret Key:</label>
+    <input
+        name="psk"
+        onchange="javascript:saveInputs();"
+        type="password"
+        title="Your AWS Polly secret key."
+        />
   </div>
 
   <!-- TTS controls -->
@@ -268,6 +282,7 @@
 </div>
 
 
+<script type="text/javascript" src="{{ static('/js/tts/polly.js')}}"></script>
 <script type="text/javascript" src="{{ static('/js/tts/tts.js')}}"></script>
 <script type="text/javascript" src="{{ static('/js/tts/twitch.js')}}"></script>
 <script type="text/javascript" src="{{ static('/js/tts/dom.js')}}"></script>

@@ -41,7 +41,14 @@ function addNewVoiceOverride(twitchUsername, voice) {
         <td><button class="delete" onclick="javascript:deleteVoice(this)">Delete</button></td>`;
     if(twitchUsername !== null) newVoice.querySelector(`.username`).value = twitchUsername;
     addVoicesToDropdown(newVoice.querySelector(`.voices`));
-    if(voice !== null) newVoice.querySelector(`.voices option[value="${voice}"]`).selected = true;
+    if(voice !== null) {
+        try {
+            newVoice.querySelector(`.voices option[value="${voice}"]`).selected = true;
+        }
+        catch(e) {
+            console.warn(`Voice ${voice} not found for user ${twitchUsername}`);
+        }
+    }
     let tbody = document.querySelector("#voice-table tbody");
     tbody.insertBefore(newVoice, tbody.firstElementChild);
 }
@@ -81,6 +88,8 @@ function serializeSoundRedeems() {
  * */
 const BASIC_SAVES = {
     "twitchAccessToken": () => document.querySelector(`[name="at"]`).value,
+    "awsAccessKey": () => document.querySelector(`[name="pak"]`).value,
+    "awsSecretKey": () => document.querySelector(`[name="psk"]`).value,
     "ttsChannels": () => document.querySelector(`[name="connect"]`).value,
     "voiceOverrides": serializeVoiceOverrides,
     "soundRedeemsEnabled": () => document.querySelector(`[name="sound-redeems-enabled"]`).checked,
@@ -107,6 +116,8 @@ const BASIC_LOADS = {
         return localStorage.getItem(`twitchAccessToken`);
     },
     '[name="connect"]': () => localStorage.getItem(`ttsChannels`),
+    '[name="pak"]': () => localStorage.getItem(`awsAccessKey`),
+    '[name="psk"]': () => localStorage.getItem(`awsSecretKey`),
     '[name="sound-redeems-enabled"]': () => {
         return JSON.parse(localStorage.getItem(`soundRedeemsEnabled`))
     },

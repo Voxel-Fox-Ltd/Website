@@ -283,7 +283,7 @@ class TwitchIRC {
 
     async onTextMessage(message) {
         console.log(`${message.username} said ${message.message} (${message.filteredMessage})`);
-        sayMessageSE(message)  // from tts.js
+        sayMessage(message)  // from tts.js
     }
 }
 
