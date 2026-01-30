@@ -4,6 +4,7 @@
 
 
 const TWITCH_MESSAGE_REGEX = /(?:@(?<tags>.+?) )?:(?<username>.+?)!.+?@.+?\.tmi\.twitch\.tv PRIVMSG #(?<channel>.+?) :(?<message>.+)/;
+const MAX_WORD_LENGTH = 50;
 
 
 class TwitchMessage {
@@ -92,7 +93,7 @@ class TwitchMessage {
             }
 
             // Filter words that are too long
-            if(i.length >= 20) {
+            if(i.length >= MAX_WORD_LENGTH) {
                 continue;
             }
 
@@ -102,16 +103,25 @@ class TwitchMessage {
         workingMessage = newTextSplit.join(" ");
 
         // Perform relevant word replacements
-        for(let [k, v] of REGEX_REPLACEMENTS) {
-            workingMessage = workingMessage.replace(new RegExp(k, "i"), v);
-        }
-        for(let [k, v] of WORD_REPLACEMENTS) {
-            workingMessage = workingMessage.replace(
-                new RegExp(WB + k + WB, "i"),
-                (match, g1, g2) => {
-                    return g1 + v + g2;
+        // Do this until no matches are found
+        let anyMatch = false;
+        while(true) {
+            for(let [k, v] of REGEX_REPLACEMENTS) {
+                let match = new RegExp(k, "i").exec(workingMessage);
+                if(match) {
+                    anyMatch = true;
+                    workingMessage = workingMessage.replace(new RegExp(k, "i"), v);
                 }
-            );
+            }
+            for(let [k, v] of WORD_REPLACEMENTS) {
+                workingMessage = workingMessage.replace(
+                    new RegExp(WB + k + WB, "i"),
+                    (match, g1, g2) => {
+                        return g1 + v + g2;
+                    }
+                );
+            }
+            if(!anyMatch) break;
         }
 
         // And done
