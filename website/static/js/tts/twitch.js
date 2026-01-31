@@ -245,6 +245,7 @@ class TwitchIRC {
                 this.onTextMessage.bind(this)(message);
             }
             catch (error) {
+                console.error("Failed to parse Twitch IRC message:", error);
                 continue;
             }
         }
