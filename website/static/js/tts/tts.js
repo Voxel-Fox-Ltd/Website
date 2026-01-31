@@ -264,7 +264,14 @@ async function sayMessage(twitchMessage) {
         text = match[2];
         rate = Math.max(RATE_MIN, Math.min(parseFloat(match[1]), RATE_MAX));
     }
-    let audioData = await pollySynthTTS(text, voice.name);
+    let audioData;
+    try {
+        audioData = await pollySynthTTS(text, voice.name);
+    }
+    catch(e) {
+        console.error("TTS synthesis error:", e);
+        return;
+    }
 
     // Add to queue
     queueAudio(audioData, rate, twitchMessage.username.toLowerCase())

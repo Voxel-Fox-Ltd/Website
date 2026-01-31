@@ -133,7 +133,8 @@ async function pollySynthTTS(text, voiceId, outputFormat = "mp3") {
     const response = await fetch(endpoint + canonicalUri, {
         method: method,
         headers,
-        body: requestBody
+        body: requestBody,
+        signal: AbortSignal.timeout(3_000),
     });
 
     if (!response.ok) {
