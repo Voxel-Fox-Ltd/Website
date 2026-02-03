@@ -105,24 +105,24 @@ class TwitchMessage {
         // Perform relevant word replacements
         // Do this until no matches are found
         let anyMatch = false;
-        while(true) {
-            for(let [k, v] of REGEX_REPLACEMENTS) {
-                let match = new RegExp(k, "i").exec(workingMessage);
-                if(match) {
-                    anyMatch = true;
-                    workingMessage = workingMessage.replace(new RegExp(k, "i"), v);
-                }
+        // while(true) {
+        for(let [k, v] of REGEX_REPLACEMENTS) {
+            let match = new RegExp(k, "i").exec(workingMessage);
+            if(match) {
+                anyMatch = true;
+                workingMessage = workingMessage.replace(new RegExp(k, "i"), v);
             }
-            for(let [k, v] of WORD_REPLACEMENTS) {
-                workingMessage = workingMessage.replace(
-                    new RegExp(WB + k + WB, "i"),
-                    (match, g1, g2) => {
-                        return g1 + v + g2;
-                    }
-                );
-            }
-            if(!anyMatch) break;
         }
+        for(let [k, v] of WORD_REPLACEMENTS) {
+            workingMessage = workingMessage.replace(
+                new RegExp(WB + k + WB, "i"),
+                (match, g1, g2) => {
+                    return g1 + v + g2;
+                }
+            );
+        }
+        //     if(!anyMatch) break;
+        // }
 
         // And done
         return workingMessage;
