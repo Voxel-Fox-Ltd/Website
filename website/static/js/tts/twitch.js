@@ -230,7 +230,7 @@ class TwitchIRC {
                 this.socketHavingFun = true;
                 return;
             }
-            else if (line.startsWith(":tmi.twitch.tv ")) {
+            else if(line.startsWith(":tmi.twitch.tv ")) {
                 return;
             }
             else if(line.startsWith("PING ")) {
@@ -240,13 +240,15 @@ class TwitchIRC {
                 this.socket.send(`PONG ${toPong}`);
                 return;
             }
-            try {
-                let message = new TwitchMessage(line);
-                this.onTextMessage.bind(this)(message);
-            }
-            catch (error) {
-                console.error("Failed to parse Twitch IRC message:", error);
-                continue;
+            else {
+                try {
+                    let message = new TwitchMessage(line);
+                    await this.onTextMessage.bind(this)(message);
+                }
+                catch (error) {
+                    console.error("Failed to parse Twitch IRC message:", error);
+                    continue;
+                }
             }
         }
     }
@@ -294,7 +296,7 @@ class TwitchIRC {
 
     async onTextMessage(message) {
         console.log(`${message.username} said ${message.message} (${message.filteredMessage})`);
-        sayMessage(message)  // from tts.js
+        await sayMessage(message)  // from tts.js
     }
 }
 
