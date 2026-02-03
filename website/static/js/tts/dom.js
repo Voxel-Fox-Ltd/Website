@@ -7,15 +7,28 @@
  * Add voices to a given dropdown.
  * */
 function addVoicesToDropdown(dropdown) {
-    let voiceOption = document.createElement("option");
-    voiceOption.innerText = "";
-    voiceOption.value = "";
-    dropdown.appendChild(voiceOption);
+
+    // Group voices by their accent
+    let voiceGroups = {};
     for(let v of VOICES) {
-        voiceOption = document.createElement("option");
-        voiceOption.innerText = v.display;
-        voiceOption.value = v.name;
-        dropdown.appendChild(voiceOption);
+        let group = v.groupName;
+        if(!(group in voiceGroups)) {
+            voiceGroups[group] = [];
+        }
+        voiceGroups[group].push(v);
+    }
+
+    // Add the voices to the dropdown
+    for(let groupName in voiceGroups) {
+        let optgroup = document.createElement("optgroup");
+        optgroup.label = groupName;
+        for(let v of voiceGroups[groupName]) {
+            let voiceOption = document.createElement("option");
+            voiceOption.innerText = v.display;
+            voiceOption.value = v.name;
+            optgroup.appendChild(voiceOption);
+        }
+        dropdown.appendChild(optgroup);
     }
 }
 

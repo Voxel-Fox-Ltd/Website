@@ -153,14 +153,15 @@ var IGNORED_USERS = [
  * A voice instance that can be used via StreamElements' API
  * */
 class Voice {
-    constructor(apiName, language=null, displayName=null) {
+    constructor(apiName, language=null, displayName=null, groupName=null) {
         this.name = apiName;
         this.language = language === null ? "en" : language;
-        this._displayName = displayName;
+        this.displayName = displayName;
+        this.groupName = groupName;
     }
 
     get display() {
-        let builder = this._displayName === null ? this.name : this._displayName;
+        let builder = this.displayName === null ? this.name : this.displayName;
         if(this.language == "en") return builder;
         return `${builder} (${this.language})`;
     }
@@ -169,51 +170,51 @@ class Voice {
 
 const VOICES = [
     // en-US
-    new Voice("Danielle"),
-    new Voice("Gregory"),
-    new Voice("Ivy"),
-    new Voice("Joanna"),
-    new Voice("Joey"),
-    new Voice("Justin"),
-    new Voice("Kendra"),
-    new Voice("Kevin"),
-    new Voice("Kimberly"),
-    new Voice("Matthew"),
-    new Voice("Ruth"),
-    new Voice("Salli"),
-    new Voice("Stephen"),
+    new Voice("Danielle", "en", null, "US English"),
+    new Voice("Gregory", "en", null, "US English"),
+    new Voice("Ivy", "en", null, "US English"),
+    new Voice("Joanna", "en", null, "US English"),
+    new Voice("Joey", "en", null, "US English"),
+    new Voice("Justin", "en", null, "US English"),
+    new Voice("Kendra", "en", null, "US English"),
+    new Voice("Kevin", "en", null, "US English"),
+    new Voice("Kimberly", "en", null, "US English"),
+    new Voice("Matthew", "en", null, "US English"),
+    new Voice("Ruth", "en", null, "US English"),
+    new Voice("Salli", "en", null, "US English"),
+    new Voice("Stephen", "en", null, "US English"),
 
     // en-GB
-    new Voice("Amy"),
-    new Voice("Arthur"),
-    new Voice("Brian"),
-    new Voice("Emma"),
+    new Voice("Amy", "en", null, "GB English"),
+    new Voice("Arthur", "en", null, "GB English"),
+    new Voice("Brian", "en", null, "GB English"),
+    new Voice("Emma", "en", null, "GB English"),
 
     // en-AU
-    new Voice("Olivia"),
+    new Voice("Olivia", "en", null, "Australian English"),
 
     // en-IN
-    new Voice("Kajal"),
+    new Voice("Kajal", "en", null, "Indian English"),
 
     // en-IE
-    new Voice("Niamh"),
+    new Voice("Niamh", "en", null, "Irish English"),
 
     // en-NZ
-    new Voice("Aria"),
+    new Voice("Aria", "en", null, "New Zealand English"),
 
     // en-SG
-    new Voice("Jasmine"),
+    new Voice("Jasmine", "en", null, "Singapore English"),
 
     // en-ZA
-    new Voice("Ayanda"),
+    new Voice("Ayanda", "en", null, "South African English"),
 
     // es
-    new Voice("Lucia", "es"),  // es-ES
-    new Voice("Sergio", "es"),  // es-ES
-    new Voice("Mia", "es"),  // es-MX
-    new Voice("Andrés", "es"),  // es-MX
-    new Voice("Lupe", "es"),  // es-US
-    new Voice("Pedro", "es"),   // es-US
+    new Voice("Lucia", "es", null, "Spain Spanish"),  // es-ES
+    new Voice("Sergio", "es", null, "Spain Spanish"),  // es-ES
+    new Voice("Mia", "es", null, "Mexican Spanish"),  // es-MX
+    new Voice("Andrés", "es", null, "Mexican Spanish"),  // es-MX
+    new Voice("Lupe", "es", null, "US Spanish"),  // es-US
+    new Voice("Pedro", "es", null, "US Spanish"),   // es-US
 ];
 
 
