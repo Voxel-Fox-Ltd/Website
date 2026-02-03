@@ -169,6 +169,8 @@ class Voice {
 
 
 const VOICES = [
+    new Voice("", "en", "None", "Special"),
+
     // en-US
     new Voice("Danielle", "en", null, "US English"),
     new Voice("Gregory", "en", null, "US English"),
