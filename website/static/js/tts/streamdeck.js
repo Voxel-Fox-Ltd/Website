@@ -27,10 +27,17 @@ class StreamdeckSocket {
                 this.socket = null;
             }
             this.socket.onmessage = (event) => {
-                let data = JSON.parse(event.data);
+                let data;
+                try {
+                    data = JSON.parse(event.data);
+                }
+                catch(e) {
+                    console.error("Failed to parse Streamdeck Websocket message:", e);
+                    return;
+                }
                 if(data.action = "STOP_TTS") {
-                    payload = data.payload || 0;
-                    let audio = document.querySelector(`audio.tts[data-order=${payload}]`);
+                    let payload = data.payload || 0;
+                    let audio = document.querySelector(`audio.tts[data-order="${payload}"]`);
                     if(audio) audio.pause();
                 }
             }
