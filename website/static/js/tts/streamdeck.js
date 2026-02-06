@@ -11,7 +11,7 @@ class StreamdeckSocket {
     async connect() {
         if(this.socket === null) {
             try {
-                this.socket = new WebSocket("ws://voxelfox.co.uk/tts-streamdeck");
+                this.socket = new WebSocket("wss://voxelfox.co.uk/tts-streamdeck");
             }
             catch(e) {
                 console.error("Failed to connect to Streamdeck Websocket:", e);
@@ -43,3 +43,7 @@ class StreamdeckSocket {
         }
     }
 }
+
+
+sd = new StreamdeckSocket();
+sd.connect();
