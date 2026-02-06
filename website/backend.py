@@ -312,25 +312,23 @@ async def tts_streamdeck(request: Request):
     TTS Streamdeck websocket handler.
     """
 
+    # Setup socket and store in dicts
+    ws = WebSocketResponse()
+    await ws.prepare(request)
+
     # Validate inputs
     username = request.query.get("username")
     if username is not None:
         username = username.strip()
     else:
-        return Response(
-            body="Missing username.",
-            status=400,
-        )
+        await ws.close(code=4000, message="Missing username.".encode())
+        return ws
     role = request.query.get("role")
     if role not in ["tts", "streamdeck"]:
-        return Response(
-            body="Invalid role.",
-            status=400,
-        )
+        await ws.close(code=4000, message="Invalid role.".encode())
+        return ws
 
-    # Setup socket and store in dicts
-    ws = WebSocketResponse()
-    await ws.prepare(request)
+    # Store sockets in role-based dicts
     tts_streamdeck_clients.setdefault(username, {"tts": set(), "streamdeck": set()})
     tts_streamdeck_clients[username][role].add(ws)
 
