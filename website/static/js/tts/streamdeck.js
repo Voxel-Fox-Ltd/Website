@@ -4,14 +4,15 @@
 
 
 class StreamdeckSocket {
-    constructor() {
+    constructor(username) {
         this.socket = null;
+        this.username = username;
     }
 
     async connect() {
         if(this.socket === null) {
             try {
-                this.socket = new WebSocket("wss://voxelfox.co.uk/tts-streamdeck");
+                this.socket = new WebSocket(`wss://voxelfox.co.uk/tts-streamdeck?username=${this.username}&role=tts`);
             }
             catch(e) {
                 console.error("Failed to connect to Streamdeck Websocket:", e);
@@ -36,14 +37,10 @@ class StreamdeckSocket {
         }
     }
 
-    async close() {
+    close() {
         if(this.socket !== null) {
             this.socket.close();
             this.socket = null;
         }
     }
 }
-
-
-sd = new StreamdeckSocket();
-sd.connect();

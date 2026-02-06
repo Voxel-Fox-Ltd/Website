@@ -8,6 +8,8 @@ const CLIENT_ID = "eatw6619xc67g5udj97dmx096vyxb7";
 
 var irc = null;
 var pubsub = null;
+var streamdeck = null;
+
 async function connectTTS() {
 
     let channelConnectTextarea = document.querySelector(`[name="connect"]`);
@@ -28,6 +30,10 @@ async function connectTTS() {
                 channelConnectTextarea.disabled = false;
                 loginButton.disabled = false;
             }
+            else {
+                streamdeck = new StreamdeckSocket(connectChannels[0]);
+                await streamdeck.connect();
+            }
         }
         if(pubsub === null && irc !== null) {
             pubsub = new TwitchPubSub(accessToken, irc.userId, CLIENT_ID);
@@ -38,6 +44,7 @@ async function connectTTS() {
     else {
         irc.close();
         pubsub.close();
+        streamdeck.close();
         channelConnectTextarea.disabled = false;
         loginButton.disabled = false;
         for(let b of document.querySelectorAll("#modify-all-point-rewards button")) b.disabled = true;
