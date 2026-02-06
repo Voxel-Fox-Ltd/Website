@@ -8,6 +8,7 @@ class StreamdeckSocket {
         this.socket = null;
         this.username = username;
         this.interval = null;
+        this.lastData = {};
     }
 
     async connect() {
@@ -42,7 +43,7 @@ class StreamdeckSocket {
                     if(audio) audio.pause();
                 }
             }
-            this.interval = setInterval(() => this.loop(), 1_000);
+            this.interval = setInterval(() => this.loop(), 10);
         }
     }
 
@@ -58,6 +59,8 @@ class StreamdeckSocket {
                 let username = audio.getAttribute("data-username");
                 if(username) payload[audio.getAttribute("data-order")] = audio.getAttribute("data-username");
             }
+            if(payload == this.lastData) return;
+            this.lastData = payload;
             this.socket.send(JSON.stringify({
                 "action": "UPDATE_TTS",
                 "payload": payload
