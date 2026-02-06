@@ -64,16 +64,16 @@
 
     <!-- A container for the played audio -->
     <div class="mb" data-hidden="1">
-      <audio class="tts" data-username="" data-first="" controls></audio>
-      <audio class="tts" data-username="" controls></audio>
-      <audio class="tts" data-username="" controls></audio>
-      <audio class="tts" data-username="" controls></audio>
-      <audio class="tts" data-username="" controls></audio>
-      <audio class="tts" data-username="" controls></audio>
-      <audio class="tts" data-username="" controls></audio>
-      <audio class="tts" data-username="" controls></audio>
-      <audio class="tts" data-username="" controls></audio>
-      <audio class="tts" data-username="" controls></audio>
+      <audio class="tts" data-username="" data-order="0" data-first="" controls></audio>
+      <audio class="tts" data-username="" data-order="1" controls></audio>
+      <audio class="tts" data-username="" data-order="2" controls></audio>
+      <audio class="tts" data-username="" data-order="3" controls></audio>
+      <audio class="tts" data-username="" data-order="4" controls></audio>
+      <audio class="tts" data-username="" data-order="5" controls></audio>
+      <audio class="tts" data-username="" data-order="6" controls></audio>
+      <audio class="tts" data-username="" data-order="7" controls></audio>
+      <audio class="tts" data-username="" data-order="8" controls></audio>
+      <audio class="tts" data-username="" data-order="9" controls></audio>
     </div>  <!-- A container for the played audio -->
 
     <!-- Selector for how voices should output -->
@@ -287,6 +287,7 @@
 <script type="text/javascript" src="{{ static('/js/tts/twitch.js')}}"></script>
 <script type="text/javascript" src="{{ static('/js/tts/dom.js')}}"></script>
 <script type="text/javascript" src="{{ static('/js/tts/main.js')}}"></script>
+<script type="text/javascript" src="{{ static('/js/tts/streamdeck.js')}}"></script>
 <script type="text/javascript" defer>main();</script>
 
 </body>
