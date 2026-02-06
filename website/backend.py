@@ -6,7 +6,7 @@ import aiohttp
 import re
 from datetime import datetime
 
-from aiohttp.web import Request, RouteTableDef, Response, WebSocketResponse
+from aiohttp.web import Request, RouteTableDef, Response, WebSocketResponse, HTTPBadRequest
 from aiohttp_jinja2 import render_string
 import htmlmin
 from PIL import Image
@@ -312,62 +312,66 @@ async def tts_streamdeck(request: Request):
     TTS Streamdeck websocket handler.
     """
 
-    # Setup socket and store in dicts
-    ws = WebSocketResponse()
+    username = request.query.get("username")
+    if not username or not username.strip():
+        raise HTTPBadRequest(text="Missing username.")
+    username = username.strip()
+
+    role = request.query.get("role")
+    if role not in ("tts", "streamdeck"):
+        raise HTTPBadRequest(text="Invalid role.")
+
+    ws = WebSocketResponse(heartbeat=30)
     await ws.prepare(request)
 
-    # Validate inputs
-    username = request.query.get("username")
-    if username is not None:
-        username = username.strip()
-    else:
-        await ws.close(code=4000, message="Missing username.".encode())
-        return ws
-    role = request.query.get("role")
-    if role not in ["tts", "streamdeck"]:
-        await ws.close(code=4000, message="Invalid role.".encode())
-        return ws
-
-    # Store sockets in role-based dicts
     tts_streamdeck_clients.setdefault(username, {"tts": set(), "streamdeck": set()})
     tts_streamdeck_clients[username][role].add(ws)
 
-    # Handle messages
-    if role == "tts":
-        await handle_tts_streamdeck_tts(ws, username)
-    elif role == "streamdeck":
-        await handle_tts_streamdeck_streamdeck(ws, username)
-    else:
-        raise ValueError("Invalid role")
+    try:
+        if role == "tts":
+            await handle_tts_streamdeck_tts(ws, username)
+        else:
+            await handle_tts_streamdeck_streamdeck(ws, username)
+    finally:
+        # Cleanup even if handler errors
+        tts_streamdeck_clients.get(username, {}).get(role, set()).discard(ws)
+        if username in tts_streamdeck_clients:
+            if not tts_streamdeck_clients[username]["tts"] and not tts_streamdeck_clients[username]["streamdeck"]:
+                del tts_streamdeck_clients[username]
 
-    # Cleanup
-    tts_streamdeck_clients[username][role].remove(ws)
-    if not tts_streamdeck_clients[username]["tts"] and not tts_streamdeck_clients[username]["streamdeck"]:
-        del tts_streamdeck_clients[username]
+        if not ws.closed:
+            await ws.close()
 
-    # Return
     return ws
+
+
+async def _safe_broadcast(peers: set[WebSocketResponse], text: str):
+    dead: list[WebSocketResponse] = []
+    for peer in list(peers):
+        if peer.closed:
+            dead.append(peer)
+            continue
+        try:
+            await peer.send_str(text)
+        except Exception:
+            dead.append(peer)
+    for peer in dead:
+        peers.discard(peer)
 
 
 async def handle_tts_streamdeck_tts(ws: WebSocketResponse, username: str) -> None:
     async for msg in ws:
         if msg.type == aiohttp.WSMsgType.TEXT:
-
-            # Relay the message to all Streamdeck clients with the same username
-            for streamdeck_client in tts_streamdeck_clients.get(username, {}).get("streamdeck", []):
-                await streamdeck_client.send_str(msg.data)
-
-        elif msg.type in [aiohttp.WSMsgType.CLOSED, aiohttp.WSMsgType.ERROR]:
+            peers = tts_streamdeck_clients.get(username, {}).get("streamdeck", set())
+            await _safe_broadcast(peers, msg.data)
+        elif msg.type in (aiohttp.WSMsgType.CLOSED, aiohttp.WSMsgType.ERROR):
             break
 
 
 async def handle_tts_streamdeck_streamdeck(ws: WebSocketResponse, username: str) -> None:
     async for msg in ws:
         if msg.type == aiohttp.WSMsgType.TEXT:
-
-            # Relay the message to all TTS clients with the same username
-            for tts_client in tts_streamdeck_clients.get(username, {}).get("tts", []):
-                await tts_client.send_str(msg.data)
-
-        elif msg.type in [aiohttp.WSMsgType.CLOSED, aiohttp.WSMsgType.ERROR]:
+            peers = tts_streamdeck_clients.get(username, {}).get("tts", set())
+            await _safe_broadcast(peers, msg.data)
+        elif msg.type in (aiohttp.WSMsgType.CLOSED, aiohttp.WSMsgType.ERROR):
             break
