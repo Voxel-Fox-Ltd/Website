@@ -53,6 +53,7 @@ class StreamdeckSocket {
      * */
     loop() {
         if(this.socket !== null) {
+            if(this.socket.readyState !== WebSocket.OPEN) return;
             let payload = {};
             for(let audio of document.querySelectorAll(`audio.tts`)) {
                 if(audio.paused || audio.ended || audio.url == "") continue;
