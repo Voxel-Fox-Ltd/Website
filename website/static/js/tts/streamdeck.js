@@ -7,6 +7,7 @@ class StreamdeckSocket {
     constructor(username) {
         this.socket = null;
         this.username = username;
+        this.interval = null;
     }
 
     async connect() {
@@ -41,13 +42,36 @@ class StreamdeckSocket {
                     if(audio) audio.pause();
                 }
             }
+            this.interval = setInterval(() => this.loop(), 1_000);
         }
+    }
+
+    /**
+     * Grab every audio element with the "tts" class, get its "data-username" attribute, and send
+     * all of those as a payload to the websocket every 1_000ms.
+     * */
+    loop() {
+        if(this.socket !== null) {
+            let payload = {};
+            for(let audio of document.querySelectorAll(`audio.tts`)) {
+                let username = audio.getAttribute("data-username");
+                if(username) payload[audio.getAttribute("data-order")] = audio.getAttribute("data-username");
+            }
+            this.socket.send(JSON.stringify({
+                "action": "UPDATE_TTS",
+                "payload": payload
+            }));
+        }
+
     }
 
     close() {
         if(this.socket !== null) {
             this.socket.close();
             this.socket = null;
+        }
+        if(this.interval !== null)  {
+            clearInterval(this.interval);
         }
     }
 }
