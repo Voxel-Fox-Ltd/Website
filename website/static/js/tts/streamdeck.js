@@ -59,7 +59,7 @@ class StreamdeckSocket {
                 let username = audio.getAttribute("data-username");
                 if(username) payload[audio.getAttribute("data-order")] = audio.getAttribute("data-username");
             }
-            if(payload == this.lastData) return;
+            if(JSON.stringify(payload) == JSON.stringify(this.lastData)) return;
             this.lastData = payload;
             this.socket.send(JSON.stringify({
                 "action": "UPDATE_TTS",
