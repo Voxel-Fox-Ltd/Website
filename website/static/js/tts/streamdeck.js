@@ -54,6 +54,7 @@ class StreamdeckSocket {
         if(this.socket !== null) {
             let payload = {};
             for(let audio of document.querySelectorAll(`audio.tts`)) {
+                if(audio.paused || audio.ended || audio.url == "") continue;
                 let username = audio.getAttribute("data-username");
                 if(username) payload[audio.getAttribute("data-order")] = audio.getAttribute("data-username");
             }
