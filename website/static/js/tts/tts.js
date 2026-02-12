@@ -26,8 +26,7 @@ var REGEX_REPLACEMENTS = [
     ["u(?:wu)+", "uwu"],
     ["^\\^+$", "Yeah, agreed!"],
     ["^</3$", ""],
-    // ["kae", "Kay"],
-    [/(^|[\W\s])(kae)($|[\W\s])/, "$1Kay$3"],
+    [/(^|[\W\s])(ka+e+)($|[\W\s])/, "$1Kay$3"],
 ]
 
 // Patterns that are replaced word-for-word
@@ -138,6 +137,9 @@ var WORD_REPLACEMENTS = [
     ["chatgpt", "chatgăpît"],
     ["istg", "I swear to God"],
     ["LFG", "let's fucking go"],
+
+    ["sinon", "sy-non"],
+    ["rei", "ray"],
 ]
 
 
