@@ -1,10 +1,27 @@
 {% extends "partials/page.htm.j2" %}
 
+{% block head %}
+<style>
+    html {
+        height: 100%;
+    }
+    body {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    #content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <img class="logo" src="{{ static('/images/_voxelfox-2025/Logo White.svg') }}" />
 <h1>Voxel Fox</h1>
 <h2>Software | Sound | Lighting</h2>
-<h2><a href="/projects">Projects</a></h2>
-<h2><a href="/contact">Contact</a></h2>
-<h2><a href="/branding">Branding</a></h2>
 {% endblock %}
