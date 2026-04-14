@@ -53,6 +53,10 @@ p {
   margin: 0.5em 2em 0.5em 2em;
 }
 
+.carousel .carousel-item p:empty {
+  display: none;
+}
+
 @media screen and (max-width: 700px) {
   .carousel {
     flex-direction: column;
