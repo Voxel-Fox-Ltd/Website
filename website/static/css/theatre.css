@@ -20,6 +20,7 @@ p {
 .project img {
   max-width: 100%;
   border-radius: 5px;;
+  max-height: 800px;
 }
 
 .carousel {
@@ -30,6 +31,7 @@ p {
   padding: 5px;
   border-radius: 5px;
   gap: 5px;
+  justify-content: space-between;
 }
 
 .carousel .hidden {
@@ -40,7 +42,6 @@ p {
   font-size: 2em;
   font-weight: bold;
   font-family: inherit;
-/*   margin: 0 0.2em; */
   cursor: pointer;
   background: #ffffff22;
   border: 0;
