@@ -43,3 +43,28 @@
     filter: opacity(0.6);
     margin: 0;
 }
+
+details summary {
+  cursor: pointer;
+  border-radius: 8px;
+  list-style: none;  /* remove default marker */
+  min-height: 2em;
+  display: flex;
+  align-items: center;
+}
+
+details summary::-webkit-details-marker {
+  display: none; /* remove Safari marker */
+}
+
+details summary::before {
+  content: "▾";
+  float: left;
+  margin: 0 0.1em 0 0.2em;
+  font-size: 1.5em;
+  transition: transform 0.2s ease;
+}
+
+details[open] summary::before {
+  transform: rotate(180deg);
+}
