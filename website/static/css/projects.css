@@ -59,6 +59,7 @@ details summary::-webkit-details-marker {
 
 details summary::before {
   content: "▾";
+  transform: rotate(-90deg);
   float: left;
   margin: 0 0.1em 0 0.2em;
   font-size: 1.5em;
@@ -66,5 +67,5 @@ details summary::before {
 }
 
 details[open] summary::before {
-  transform: rotate(180deg);
+  transform: rotate(0deg);
 }
