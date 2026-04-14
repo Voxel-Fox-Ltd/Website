@@ -1,0 +1,72 @@
+{% extends "partials/page.htm.j2" %}
+
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ static('/css/theatre.css') }}" />
+{% endblock %}
+
+
+{% macro project(name, details, images) %}
+<div class="project">
+  <div class="top">
+    <p class="name">{{ name }}</p>
+    <div class="details">
+      {% for d in details %}
+      <p>{{ d }}</p>
+      {% endfor %}
+    </div>
+    <div class="carousel">
+      <button onclick="changeCarousel(this, -1);">&larr;</button>
+      <div class="carousel-images">
+        {% for image, image_details in images %}
+        <div class="carousel-item {% if not loop.first %}hidden{% endif %}">
+          <img src="{{ image }}" {% if not loop.first %}loading="lazy"{% endif %} />
+          <p>{{ image_details }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      <button onclick="changeCarousel(this, 1);">&rarr;</button>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+
+{% block content %}
+{{ project(
+  "Haverhill in the Park 2023",
+  (
+    "My first year working for Haverhill Town Council I was given the opportunity to run the lighting for Haverhill in the Park, a free music festival held in the town. Under guidance of the project manager I was able to emulate and use the focus from the previous year and work on my first high-profile festival.",
+    "For this I used a combination of Chauvet R2X spots, Prolight Fusion 260ZRs, Visage LED 4-head ParBars, and some basic LED battens, all controlled via an Avolites Tiger Touch II."
+  ),
+  [
+    (static("images/theatre/hitp-2023/4.webp"), ""),
+    (static("images/theatre/hitp-2023/1.webp"), ""),
+    (static("images/theatre/hitp-2023/2.webp"), ""),
+    (static("images/theatre/hitp-2023/3.webp"), ""),
+    (static("images/theatre/hitp-2023/5.webp"), ""),
+    (static("images/theatre/hitp-2023/6.webp"), ""),
+    (static("images/theatre/hitp-2023/7.webp"), ""),
+    (static("images/theatre/hitp-2023/8.webp"), ""),
+    (static("images/theatre/hitp-2023/9.webp"), ""),
+  ],
+) }}
+
+<script>
+function changeCarousel(node, direction) {
+  const carousel = node.closest('.carousel');
+  const images = carousel.querySelectorAll('.carousel-item');
+  let currentIndex = -1;
+  images.forEach((item, index) => {
+    if (!item.classList.contains('hidden')) {
+      currentIndex = index;
+    }
+  });
+  if (currentIndex === -1) return;
+  images[currentIndex].classList.add('hidden');
+  let newIndex = (currentIndex + direction) % images.length;
+  if (newIndex < 0) newIndex += images.length;
+  images[newIndex].classList.remove('hidden');
+}
+</script>
+{% endblock %}

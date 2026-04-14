@@ -1,0 +1,64 @@
+p {
+  margin: .5em 0;
+}
+
+.project {
+  background: #ffffff22;
+  padding: 1em;
+  margin: 0.5em;
+  border-radius: 5px;
+  text-align: left;
+  transition: 0.2s ease all;
+}
+
+.project .name {
+  margin-top: 0;
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.project img {
+  max-width: 100%;
+  border-radius: 5px;;
+}
+
+.carousel {
+  display: flex;
+  box-shadow: border-box;
+  margin-top: 1em;
+  background: #ffffff22;
+  padding: 5px;
+  border-radius: 5px;
+  gap: 5px;
+}
+
+.carousel .hidden {
+  display: none;
+}
+
+.carousel button {
+  font-size: 2em;
+  font-weight: bold;
+  font-family: inherit;
+/*   margin: 0 0.2em; */
+  cursor: pointer;
+  background: #ffffff22;
+  border: 0;
+  color: white;
+  padding: 0 0.5em;
+  border-radius: 5px;
+}
+
+.carousel .carousel-item p {
+  margin: 0.5em 2em 0.5em 2em;
+}
+
+@media screen and (max-width: 700px) {
+  .carousel {
+    flex-direction: column;
+  }
+
+  .carousel .carousel-item p {
+    margin: 0;
+  }
+}
