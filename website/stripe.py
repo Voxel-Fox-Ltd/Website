@@ -103,7 +103,7 @@ async def create_checkout_session(request: Request):
     # Make params to send to Stripe
     json_data = {
         "cancel_url": item.cancel_url,
-        "payment_method_types": ["card", "ideal"] if ideal else ["card"],
+        "payment_method_types": ["card", "ideal", "link"] if ideal else ["card", "link"],
         "success_url": item.success_url,
         "mode": "subscription" if item.subscription else "payment",
         "line_items": [
