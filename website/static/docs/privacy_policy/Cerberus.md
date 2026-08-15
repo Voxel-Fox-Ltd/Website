@@ -1,8 +1,8 @@
 # Privacy Policy
 
-Cerebus is run by Voxel Fox Ltd, trading as Voxel Fox (UK company number 12467253). 
+Cerberus is run by Voxel Fox Ltd, trading as Voxel Fox (UK company number 12467253).
 
-The following describes the data stored by Cerebus.
+The following describes the data stored by Cerberus.
 
 ## Why we collect and use data
 
