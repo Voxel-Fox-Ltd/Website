@@ -48,6 +48,9 @@ p {
 .carousel button {
   font-size: 2em;
   font-weight: bold;
+}
+
+.carousel button, .carousel p {
   font-family: inherit;
   cursor: pointer;
   background: #ffffff22;
@@ -55,6 +58,10 @@ p {
   color: white;
   padding: 0 0.5em;
   border-radius: 5px;
+}
+
+.carousel p {
+  padding: 3px 8px;
 }
 
 dialog::backdrop {

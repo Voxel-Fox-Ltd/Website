@@ -19,9 +19,16 @@
       <button onclick="changeCarousel(this, -1);">&larr;</button>
       <div class="carousel-images">
         {% for image in images %}
-        <div class="carousel-item {% if not loop.first %}hidden{% endif %}">
-          <img src="{{ image }}" {% if not loop.first %}loading="lazy"{% endif %} />
-        </div>
+          {% if image is string %}
+            <div class="carousel-item {% if not loop.first %}hidden{% endif %}">
+              <img src="{{ image }}" {% if not loop.first %}loading="lazy"{% endif %} />
+            </div>
+          {% else %}
+            <div class="carousel-item {% if not loop.first %}hidden{% endif %}">
+              <img src="{{ image[0] }}" {% if not loop.first %}loading="lazy"{% endif %} />
+              <p>{{ image[1]|safe }}</p>
+            </div>
+          {% endif %}
         {% endfor %}
       </div>
       <button onclick="changeCarousel(this, 1);">&rarr;</button>
@@ -33,32 +40,60 @@
 
 {% block content %}
 {{ project(
+  "Haverhill in the Park - August 2026",
+  (
+    "Once again running the lighting for Haverhill in the Park (HITP).",
+    "I ran an Avolites Tiger Touch II lighting desk.",
+  ),
+  [
+    static("images/theatre/hitp-2026/20260820_220623.jpg"),
+    static("images/theatre/hitp-2026/20260820_220615.jpg"),
+    static("images/theatre/hitp-2026/20260820_220654.jpg"),
+    static("images/theatre/hitp-2026/20260822_115630.jpg"),
+    static("images/theatre/hitp-2026/20260821_201220.jpg"),
+    (static("images/theatre/hitp-2026/FB_IMG_1787444380408.jpg"), "Photo credit: <a href='https://www.instagram.com/hitpfest'>@hitpfest on Instagram</a>."),
+    (static("images/theatre/hitp-2026/IMG_1197.jpg"), "Photo credit: <a href='https://www.instagram.com/apertureelementphotography'>Apeture Element Photography</a>."),
+    (static("images/theatre/hitp-2026/IMG_1643.jpg"), "Photo credit: <a href='https://www.instagram.com/apertureelementphotography'>Apeture Element Photography</a>."),
+    (static("images/theatre/hitp-2026/IMG_1709.jpg"), "Photo credit: <a href='https://www.instagram.com/apertureelementphotography'>Apeture Element Photography</a>."),
+    (static("images/theatre/hitp-2026/IMG_1776.jpg"), "Photo credit: <a href='https://www.instagram.com/apertureelementphotography'>Apeture Element Photography</a>."),
+    (static("images/theatre/hitp-2026/IMG_1969.jpg"), "Photo credit: <a href='https://www.instagram.com/apertureelementphotography'>Apeture Element Photography</a>."),
+    (static("images/theatre/hitp-2026/IMG_2346.jpg"), "Photo credit: <a href='https://www.instagram.com/apertureelementphotography'>Apeture Element Photography</a>."),
+    (static("images/theatre/hitp-2026/IMG_4063.jpg"), "Photo credit: <a href='https://www.instagram.com/apertureelementphotography'>Apeture Element Photography</a>."),
+    (static("images/theatre/hitp-2026/IMG_4105.jpg"), "Photo credit: <a href='https://www.instagram.com/apertureelementphotography'>Apeture Element Photography</a>."),
+    (static("images/theatre/hitp-2026/IMG_4320.jpg"), "Photo credit: <a href='https://www.instagram.com/apertureelementphotography'>Apeture Element Photography</a>."),
+  ],
+) }}
+
+
+{{ project(
   "What's Love Got To Do With It - London Palladium - May 2026",
   (
     "Thrilled to have received the opportunity to run lighting in the West End of London for the first time, in the Palladium no less. Working on a Tina Turner tribute show called What's Love Got To Do With It. Used the house rig at the Palladium - 11 universes over sACN - and a handful of lights that were brought on the tour as a ground package.",
     "Running on an Avolites Tiger Touch II lighting desk with additional fader wing.",
   ),
   [
-    static("images/theatre/tina-palladium-2026-05-07/20260507_195705.jpg"),
+    (static("images/theatre/tina-palladium-2026-05-07/20260507_195705.jpg"), "Photo credit: <a href='https://www.instagram.com/rachaellauren1'>@rachaellauren1 on Instagram</a>."),
     static("images/theatre/tina-palladium-2026-05-07/20260507_110821.jpg"),
     static("images/theatre/tina-palladium-2026-05-07/20260507_111810.jpg"),
     static("images/theatre/tina-palladium-2026-05-07/20260507_140515.jpg"),
     static("images/theatre/tina-palladium-2026-05-07/20260507_161955_884dd2a6.jpg"),
     static("images/theatre/tina-palladium-2026-05-07/20260507_213015.jpg"),
-    static("images/theatre/tina-palladium-2026-05-07/IMG-20260507-WA0006.jpg"),
-    static("images/theatre/tina-palladium-2026-05-07/IMG-20260507-WA0009.jpg"),
-    static("images/theatre/tina-palladium-2026-05-07/IMG-20260507-WA0011.jpg"),
-    static("images/theatre/tina-palladium-2026-05-07/IMG-20260507-WA0014.jpg"),
-    static("images/theatre/tina-palladium-2026-05-07/IMG-20260508-WA0003.jpg"),
-    static("images/theatre/tina-palladium-2026-05-07/IMG-20260508-WA0009.jpg"),
-    static("images/theatre/tina-palladium-2026-05-07/IMG-20260508-WA0010.jpg"),
-    static("images/theatre/tina-palladium-2026-05-07/IMG-20260508-WA0023.jpg"),
-    static("images/theatre/tina-palladium-2026-05-07/IMG-20260508-WA0031.jpg"),
+    (static("images/theatre/tina-palladium-2026-05-07/IMG-20260507-WA0006.jpg"), "Photo credit: <a href='https://www.instagram.com/rachaellauren1'>@rachaellauren1 on Instagram</a>."),
+    (static("images/theatre/tina-palladium-2026-05-07/IMG-20260507-WA0009.jpg"), "Photo credit: <a href='https://www.instagram.com/rachaellauren1'>@rachaellauren1 on Instagram</a>."),
+    (static("images/theatre/tina-palladium-2026-05-07/IMG-20260507-WA0011.jpg"), "Photo credit: <a href='https://www.instagram.com/rachaellauren1'>@rachaellauren1 on Instagram</a>."),
+    (static("images/theatre/tina-palladium-2026-05-07/IMG-20260507-WA0014.jpg"), "Photo credit: <a href='https://www.instagram.com/rachaellauren1'>@rachaellauren1 on Instagram</a>."),
+    (static("images/theatre/tina-palladium-2026-05-07/IMG-20260508-WA0003.jpg"), "Photo credit: <a href='https://www.instagram.com/rachaellauren1'>@rachaellauren1 on Instagram</a>."),
+    (static("images/theatre/tina-palladium-2026-05-07/IMG-20260508-WA0009.jpg"), "Photo credit: <a href='https://www.instagram.com/rachaellauren1'>@rachaellauren1 on Instagram</a>."),
+    (static("images/theatre/tina-palladium-2026-05-07/IMG-20260508-WA0010.jpg"), "Photo credit: <a href='https://www.instagram.com/rachaellauren1'>@rachaellauren1 on Instagram</a>."),
+    (static("images/theatre/tina-palladium-2026-05-07/IMG-20260508-WA0023.jpg"), "Photo credit: <a href='https://www.instagram.com/rachaellauren1'>@rachaellauren1 on Instagram</a>."),
+    (static("images/theatre/tina-palladium-2026-05-07/IMG-20260508-WA0031.jpg"), "Photo credit: <a href='https://www.instagram.com/rachaellauren1'>@rachaellauren1 on Instagram</a>."),
     static("images/theatre/tina-palladium-2026-05-07/SnapInsta.to_686165239_18317980531282126_5659068734181000699_n.jpg"),
     static("images/theatre/tina-palladium-2026-05-07/SnapInsta.to_689517580_18318027898282126_1983354901514946672_n.jpg"),
     static("images/theatre/tina-palladium-2026-05-07/SnapInsta.to_AQNCRtoTbhVOySVkhUuotm5-Hv41300UUbaUsUVTa96uwdMlI8NSvFlyhD-fzDsDcenlvV9PSjuXZ8IBQFEshGUeF9RhC5On6fqNiOg.jpg"),
   ],
 ) }}
+
+
 {{ project(
   "Beauty and the Beast - Haverhill Arts Centre Pantomime - December 2025",
   (
@@ -72,6 +107,8 @@
     static("images/theatre/hav-panto-2025/20251230_174419.jpg"),
   ],
 ) }}
+
+
 {{ project(
   "Queen of the Night - Brighton Centre - November 2025",
   (
@@ -101,6 +138,8 @@
     static("images/theatre/whitney-brighton-2025-11-15/IMG-20251116-WA0009.jpg"),
   ],
 ) }}
+
+
 {{ project(
   "Kesgrave Hall - September 2025",
   (
@@ -115,6 +154,8 @@
     static("images/theatre/kesgrave-2025-09-19/20250919_180526.jpg"),
   ],
 ) }}
+
+
 {{ project(
   "Haverhill in the Park - August 2025",
   (
@@ -130,6 +171,8 @@
     static("images/theatre/hitp-2025/Screenshot_20250815_001920_Instagram.jpg"),
   ],
 ) }}
+
+
 {{ project(
   "Queen of the Night - Milton Keynes Theatre - January 2025",
   (
@@ -143,6 +186,8 @@
     static("images/theatre/whitney-milton-2025-01-14/20250114_214653.jpg"),
   ],
 ) }}
+
+
 {{ project(
   "Jack and the Beanstalk - Haverhill Arts Centre Pantomime - December 2024",
   (
@@ -156,6 +201,8 @@
     static("images/theatre/hav-panto-2024/IMG-20241215-WA0001.jpg"),
   ],
 ) }}
+
+
 {{ project(
   "Haverhill in the Park - August 2024",
   (
@@ -169,6 +216,8 @@
     static("images/theatre/hitp-2024/20240816_112614.jpg"),
   ],
 ) }}
+
+
 {{ project(
   "Dick Whittington - Haverhill Arts Centre Pantomime - December 2023",
   (
@@ -182,6 +231,8 @@
     static("images/theatre/hav-panto-2023/20231223_111927.jpg"),
   ],
 ) }}
+
+
 {{ project(
   "Haverhill in the Park - August 2023",
   (
@@ -200,6 +251,7 @@
     static("images/theatre/hitp-2023/9.webp"),
   ],
 ) }}
+
 
 <dialog id="imageModal">
   <button onclick="imageModal.close()">X</button>
