@@ -44,4 +44,4 @@ Raw data is not shared with other entities. Much of the stored data is publicly 
 
 ## Concerns
 
-If you have any concerns about the usage of your data or wish to have some of it deleted, please [contact us](mailto:privacy@voxelfox.co.uk?subject=Privacy%20Policy%20Concern).
+If you have any concerns about the usage of your data or wish to have some of it deleted, please [contact us](mailto:privacy@voxelfox.co.uk?subject=Privacy%20Policy%20Concern%20re%20Furries%20After%20Dark).

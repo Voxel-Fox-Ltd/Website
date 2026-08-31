@@ -1,12 +1,12 @@
 # Privacy Policy
 
-Cerberus is run by Voxel Fox Ltd, trading as Voxel Fox (UK company number 12467253).
+Cerberus (The Bot) is run by Voxel Fox Ltd, trading as Voxel Fox (UK company number 12467253).
 
 The following describes the data stored by Cerberus.
 
 ## Why we collect and use data
 
-Collecting data is necessary in order to make the bot run properly. Without storing some aspects of your user data, the bot would not be able to run.
+Collecting data is necessary in order to allow The Bot to run properly. Without storing some aspects of your user data, The Bot would not be able to function correctly.
 
 ## What data is collected
 
@@ -14,23 +14,24 @@ We collect the following:
 
 * **User IDs**
 
-    This is used to keep track of messages you've sent, how long you have been in voice channels, and activity in a Minecraft server (if used).
+    * User IDs are stored in order to track the number of messages sent by a user, and keep track of how long a user has been inside of a voice channel. Points are stored up to once per minute.
 
 * **Guild IDs**
 
-    This is to keep track of guild settings, and where activity and experience can be tracked and validated. This also is to keep track of the guild customisations (such as the prefix).
+    * A guild ID is stored when keeping track of guild specific bot settings, such as whether or not roles are removed when a new one is gained, and the window of activity that the bot will average between.
 
 * **Channel IDs**
 
-    This is to keep track of where messages are sent and if certain commands can be executed, or if there are override settings in place.
+    * Channel IDs are stored to track the number of messages sent by a user, and keep track of how long a user has been inside of a voice channel. Points are stored up to once per minute.
+    * Channel IDs are stored when a server marks a channel as blacklisted for gaining points.
 
 * **Role IDs**
 
-    This is to keep track of the roles a user has. This also is used to keep track of when to add a role to a user.
+    * Role IDs are stored when a server sets a certain number of points as the minimum number of points required to hold a role.
 
 ## Where data is stored and secured
 
-Data that we collect is stored in a database. This database is not accessible by other entities. The server that the database is kept on is secure, and its hard drive is encrypted.
+Data that we collect is stored in a database. This database is not accessible by other entities. The server that the database is kept on is secure, and its hard drive is encrypted. The database is physically located within the EU.
 
 ## Where data is shared
 
@@ -38,4 +39,4 @@ Raw data is not shared with other entities.
 
 ## Concerns
 
-If you have any concerns about the usage of your data, please [contact us](mailto:privacy@voxelfox.co.uk?subject=Privacy%20Policy%20Concern).
+If you have any concerns about the usage of your data, please [contact us](mailto:privacy@voxelfox.co.uk?subject=Privacy%20Policy%20Concern%20re%20Cerberus).

@@ -36,7 +36,7 @@ We collect the following:
 
 ## Where data is stored and secured
 
-Data that we collect is stored in a database. This database is not accessible by other entities. The server that the database is kept on is secure, and its hard drive is encrypted. The database is stored within the EU.
+Data that we collect is stored in a database. This database is not accessible by other entities. The server that the database is kept on is secure, and its hard drive is encrypted. The database is physically located within the EU.
 
 ## Where data is shared
 
