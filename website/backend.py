@@ -276,20 +276,31 @@ async def calendar_filter(request: Request):
         new_calendar = ics.Calendar()
         previous: ics.Event | None = None
         for event in sorted(calendar.events, key=lambda e: e.begin):
-            if previous is None:
-                previous = event
-                continue
-            assert previous is not None
-            new_name = calendar_names_are_similar(previous.name, event.name)
-            if new_name is not False and previous.end == event.begin:
-                if not isinstance(previous.description, str):
-                    previous.description = ""
+            new_name = False
+            if previous is not None:
+                new_name = calendar_names_are_similar(previous.name, event.name)
+            if previous is not None and new_name is not False and previous.end == event.begin:
                 previous.name = new_name
-                previous.description += "\n----------\n" + (event.description or "")
+                assert isinstance(previous.description, str)
+                previous.description = (
+                    f"{previous.description.strip()}\n"
+                    + "----------\n"
+                    + f"{event.name} @ "
+                    + f"{event.begin.strftime('%H:%M')} - {event.end.strftime('%H:%M')}\n"
+                    + (event.description or "")
+                ).strip()
                 previous.end = event.end
             else:
-                new_calendar.events.add(previous)
+                if previous is not None:
+                    new_calendar.events.add(previous)
                 previous = event
+                if not isinstance(previous.description, str):
+                    previous.description = ""
+                previous.description = (
+                    f"{previous.name} @ "
+                    + f"{previous.begin.strftime('%H:%M')} - {previous.end.strftime('%H:%M')}\n"
+                    + previous.description
+                ).strip()
         if previous is not None:
             new_calendar.events.add(previous)
         calendar = new_calendar
