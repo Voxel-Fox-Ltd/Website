@@ -263,12 +263,12 @@ async def calendar_filter(request: Request):
         for event in calendar.events:
             add = True
             for f in filters:
-                if f.casefold() in event.name.casefold():
+                if f.casefold() in event.summary.casefold():
                     add = False
                     break
             if not add:
                 continue
-            new_calendar.events.add(event)
+            new_calendar.events.append(event)
         calendar = new_calendar
 
     combine_similar = request.query.get("combine_similar") is not None
@@ -278,31 +278,31 @@ async def calendar_filter(request: Request):
         for event in sorted(calendar.events, key=lambda e: e.begin):
             new_name = False
             if previous is not None:
-                new_name = calendar_names_are_similar(previous.name, event.name)
+                new_name = calendar_names_are_similar(previous.summary, event.summary)
             if previous is not None and new_name is not False and previous.end == event.begin:
-                previous.name = new_name
+                previous.summary = new_name
                 assert isinstance(previous.description, str)
                 previous.description = (
                     f"{previous.description.strip()}\n"
                     + "----------\n"
-                    + f"{event.name} @ "
+                    + f"{event.summary} @ "
                     + f"{event.begin.strftime('%H:%M')} - {event.end.strftime('%H:%M')}\n"
                     + (event.description or "")
                 ).strip()
                 previous.end = event.end
             else:
                 if previous is not None:
-                    new_calendar.events.add(previous)
+                    new_calendar.events.append(previous)
                 previous = event
                 if not isinstance(previous.description, str):
                     previous.description = ""
                 previous.description = (
-                    f"{previous.name} @ "
+                    f"{previous.summary} @ "
                     + f"{previous.begin.strftime('%H:%M')} - {previous.end.strftime('%H:%M')}\n"
                     + previous.description
                 ).strip()
         if previous is not None:
-            new_calendar.events.add(previous)
+            new_calendar.events.append(previous)
         calendar = new_calendar
 
     return Response(
